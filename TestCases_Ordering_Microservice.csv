@@ -1,0 +1,285 @@
+Test ID,Fonctionnalité,Scénario de Test,Type,Priorité,Préconditions,Données de Test,Étapes,Résultat Attendu,Statut,Commentaires
+TC_ORDER_001,Création commande,Créer une commande avec toutes les données valides,Positif,Haute,Un client existe,"CustomerId = GUID valide
+ShippingAddress = ""123 Rue de Paris, 75001 Paris""
+BillingAddress = ""123 Rue de Paris, 75001 Paris""
+PaymentMethod = ""CreditCard""
+CustomerEmail = ""customer@eshop.com""
+CustomerPhone = ""+33612345678""","1. Appeler POST /api/orders avec données complètes
+2. Vérifier la réponse
+3. Récupérer la commande créée","- Code HTTP 201 Created
+- OrderId généré (GUID)
+- OrderStatus = ""Initial""
+- CustomerId correct
+- TotalAmount = 0 (pas d'items encore)
+- OrderDate définie",À tester,Création basique de commande
+TC_ORDER_002,Création commande,Créer une commande sans CustomerId,Négatif,Haute,Aucune,"CustomerId = Guid.Empty ou null","1. Appeler POST /api/orders sans CustomerId
+2. Vérifier l'erreur de validation","- Code HTTP 400 Bad Request
+- Message : ""CustomerId est requis""",À tester,Validation CustomerId obligatoire
+TC_ORDER_003,Création commande,Créer une commande sans adresse de livraison,Négatif,Haute,Aucune,"ShippingAddress = null ou """"","1. Appeler POST /api/orders sans ShippingAddress
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""L'adresse de livraison est requise""",À tester,Validation adresse livraison
+TC_ORDER_004,Création commande,Créer une commande sans adresse de facturation,Négatif,Haute,Aucune,"BillingAddress = null ou """"","1. Appeler POST /api/orders sans BillingAddress
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""L'adresse de facturation est requise""",À tester,Validation adresse facturation
+TC_ORDER_005,Création commande,Créer une commande avec email invalide,Négatif,Haute,Aucune,"CustomerEmail = ""invalid-email""
+ou ""@example.com""
+ou ""user@""","1. Appeler POST /api/orders avec email invalide
+2. Vérifier l'erreur de validation","- Code HTTP 400 Bad Request
+- Message : ""Format d'email invalide""",À tester,Validation format email
+TC_ORDER_006,Création commande,Créer une commande sans email,Négatif,Moyenne,Aucune,"CustomerEmail = null ou """"","1. Appeler POST /api/orders sans email
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""L'email est requis""",À tester,Validation email obligatoire
+TC_ORDER_007,Création commande,Créer une commande sans téléphone,Négatif,Moyenne,Aucune,"CustomerPhone = null ou """"","1. Appeler POST /api/orders sans téléphone
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request OU accepté
+- Selon la logique métier",À tester,Validation téléphone (optionnel?)
+TC_ORDER_008,Création commande,Créer une commande sans méthode de paiement,Négatif,Haute,Aucune,"PaymentMethod = null ou """"","1. Appeler POST /api/orders sans PaymentMethod
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""La méthode de paiement est requise""",À tester,Validation paiement obligatoire
+TC_ORDER_009,Ajout d'item,Ajouter un item à une commande en statut Initial,Positif,Haute,"Une commande existe
+OrderStatus = ""Initial""","CatalogItemId = GUID valide
+ProductName = ""iPhone 15 Pro""
+UnitPrice = 1199.99
+Quantity = 2
+Discount = 0","1. Appeler POST /api/orders/{orderId}/items
+2. Récupérer la commande
+3. Vérifier l'item et le total","- Code HTTP 200 OK
+- Item ajouté à order.Items
+- TotalAmount = 2399.98 (1199.99 * 2)
+- OrderItemAddedDomainEvent levé",À tester,Ajout d'item basique
+TC_ORDER_010,Ajout d'item,Ajouter un item avec quantité = 0,Négatif,Moyenne,Une commande existe,"Quantity = 0","1. Appeler POST /api/orders/{orderId}/items avec Quantity = 0
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""La quantité doit être supérieure à 0""",À tester,Validation quantité positive
+TC_ORDER_011,Ajout d'item,Ajouter un item avec quantité négative,Négatif,Moyenne,Une commande existe,"Quantity = -5","1. Appeler POST /api/orders/{orderId}/items avec quantité négative
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Erreur de validation sur Quantity",À tester,Validation quantité négative
+TC_ORDER_012,Ajout d'item,Ajouter un item avec prix négatif,Négatif,Moyenne,Une commande existe,"UnitPrice = -99.99","1. Appeler POST /api/orders/{orderId}/items avec prix négatif
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Erreur de validation sur UnitPrice",À tester,Validation prix positif
+TC_ORDER_013,Ajout d'item,Ajouter un item sans nom de produit,Négatif,Basse,Une commande existe,"ProductName = null ou """"","1. Appeler POST /api/orders/{orderId}/items sans ProductName
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""Le nom du produit est requis""",À tester,Validation ProductName
+TC_ORDER_014,Ajout d'item,Ajouter un item à une commande déjà livrée,Négatif,Haute,"Une commande existe
+OrderStatus = ""Delivered""","CatalogItemId = GUID valide
+Quantity = 1","1. Tenter d'ajouter un item à une commande livrée
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""Impossible de modifier une commande livrée""",À tester,Immutabilité commande livrée
+TC_ORDER_015,Ajout d'item,Ajouter un item à une commande annulée,Négatif,Haute,"OrderStatus = ""Cancelled""","Item valide","1. Tenter d'ajouter un item à une commande annulée
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""Impossible de modifier une commande annulée""",À tester,Immutabilité commande annulée
+TC_ORDER_016,Ajout d'item,Ajouter plusieurs items à une commande,Positif,Haute,Une commande existe,"Item 1 : iPhone (1199.99 x 2)
+Item 2 : MacBook (2499.99 x 1)
+Item 3 : AirPods (249.99 x 3)","1. Ajouter les 3 items
+2. Récupérer la commande
+3. Vérifier le total","- Code HTTP 200 OK pour chaque ajout
+- order.Items.Count = 3
+- TotalAmount = 5649.94
+- Calcul correct",À tester,Commande multi-items
+TC_ORDER_017,Ajout d'item,Ajouter un item avec remise de 10%,Positif,Moyenne,Une commande existe,"UnitPrice = 100
+Quantity = 2
+Discount = 10 (10%)","1. Ajouter l'item avec remise
+2. Vérifier le calcul du total","- Code HTTP 200 OK
+- Sous-total = 200
+- Remise = 20 (10%)
+- Total item = 180
+- TotalAmount correct",À tester,Calcul avec remise
+TC_ORDER_018,Ajout d'item,Ajouter un item avec remise > 100%,Négatif,Basse,Une commande existe,"Discount = 150 (150%)","1. Tenter d'ajouter un item avec remise > 100%
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""La remise ne peut pas dépasser 100%""",À tester,Validation remise maximale
+TC_ORDER_019,Suppression d'item,Supprimer un item d'une commande en statut Initial,Positif,Haute,"Une commande avec 2 items
+OrderStatus = ""Initial""","CatalogItemId de l'item à supprimer","1. Appeler DELETE /api/orders/{orderId}/items/{catalogItemId}
+2. Récupérer la commande
+3. Vérifier la suppression","- Code HTTP 204 No Content
+- Item supprimé
+- TotalAmount recalculé
+- OrderItemRemovedDomainEvent levé",À tester,Suppression d'item
+TC_ORDER_020,Suppression d'item,Supprimer un item inexistant,Négatif,Moyenne,Une commande existe,CatalogItemId inexistant,"1. Appeler DELETE /api/orders/{orderId}/items/{inexistantId}
+2. Vérifier l'erreur","- Code HTTP 404 Not Found
+- Message : ""Item non trouvé dans la commande""",À tester,Gestion item inexistant
+TC_ORDER_021,Suppression d'item,Supprimer un item d'une commande livrée,Négatif,Haute,"OrderStatus = ""Delivered""","CatalogItemId valide","1. Tenter de supprimer un item d'une commande livrée
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""Impossible de modifier une commande livrée""",À tester,Immutabilité après livraison
+TC_ORDER_022,Mise à jour quantité,Mettre à jour la quantité d'un item dans la commande,Positif,Haute,"Une commande avec un item
+Quantité actuelle = 2","NewQuantity = 5","1. Appeler PUT /api/orders/{orderId}/items/{catalogItemId}/quantity
+2. Vérifier la mise à jour
+3. Vérifier le nouveau total","- Code HTTP 200 OK
+- item.Quantity = 5
+- TotalAmount recalculé
+- OrderItemQuantityUpdatedDomainEvent levé",À tester,Mise à jour quantité
+TC_ORDER_023,Mise à jour quantité,Mettre à jour avec quantité = 0,Négatif,Moyenne,Une commande avec un item,"NewQuantity = 0","1. Tenter de mettre à jour avec Quantity = 0
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""La quantité doit être supérieure à 0""",À tester,Validation quantité
+TC_ORDER_024,Mise à jour quantité,Mettre à jour la quantité d'une commande expédiée,Négatif,Haute,"OrderStatus = ""Shipped""","NewQuantity = 10","1. Tenter de modifier une commande expédiée
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""Impossible de modifier une commande expédiée""",À tester,Immutabilité après expédition
+TC_ORDER_025,Soumission commande,Soumettre une commande en statut Initial,Positif,Haute,"Une commande avec items
+OrderStatus = ""Initial""",Aucune,"1. Appeler POST /api/orders/{orderId}/submit
+2. Récupérer la commande
+3. Vérifier le changement de statut","- Code HTTP 200 OK
+- OrderStatus = ""Pending""
+- OrderSubmittedDomainEvent levé
+- OrderDate mise à jour",À tester,Soumission de commande
+TC_ORDER_026,Soumission commande,Soumettre une commande vide (sans items),Négatif,Haute,"Une commande sans items
+Items.Count = 0","Aucune","1. Tenter de soumettre une commande vide
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""Impossible de soumettre une commande vide""",À tester,Validation commande non vide
+TC_ORDER_027,Soumission commande,Soumettre une commande déjà soumise,Négatif,Moyenne,"OrderStatus = ""Pending""",Aucune,"1. Tenter de soumettre à nouveau
+2. Vérifier l'erreur ou idempotence","- Code HTTP 400 Bad Request
+OU Code HTTP 200 OK (idempotent)
+- Message approprié",À tester,Idempotence ou validation
+TC_ORDER_028,Expédition commande,Expédier une commande en statut Processing,Positif,Haute,"OrderStatus = ""Processing""",Aucune,"1. Appeler POST /api/orders/{orderId}/ship
+2. Vérifier le changement de statut","- Code HTTP 200 OK
+- OrderStatus = ""Shipped""
+- OrderShippedDomainEvent levé
+- OrderShippedIntegrationEvent publié",À tester,Expédition de commande
+TC_ORDER_029,Expédition commande,Expédier une commande en statut Initial,Négatif,Haute,"OrderStatus = ""Initial""",Aucune,"1. Tenter d'expédier une commande non soumise
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""La commande doit être en statut Processing pour être expédiée""",À tester,Validation workflow
+TC_ORDER_030,Expédition commande,Expédier une commande déjà expédiée,Négatif,Moyenne,"OrderStatus = ""Shipped""",Aucune,"1. Tenter d'expédier à nouveau
+2. Vérifier l'erreur ou idempotence","- Code HTTP 400 Bad Request
+OU Code HTTP 200 OK (idempotent)",À tester,Idempotence expédition
+TC_ORDER_031,Livraison commande,Livrer une commande en statut Shipped,Positif,Haute,"OrderStatus = ""Shipped""",Aucune,"1. Appeler POST /api/orders/{orderId}/deliver
+2. Vérifier le changement de statut
+3. Vérifier la date de livraison","- Code HTTP 200 OK
+- OrderStatus = ""Delivered""
+- DeliveryDate définie (DateTime.Now)
+- OrderDeliveredDomainEvent levé",À tester,Livraison de commande
+TC_ORDER_032,Livraison commande,Livrer une commande non expédiée,Négatif,Haute,"OrderStatus = ""Pending""",Aucune,"1. Tenter de livrer une commande non expédiée
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""La commande doit être expédiée avant d'être livrée""",À tester,Validation workflow livraison
+TC_ORDER_033,Livraison commande,Livrer une commande déjà livrée,Négatif,Moyenne,"OrderStatus = ""Delivered""
+DeliveryDate déjà définie",Aucune,"1. Tenter de livrer à nouveau
+2. Vérifier l'erreur ou idempotence","- Code HTTP 400 Bad Request
+OU Code HTTP 200 OK (idempotent)",À tester,Idempotence livraison
+TC_ORDER_034,Annulation commande,Annuler une commande en statut Pending,Positif,Haute,"OrderStatus = ""Pending""",Aucune,"1. Appeler POST /api/orders/{orderId}/cancel
+2. Vérifier l'annulation","- Code HTTP 200 OK
+- OrderStatus = ""Cancelled""
+- OrderCancelledDomainEvent levé",À tester,Annulation de commande
+TC_ORDER_035,Annulation commande,Annuler une commande en statut Initial,Positif,Haute,"OrderStatus = ""Initial""",Aucune,"1. Appeler POST /api/orders/{orderId}/cancel
+2. Vérifier l'annulation","- Code HTTP 200 OK
+- OrderStatus = ""Cancelled""",À tester,Annulation avant soumission
+TC_ORDER_036,Annulation commande,Annuler une commande expédiée,Négatif,Haute,"OrderStatus = ""Shipped""",Aucune,"1. Tenter d'annuler une commande expédiée
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""Impossible d'annuler une commande expédiée""",À tester,Validation annulation
+TC_ORDER_037,Annulation commande,Annuler une commande déjà livrée,Négatif,Haute,"OrderStatus = ""Delivered""",Aucune,"1. Tenter d'annuler une commande livrée
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""Impossible d'annuler une commande livrée""",À tester,Impossibilité annulation après livraison
+TC_ORDER_038,Annulation commande,Annuler une commande déjà annulée,Négatif,Basse,"OrderStatus = ""Cancelled""",Aucune,"1. Tenter d'annuler à nouveau
+2. Vérifier idempotence ou erreur","- Code HTTP 400 Bad Request
+OU Code HTTP 200 OK (idempotent)",À tester,Idempotence annulation
+TC_ORDER_039,Récupération commande,Récupérer une commande par ID,Positif,Haute,Une commande existe,OrderId = GUID valide,"1. Appeler GET /api/orders/{orderId}
+2. Vérifier les données retournées","- Code HTTP 200 OK
+- Toutes les propriétés de la commande
+- Items inclus avec détails",À tester,Lecture d'une commande
+TC_ORDER_040,Récupération commande,Récupérer une commande inexistante,Négatif,Moyenne,Commande n'existe pas,OrderId = GUID inexistant,"1. Appeler GET /api/orders/{inexistantId}
+2. Vérifier l'erreur","- Code HTTP 404 Not Found
+- Message : ""Commande non trouvée""",À tester,Gestion commande inexistante
+TC_ORDER_041,Liste commandes,Récupérer toutes les commandes,Positif,Haute,"5 commandes existent dans la base",Aucune,"1. Appeler GET /api/orders
+2. Vérifier la liste retournée","- Code HTTP 200 OK
+- Liste avec 5 commandes
+- Chaque commande a ses propriétés",À tester,Liste complète
+TC_ORDER_042,Liste commandes,Récupérer toutes les commandes avec pagination,Positif,Moyenne,"50 commandes existent
+PageSize = 10","PageNumber = 1
+PageSize = 10","1. Appeler GET /api/orders?pageNumber=1&pageSize=10
+2. Vérifier les résultats","- Code HTTP 200 OK
+- 10 commandes retournées
+- Métadonnées de pagination",À tester,Test pagination
+TC_ORDER_043,Filtrage par client,Récupérer les commandes d'un client,Positif,Haute,"Client A a 3 commandes
+Client B a 5 commandes","CustomerId de Client A","1. Appeler GET /api/orders/customer/{customerId}
+2. Vérifier les résultats","- Code HTTP 200 OK
+- 3 commandes retournées
+- Toutes ont le bon CustomerId",À tester,Filtrage par client
+TC_ORDER_044,Filtrage par client,Récupérer les commandes d'un client sans commandes,Positif,Basse,Client sans commandes,CustomerId sans commandes,"1. Appeler GET /api/orders/customer/{customerId}
+2. Vérifier le résultat","- Code HTTP 200 OK
+- Liste vide []",À tester,Client sans historique
+TC_ORDER_045,Filtrage par statut,Récupérer les commandes par statut Pending,Positif,Haute,"3 commandes Pending
+2 commandes Shipped
+1 commande Delivered","Status = ""Pending""","1. Appeler GET /api/orders/status/Pending
+2. Vérifier les résultats","- Code HTTP 200 OK
+- 3 commandes retournées
+- Toutes ont OrderStatus = ""Pending""",À tester,Filtrage par statut
+TC_ORDER_046,Filtrage par statut,Récupérer les commandes par statut inexistant,Négatif,Basse,Aucune,"Status = ""InvalidStatus""","1. Appeler GET /api/orders/status/InvalidStatus
+2. Vérifier l'erreur ou liste vide","- Code HTTP 400 Bad Request
+OU Code HTTP 200 OK avec liste vide",À tester,Validation statut
+TC_ORDER_047,Filtrage combiné,Récupérer les commandes d'un client avec un statut spécifique,Positif,Moyenne,"Client A :
+- 2 commandes Pending
+- 1 commande Shipped","CustomerId = Client A
+Status = ""Pending""","1. Appeler GET /api/orders/customer/{customerId}/status/Pending
+2. Vérifier les résultats","- Code HTTP 200 OK
+- 2 commandes retournées
+- CustomerId et Status corrects",À tester,Filtrage multi-critères
+TC_ORDER_048,Calcul total,Calculer le total avec plusieurs items sans remise,Positif,Haute,Une commande existe,"Item 1 : 100€ x 2 = 200€
+Item 2 : 50€ x 3 = 150€
+Item 3 : 75€ x 1 = 75€","1. Ajouter les 3 items
+2. Récupérer la commande
+3. Vérifier le total","- TotalAmount = 425€
+- Calcul correct
+- Pas de remise appliquée",À tester,Calcul total simple
+TC_ORDER_049,Calcul total,Calculer le total avec remises différentes,Positif,Haute,Une commande existe,"Item 1 : 100€ x 2, Remise 10% = 180€
+Item 2 : 200€ x 1, Remise 20% = 160€","1. Ajouter les items avec remises
+2. Vérifier le calcul du total","- Sous-total = 400€
+- Total après remises = 340€
+- TotalAmount = 340€",À tester,Calcul avec remises multiples
+TC_ORDER_050,Calcul total,Calculer le total avec remise de 100%,Positif,Basse,Une commande existe,"Item : 100€ x 1, Remise 100%","1. Ajouter un item avec remise de 100%
+2. Vérifier le calcul","- TotalAmount = 0€
+- Item gratuit",À tester,Cas limite remise 100%
+TC_ORDER_051,Workflow complet,Cycle de vie complet d'une commande (Happy Path),Intégration,Haute,Aucune,"Commande complète de A à Z
+3 items dans la commande","1. Créer commande (Initial)
+2. Ajouter 3 items
+3. Soumettre (Pending)
+4. Traiter (Processing)
+5. Expédier (Shipped)
+6. Livrer (Delivered)","- Tous les changements de statut réussis
+- Événements levés à chaque étape
+- DeliveryDate définie
+- TotalAmount correct
+- Historique complet",À tester,Test end-to-end complet
+TC_ORDER_052,Workflow complet,Cycle de vie avec annulation après soumission,Intégration,Haute,Aucune,"Commande soumise puis annulée","1. Créer commande
+2. Ajouter items
+3. Soumettre
+4. Annuler","- OrderStatus = ""Cancelled""
+- OrderCancelledDomainEvent levé
+- TotalAmount conservé
+- Items conservés (historique)",À tester,Flow annulation
+TC_ORDER_053,Performance,Créer 100 commandes en séquence,Performance,Basse,Aucune,"100 commandes différentes","1. Créer 100 commandes via boucle
+2. Mesurer le temps total","- Temps total < 30 secondes
+- Les 100 commandes créées
+- Tous les OrderId uniques",À tester,Test de charge création
+TC_ORDER_054,Performance,Récupérer 1000 commandes avec pagination,Performance,Basse,"1000 commandes dans la base
+PageSize = 100",PageNumber = 1 à 10,"1. 10 requêtes paginées
+2. Mesurer les temps de réponse","- Chaque requête < 500ms
+- Total = 1000 commandes
+- Pas de doublons",À tester,Test de charge lecture
+TC_ORDER_055,Concurrence,Deux utilisateurs modifient la même commande simultanément,Concurrence,Moyenne,Une commande existe,"User1 ajoute Item A
+User2 ajoute Item B
+Simultanément","1. 2 requêtes parallèles d'ajout d'items
+2. Vérifier l'intégrité","- Les 2 items ajoutés
+OU un seul réussit (optimistic concurrency)
+- Pas de perte de données",À tester,Gestion concurrence
+TC_ORDER_056,Concurrence,Soumission et annulation simultanées,Concurrence,Haute,Une commande en statut Initial,"User1 soumet la commande
+User2 annule la commande
+Simultanément","1. Lancer Submit et Cancel en parallèle
+2. Vérifier le statut final","- Un seul gagne
+- Statut = ""Pending"" OU ""Cancelled""
+- Cohérence garantie",À tester,Race condition workflow
+TC_ORDER_057,Intégration,Créer une commande depuis un panier (checkout),Intégration,Haute,"Un panier avec 3 items
+Total panier = 500€","BasketId avec items","1. Récupérer le panier
+2. Créer la commande depuis le panier
+3. Transférer les items
+4. Vider le panier","- Commande créée avec les items du panier
+- TotalAmount = 500€
+- Panier vidé après checkout",À tester,Flow Basket → Order
+TC_ORDER_058,Intégration,Vérifier la disponibilité du stock avant création,Intégration,Haute,"Catalog :
+Produit A : 10 en stock
+Commande : 5 unités","CatalogItemId, Quantity = 5","1. Vérifier le stock dans Catalog
+2. Créer la commande si stock suffisant
+3. Réserver ou déduire le stock","- Commande créée
+- Stock vérifié avant
+- Stock réservé/déduit dans Catalog",À tester,Validation stock inter-services
+TC_ORDER_059,Intégration,Commande avec produit supprimé du catalogue,Intégration,Moyenne,"Produit était dans Catalog
+Produit supprimé ensuite","CatalogItemId supprimé","1. Créer commande avec produit existant
+2. Supprimer produit du Catalog
+3. Vérifier que la commande conserve l'info","- Commande conserve ProductName et prix historiques
+- Pas d'impact sur commandes existantes",À tester,Cohérence données historiques
+TC_ORDER_060,Validation ID,Opérations avec GUID invalide,Négatif,Basse,Aucune,"OrderId = ""invalid-guid""","1. Tenter GET/PUT/POST avec GUID invalide
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""Format d'ID invalide""",À tester,Validation format GUID

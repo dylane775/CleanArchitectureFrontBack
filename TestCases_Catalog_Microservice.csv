@@ -1,0 +1,249 @@
+Test ID,Fonctionnalité,Scénario de Test,Type,Priorité,Préconditions,Données de Test,Étapes,Résultat Attendu,Statut,Commentaires
+TC_CATALOG_001,Création produit,Créer un produit avec toutes les données valides,Positif,Haute,CatalogType et CatalogBrand existent,"Name = ""iPhone 15 Pro""
+Description = ""Latest Apple smartphone""
+Price = 1199.99
+AvailableStock = 100
+RestockThreshold = 10
+MaxStockThreshold = 500
+CatalogTypeId = GUID valide
+CatalogBrandId = GUID valide","1. Appeler POST /api/catalogitems avec données complètes
+2. Vérifier la réponse
+3. Récupérer le produit créé","- Code HTTP 201 Created
+- Id généré (GUID)
+- Toutes les propriétés correctement sauvegardées
+- Location header avec URL du produit",À tester,Création basique de produit
+TC_CATALOG_002,Création produit,Créer un produit sans nom,Négatif,Haute,Aucune,"Name = null ou """"
+Description = ""Test""
+Price = 99.99","1. Appeler POST /api/catalogitems sans Name
+2. Vérifier l'erreur de validation","- Code HTTP 400 Bad Request
+- Message : ""Le nom du produit est requis""",À tester,Validation nom obligatoire
+TC_CATALOG_003,Création produit,Créer un produit avec un nom vide (espaces),Négatif,Moyenne,Aucune,"Name = ""   ""
+Price = 99.99","1. Appeler POST /api/catalogitems avec Name contenant uniquement des espaces
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Erreur de validation sur Name",À tester,Validation nom non vide
+TC_CATALOG_004,Création produit,Créer un produit avec prix = 0,Négatif,Haute,Aucune,"Name = ""Test Product""
+Price = 0","1. Appeler POST /api/catalogitems avec Price = 0
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""Le prix doit être supérieur à 0""",À tester,Validation prix positif
+TC_CATALOG_005,Création produit,Créer un produit avec prix négatif,Négatif,Haute,Aucune,"Name = ""Test Product""
+Price = -99.99","1. Appeler POST /api/catalogitems avec prix négatif
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Erreur de validation sur Price",À tester,Validation prix négatif interdit
+TC_CATALOG_006,Création produit,Créer un produit avec stock négatif,Négatif,Moyenne,Aucune,"Name = ""Test Product""
+Price = 99.99
+AvailableStock = -10","1. Appeler POST /api/catalogitems avec stock négatif
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""Le stock ne peut pas être négatif""",À tester,Validation stock >= 0
+TC_CATALOG_007,Création produit,Créer un produit avec MaxStock < RestockThreshold,Négatif,Moyenne,Aucune,"RestockThreshold = 100
+MaxStockThreshold = 50","1. Appeler POST /api/catalogitems avec MaxStock < RestockThreshold
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""MaxStockThreshold doit être supérieur à RestockThreshold""",À tester,Validation cohérence seuils
+TC_CATALOG_008,Création produit,Créer un produit avec CatalogTypeId inexistant,Négatif,Moyenne,CatalogTypeId n'existe pas,CatalogTypeId = GUID inexistant,"1. Appeler POST /api/catalogitems avec CatalogTypeId invalide
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request OU 404
+- Message : ""Type de catalogue non trouvé""",À tester,Validation clé étrangère Type
+TC_CATALOG_009,Création produit,Créer un produit avec CatalogBrandId inexistant,Négatif,Moyenne,CatalogBrandId n'existe pas,CatalogBrandId = GUID inexistant,"1. Appeler POST /api/catalogitems avec BrandId invalide
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request OU 404
+- Message : ""Marque non trouvée""",À tester,Validation clé étrangère Brand
+TC_CATALOG_010,Mise à jour produit,Mettre à jour toutes les propriétés d'un produit,Positif,Haute,Un produit existe,"Nouvelles valeurs :
+Name = ""Updated Name""
+Description = ""Updated Desc""
+Price = 1499.99","1. Appeler PUT /api/catalogitems/{id} avec nouvelles données
+2. Récupérer le produit
+3. Vérifier les modifications","- Code HTTP 200 OK
+- Toutes les propriétés mises à jour
+- Id inchangé",À tester,Mise à jour complète
+TC_CATALOG_011,Mise à jour produit,Mettre à jour uniquement le prix,Positif,Haute,Un produit existe,"Price = 1499.99
+Autres champs inchangés","1. Appeler PUT /api/catalogitems/{id} avec nouveau prix
+2. Vérifier la mise à jour
+3. Vérifier l'événement de domaine","- Code HTTP 200 OK
+- Price = 1499.99
+- ProductPriceChangedDomainEvent levé
+- Autres propriétés inchangées",À tester,Changement de prix + événement
+TC_CATALOG_012,Mise à jour produit,Mettre à jour un produit inexistant,Négatif,Moyenne,Produit n'existe pas,Id = GUID inexistant,"1. Appeler PUT /api/catalogitems/{inexistantId}
+2. Vérifier l'erreur","- Code HTTP 404 Not Found
+- Message : ""Produit non trouvé""",À tester,Gestion produit inexistant
+TC_CATALOG_013,Mise à jour produit,Mettre à jour avec des données invalides,Négatif,Moyenne,Un produit existe,"Name = """"
+Price = -50","1. Appeler PUT /api/catalogitems/{id} avec données invalides
+2. Vérifier les erreurs de validation","- Code HTTP 400 Bad Request
+- Erreurs sur Name et Price",À tester,Validation lors de la mise à jour
+TC_CATALOG_014,Suppression produit,Supprimer un produit existant,Positif,Haute,Un produit existe,Id = GUID valide,"1. Appeler DELETE /api/catalogitems/{id}
+2. Tenter de récupérer le produit
+3. Vérifier qu'il n'existe plus","- Code HTTP 204 No Content
+- GET retourne 404
+- ProductDeletedIntegrationEvent publié",À tester,Suppression de produit
+TC_CATALOG_015,Suppression produit,Supprimer un produit inexistant,Négatif,Moyenne,Produit n'existe pas,Id = GUID inexistant,"1. Appeler DELETE /api/catalogitems/{inexistantId}
+2. Vérifier l'erreur","- Code HTTP 404 Not Found
+- Message : ""Produit non trouvé""",À tester,Gestion produit inexistant
+TC_CATALOG_016,Suppression produit,Supprimer un produit présent dans des paniers actifs,Intégration,Haute,"Le produit est dans 5 paniers actifs
+ProductId = GUID-123",ProductId = GUID-123,"1. Ajouter le produit à plusieurs paniers
+2. Supprimer le produit du catalogue
+3. Vérifier la propagation aux paniers
+4. Vérifier les paniers","- Code HTTP 204 No Content
+- ProductDeletedIntegrationEvent publié
+- Les paniers sont notifiés (item marqué indisponible ou supprimé)",À tester,Impact sur les paniers actifs
+TC_CATALOG_017,Gestion stock,Ajouter du stock à un produit,Positif,Haute,"Un produit avec 50 unités en stock
+AvailableStock = 50",Quantity = 30,"1. Appeler POST /api/catalogitems/{id}/stock avec Quantity = +30
+2. Récupérer le produit
+3. Vérifier le nouveau stock","- Code HTTP 200 OK
+- AvailableStock = 80 (50 + 30)
+- ProductStockUpdatedDomainEvent levé",À tester,Ajout de stock
+TC_CATALOG_018,Gestion stock,Retirer du stock d'un produit,Positif,Haute,"Un produit avec 50 unités
+AvailableStock = 50",Quantity = -20,"1. Appeler POST /api/catalogitems/{id}/stock avec Quantity = -20
+2. Récupérer le produit
+3. Vérifier le stock","- Code HTTP 200 OK
+- AvailableStock = 30 (50 - 20)
+- ProductStockUpdatedDomainEvent levé",À tester,Retrait de stock
+TC_CATALOG_019,Gestion stock,Retirer plus de stock que disponible,Négatif,Haute,AvailableStock = 10,Quantity = -50,"1. Appeler POST /api/catalogitems/{id}/stock avec Quantity = -50
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""Stock insuffisant""
+- Stock inchangé (reste 10)",À tester,Validation stock suffisant
+TC_CATALOG_020,Gestion stock,Stock atteint le seuil de réapprovisionnement,Positif,Moyenne,"AvailableStock = 15
+RestockThreshold = 10","Quantity = -6
+Nouveau stock = 9","1. Retirer du stock pour passer sous le seuil
+2. Vérifier l'événement de domaine","- Code HTTP 200 OK
+- AvailableStock = 9
+- ProductRestockThresholdReachedDomainEvent levé
+- OnReorder = true",À tester,Déclenchement alerte réapprovisionnement
+TC_CATALOG_021,Gestion stock,Réapprovisionner un produit en rupture de stock,Positif,Haute,"AvailableStock = 0
+OnReorder = true",Quantity = 100,"1. Ajouter 100 unités
+2. Vérifier le stock et le statut OnReorder","- AvailableStock = 100
+- OnReorder = false
+- ProductStockUpdatedDomainEvent levé",À tester,Réapprovisionnement
+TC_CATALOG_022,Récupération produit,Récupérer un produit par ID,Positif,Haute,Un produit existe,Id = GUID valide,"1. Appeler GET /api/catalogitems/{id}
+2. Vérifier les données retournées","- Code HTTP 200 OK
+- Toutes les propriétés du produit
+- Informations Type et Brand incluses",À tester,Lecture d'un produit
+TC_CATALOG_023,Récupération produit,Récupérer un produit inexistant,Négatif,Moyenne,Produit n'existe pas,Id = GUID inexistant,"1. Appeler GET /api/catalogitems/{inexistantId}
+2. Vérifier l'erreur","- Code HTTP 404 Not Found
+- Message : ""Produit non trouvé""",À tester,Gestion produit inexistant
+TC_CATALOG_024,Liste produits,Récupérer tous les produits,Positif,Haute,"3 produits existent dans la base
+Total = 3",Aucune,"1. Appeler GET /api/catalogitems
+2. Vérifier la liste retournée","- Code HTTP 200 OK
+- Liste avec 3 produits
+- Chaque produit a toutes ses propriétés",À tester,Liste complète
+TC_CATALOG_025,Liste produits,Récupérer tous les produits (pagination),Positif,Moyenne,"50 produits existent
+PageSize = 10","PageNumber = 1
+PageSize = 10","1. Appeler GET /api/catalogitems?pageNumber=1&pageSize=10
+2. Vérifier les résultats","- Code HTTP 200 OK
+- 10 produits retournés
+- Métadonnées de pagination (totalCount, hasNext, hasPrevious)",À tester,Test de pagination
+TC_CATALOG_026,Filtrage par type,Récupérer les produits d'un type spécifique,Positif,Haute,"Type ""Smartphones"" contient 5 produits
+Type ""Laptops"" contient 3 produits","TypeId = ID de ""Smartphones""","1. Appeler GET /api/catalogitems/type/{typeId}
+2. Vérifier les résultats","- Code HTTP 200 OK
+- 5 produits retournés
+- Tous ont CatalogTypeId = typeId",À tester,Filtrage par catégorie
+TC_CATALOG_027,Filtrage par type,Récupérer les produits d'un type sans produits,Positif,Basse,Type existe mais sans produits,TypeId = type vide,"1. Appeler GET /api/catalogitems/type/{typeId}
+2. Vérifier le résultat","- Code HTTP 200 OK
+- Liste vide []",À tester,Type sans produits
+TC_CATALOG_028,Filtrage par marque,Récupérer les produits d'une marque spécifique,Positif,Haute,"Marque ""Apple"" : 10 produits
+Marque ""Samsung"" : 7 produits","BrandId = ID de ""Apple""","1. Appeler GET /api/catalogitems/brand/{brandId}
+2. Vérifier les résultats","- Code HTTP 200 OK
+- 10 produits retournés
+- Tous ont CatalogBrandId = brandId",À tester,Filtrage par marque
+TC_CATALOG_029,Filtrage par marque,Récupérer les produits d'une marque inexistante,Négatif,Basse,Marque n'existe pas,BrandId = GUID inexistant,"1. Appeler GET /api/catalogitems/brand/{inexistantBrandId}
+2. Vérifier l'erreur ou résultat vide","- Code HTTP 200 OK avec liste vide
+OU Code HTTP 404",À tester,Marque inexistante
+TC_CATALOG_030,Recherche,Rechercher des produits par nom (contient),Positif,Haute,"5 produits contiennent ""iPhone""
+3 produits contiennent ""MacBook""","SearchTerm = ""iPhone""","1. Appeler GET /api/catalogitems/search?q=iPhone
+2. Vérifier les résultats","- Code HTTP 200 OK
+- 5 produits retournés
+- Tous contiennent ""iPhone"" dans le nom ou description",À tester,Recherche textuelle
+TC_CATALOG_031,Recherche,Rechercher avec un terme vide,Positif,Basse,"10 produits dans la base
+SearchTerm = """"","SearchTerm = """"","1. Appeler GET /api/catalogitems/search?q=
+2. Vérifier le résultat","- Code HTTP 200 OK
+- Tous les produits retournés (ou erreur de validation)",À tester,Recherche vide
+TC_CATALOG_032,Recherche,Rechercher avec aucun résultat,Positif,Moyenne,Aucun produit ne correspond,"SearchTerm = ""ProductDoesNotExist""","1. Appeler GET /api/catalogitems/search?q=ProductDoesNotExist
+2. Vérifier le résultat","- Code HTTP 200 OK
+- Liste vide []",À tester,Aucun résultat
+TC_CATALOG_033,Types de catalogue,Récupérer tous les types de catalogue,Positif,Haute,"3 types existent :
+- Smartphones
+- Laptops
+- Tablets",Aucune,"1. Appeler GET /api/catalogtypes
+2. Vérifier la liste","- Code HTTP 200 OK
+- 3 types retournés
+- Chaque type a Id et Type (nom)",À tester,Liste des types
+TC_CATALOG_034,Types de catalogue,Créer un nouveau type de catalogue,Positif,Moyenne,Aucune,"Type = ""Smartwatches""","1. Appeler POST /api/catalogtypes avec Type = ""Smartwatches""
+2. Vérifier la création","- Code HTTP 201 Created
+- Id généré
+- Type = ""Smartwatches""",À tester,Création d'un type
+TC_CATALOG_035,Types de catalogue,Créer un type avec un nom vide,Négatif,Moyenne,Aucune,"Type = """"","1. Appeler POST /api/catalogtypes avec Type vide
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""Le nom du type est requis""",À tester,Validation type obligatoire
+TC_CATALOG_036,Types de catalogue,Créer un type déjà existant (doublon),Négatif,Moyenne,"Type ""Smartphones"" existe déjà","Type = ""Smartphones""","1. Appeler POST /api/catalogtypes avec type existant
+2. Vérifier l'erreur ou le comportement","- Code HTTP 400 Bad Request OU 409 Conflict
+- Message : ""Ce type existe déjà""",À tester,Validation unicité
+TC_CATALOG_037,Marques,Récupérer toutes les marques,Positif,Haute,"4 marques existent :
+- Apple, Samsung, Sony, LG",Aucune,"1. Appeler GET /api/catalogbrands
+2. Vérifier la liste","- Code HTTP 200 OK
+- 4 marques retournées
+- Chaque marque a Id et Brand (nom)",À tester,Liste des marques
+TC_CATALOG_038,Marques,Créer une nouvelle marque,Positif,Moyenne,Aucune,"Brand = ""Huawei""","1. Appeler POST /api/catalogbrands avec Brand = ""Huawei""
+2. Vérifier la création","- Code HTTP 201 Created
+- Id généré
+- Brand = ""Huawei""",À tester,Création d'une marque
+TC_CATALOG_039,Marques,Créer une marque avec un nom vide,Négatif,Moyenne,Aucune,"Brand = """"","1. Appeler POST /api/catalogbrands avec Brand vide
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""Le nom de la marque est requis""",À tester,Validation marque obligatoire
+TC_CATALOG_040,Marques,Créer une marque déjà existante (doublon),Négatif,Moyenne,"Marque ""Apple"" existe","Brand = ""Apple""","1. Appeler POST /api/catalogbrands avec marque existante
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request OU 409 Conflict
+- Message : ""Cette marque existe déjà""",À tester,Validation unicité
+TC_CATALOG_041,Images,Télécharger une image pour un produit,Positif,Moyenne,Un produit existe,"File = image.jpg (JPG valide)
+Taille < 5MB","1. Appeler POST /api/catalogitems/{id}/picture avec fichier
+2. Vérifier le téléchargement","- Code HTTP 200 OK
+- PictureFileName mis à jour
+- PictureUri accessible
+- Image stockée correctement",À tester,Upload d'image
+TC_CATALOG_042,Images,Télécharger une image avec format invalide,Négatif,Moyenne,Un produit existe,File = document.pdf,"1. Appeler POST /api/catalogitems/{id}/picture avec PDF
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""Format de fichier non supporté (JPG, PNG uniquement)""",À tester,Validation format image
+TC_CATALOG_043,Images,Télécharger une image trop volumineuse,Négatif,Basse,Un produit existe,"File = image.jpg
+Taille = 10MB","1. Appeler POST /api/catalogitems/{id}/picture avec fichier > 5MB
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""La taille du fichier ne doit pas dépasser 5MB""",À tester,Validation taille fichier
+TC_CATALOG_044,Performance,Récupérer 1000 produits avec pagination,Performance,Basse,"1000 produits dans la base
+PageSize = 100",PageNumber = 1 à 10,"1. Boucle de 10 requêtes paginées
+2. Mesurer les temps de réponse
+3. Vérifier la cohérence","- Chaque requête < 500ms
+- Total = 1000 produits uniques
+- Pas de doublons",À tester,Test de charge
+TC_CATALOG_045,Performance,Créer 100 produits en séquence,Performance,Basse,Aucune,"100 produits différents
+Données variées","1. Créer 100 produits via boucle
+2. Mesurer le temps total
+3. Vérifier tous les produits","- Temps total < 30 secondes
+- Les 100 produits créés
+- Tous ont des Id uniques",À tester,Test de création en masse
+TC_CATALOG_046,Intégration,Changement de prix déclenche événement RabbitMQ,Intégration,Haute,"Un produit avec Price = 99.99
+Des paniers contiennent ce produit",Nouveau Price = 149.99,"1. Mettre à jour le prix du produit
+2. Vérifier la publication de l'événement
+3. Vérifier la consommation par Basket service
+4. Vérifier la mise à jour des paniers","- ProductPriceChangedIntegrationEvent publié sur RabbitMQ
+- Basket service consomme l'événement
+- Les paniers sont mis à jour (< 3s)
+- Nouveau prix = 149.99 dans les paniers",À tester,Event-Driven Architecture
+TC_CATALOG_047,Intégration,Suppression de produit notifie les services dépendants,Intégration,Haute,"Produit présent dans 3 paniers
+Produit a des commandes en cours",ProductId = GUID-123,"1. Supprimer le produit du catalogue
+2. Vérifier la publication de l'événement
+3. Vérifier l'impact sur Basket et Ordering","- ProductDeletedIntegrationEvent publié
+- Basket service reçoit l'événement
+- Items marqués comme indisponibles dans les paniers
+- Ordering garde l'historique",À tester,Propagation suppression
+TC_CATALOG_048,Concurrence,Deux utilisateurs modifient le même produit simultanément,Concurrence,Moyenne,Un produit existe,"User1 change le prix à 150
+User2 change le prix à 200
+Simultanément","1. Lancer 2 requêtes PUT parallèles
+2. Vérifier le résultat final
+3. Vérifier les événements levés","- Une seule mise à jour gagne (optimistic concurrency)
+OU les deux réussissent avec le dernier gagnant
+- Pas de perte de données
+- Événements cohérents",À tester,Gestion de concurrence
+TC_CATALOG_049,Concurrence,Retrait simultané de stock par plusieurs commandes,Concurrence,Haute,"AvailableStock = 10
+3 commandes demandent 5 unités chacune","Commande1 : -5
+Commande2 : -5
+Commande3 : -5","1. Lancer 3 retraits de stock simultanés
+2. Vérifier le stock final
+3. Vérifier les succès/échecs","- 2 commandes réussissent
+- 1 commande échoue (stock insuffisant)
+- Stock final = 0
+- Pas de stock négatif",À tester,Race condition sur stock
+TC_CATALOG_050,Validation ID,Opérations avec GUID invalide,Négatif,Basse,Aucune,"Id = ""invalid-guid-format""","1. Tenter GET/PUT/DELETE avec GUID invalide
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""Format d'ID invalide""",À tester,Validation format GUID

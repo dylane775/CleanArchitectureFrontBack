@@ -1,0 +1,156 @@
+Test ID,Fonctionnalité,Scénario de Test,Type,Priorité,Préconditions,Données de Test,Étapes,Résultat Attendu,Statut,Commentaires
+TC_BASKET_001,Création de panier,Créer un panier vide avec un CustomerId valide,Positif,Haute,Aucune,"CustomerId = ""customer-123""","1. Appeler POST /api/baskets avec CustomerId
+2. Vérifier la réponse","- Code HTTP 201 Created
+- BasketId généré (GUID non vide)
+- CustomerId = ""customer-123""
+- Items = []",À tester,Test de création basique
+TC_BASKET_002,Création de panier,Créer un panier sans CustomerId,Négatif,Haute,Aucune,CustomerId = null ou vide,"1. Appeler POST /api/baskets sans CustomerId
+2. Vérifier l'erreur de validation","- Code HTTP 400 Bad Request
+- Message d'erreur : ""CustomerId est requis""",À tester,Validation des données obligatoires
+TC_BASKET_003,Ajout d'item,Ajouter un produit valide au panier,Positif,Haute,Un panier existe,"CatalogItemId = GUID valide
+ProductName = ""iPhone 15 Pro""
+UnitPrice = 1199.99
+Quantity = 2
+PictureUrl = ""http://catalog.com/iphone.jpg""","1. Appeler POST /api/baskets/{basketId}/items
+2. Vérifier que l'item est ajouté","- Code HTTP 200 OK
+- L'item apparaît dans basket.Items
+- Quantity = 2
+- UnitPrice = 1199.99",À tester,Ajout simple d'un produit
+TC_BASKET_004,Ajout d'item,Ajouter un produit avec quantité = 0,Négatif,Moyenne,Un panier existe,"CatalogItemId = GUID valide
+ProductName = ""Test Product""
+UnitPrice = 99.99
+Quantity = 0","1. Appeler POST /api/baskets/{basketId}/items
+2. Vérifier l'erreur de validation","- Code HTTP 400 Bad Request
+- Message : ""La quantité doit être supérieure à 0""",À tester,Validation quantité positive
+TC_BASKET_005,Ajout d'item,Ajouter un produit avec quantité négative,Négatif,Moyenne,Un panier existe,"CatalogItemId = GUID valide
+Quantity = -5","1. Appeler POST /api/baskets/{basketId}/items avec Quantity = -5
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Erreur de validation sur Quantity",À tester,Validation quantité négative
+TC_BASKET_006,Ajout d'item,Ajouter un produit avec prix = 0,Négatif,Moyenne,Un panier existe,"UnitPrice = 0
+Quantity = 1","1. Appeler POST /api/baskets/{basketId}/items avec UnitPrice = 0
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""Le prix doit être supérieur à 0""",À tester,Validation prix positif
+TC_BASKET_007,Ajout d'item,Ajouter un produit avec prix négatif,Négatif,Moyenne,Un panier existe,"UnitPrice = -99.99
+Quantity = 1","1. Appeler POST /api/baskets/{basketId}/items
+2. Vérifier l'erreur de validation","- Code HTTP 400 Bad Request
+- Erreur de validation sur UnitPrice",À tester,Validation prix négatif
+TC_BASKET_008,Ajout d'item,Ajouter un produit sans nom,Négatif,Moyenne,Un panier existe,"ProductName = null ou """"
+UnitPrice = 99.99
+Quantity = 1","1. Appeler POST /api/baskets/{basketId}/items sans ProductName
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""Le nom du produit est requis""",À tester,Validation ProductName obligatoire
+TC_BASKET_009,Ajout d'item,Ajouter le même produit deux fois (incrémentation),Positif,Haute,"Un panier existe avec un item
+CatalogItemId = GUID-123
+Quantité existante = 2","Ajouter le même CatalogItemId = GUID-123
+Nouvelle quantité = 3","1. Ajouter le produit une première fois (Qty = 2)
+2. Ajouter le même produit (Qty = 3)
+3. Vérifier la quantité totale","- Code HTTP 200 OK
+- Un seul item dans le panier
+- Quantity = 5 (2 + 3)
+- Le produit n'est pas dupliqué",À tester,Test incrémentation automatique
+TC_BASKET_010,Ajout d'item,Ajouter plusieurs produits différents,Positif,Moyenne,Un panier existe,"Produit 1 : iPhone (Qty = 2)
+Produit 2 : MacBook (Qty = 1)
+Produit 3 : AirPods (Qty = 3)","1. Ajouter Produit 1
+2. Ajouter Produit 2
+3. Ajouter Produit 3
+4. Récupérer le panier","- Code HTTP 200 OK
+- basket.Items.Count = 3
+- Tous les produits sont présents avec leurs quantités respectives",À tester,Test multi-produits
+TC_BASKET_011,Suppression d'item,Supprimer un item existant du panier,Positif,Haute,"Un panier existe avec 2 items
+Item à supprimer : CatalogItemId = GUID-123","CatalogItemId = GUID-123","1. Appeler DELETE /api/baskets/{basketId}/items/{catalogItemId}
+2. Récupérer le panier
+3. Vérifier que l'item a été supprimé","- Code HTTP 204 No Content
+- L'item n'est plus dans basket.Items
+- Les autres items restent intacts",À tester,Suppression d'un item
+TC_BASKET_012,Suppression d'item,Supprimer un item qui n'existe pas,Négatif,Moyenne,Un panier existe sans cet item,CatalogItemId = GUID inexistant,"1. Appeler DELETE /api/baskets/{basketId}/items/{inexistantId}
+2. Vérifier la réponse","- Code HTTP 404 Not Found
+- Message : ""Item non trouvé dans le panier""",À tester,Gestion item inexistant
+TC_BASKET_013,Mise à jour quantité,Mettre à jour la quantité d'un item existant,Positif,Haute,"Un panier avec un item
+Quantité actuelle = 2","NewQuantity = 5","1. Appeler PUT /api/baskets/{basketId}/items avec NewQuantity = 5
+2. Récupérer le panier
+3. Vérifier la nouvelle quantité","- Code HTTP 200 OK
+- item.Quantity = 5
+- Les autres propriétés restent inchangées",À tester,Mise à jour de quantité
+TC_BASKET_014,Mise à jour quantité,Mettre à jour avec une quantité invalide (0),Négatif,Moyenne,Un panier avec un item,NewQuantity = 0,"1. Appeler PUT /api/baskets/{basketId}/items avec NewQuantity = 0
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Erreur de validation sur NewQuantity",À tester,Validation mise à jour quantité
+TC_BASKET_015,Mise à jour quantité,Mettre à jour avec une quantité négative,Négatif,Moyenne,Un panier avec un item,NewQuantity = -3,"1. Appeler PUT /api/baskets/{basketId}/items avec NewQuantity = -3
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""La quantité doit être positive""",À tester,Validation quantité négative
+TC_BASKET_016,Vider le panier,Vider un panier contenant plusieurs items,Positif,Haute,"Un panier avec 3 items
+Total items = 3",Aucune,"1. Appeler DELETE /api/baskets/{basketId}/clear
+2. Récupérer le panier
+3. Vérifier qu'il est vide","- Code HTTP 204 No Content
+- basket.Items = []
+- Le panier existe toujours mais est vide",À tester,Suppression de tous les items
+TC_BASKET_017,Vider le panier,Vider un panier déjà vide,Positif,Basse,"Un panier vide
+Items = []",Aucune,"1. Appeler DELETE /api/baskets/{basketId}/clear sur un panier vide
+2. Vérifier la réponse","- Code HTTP 204 No Content
+- Aucune erreur
+- Le panier reste vide",À tester,Idempotence de l'opération
+TC_BASKET_018,Suppression de panier,Supprimer un panier existant,Positif,Moyenne,Un panier existe,BasketId = GUID valide,"1. Appeler DELETE /api/baskets/{basketId}
+2. Tenter de récupérer le panier
+3. Vérifier qu'il n'existe plus","- Code HTTP 204 No Content
+- GET /api/baskets/{basketId} retourne 404",À tester,Suppression complète du panier
+TC_BASKET_019,Suppression de panier,Supprimer un panier inexistant,Négatif,Basse,Aucun panier avec cet ID,BasketId = GUID inexistant,"1. Appeler DELETE /api/baskets/{inexistantId}
+2. Vérifier l'erreur","- Code HTTP 404 Not Found
+- Message : ""Panier non trouvé""",À tester,Gestion panier inexistant
+TC_BASKET_020,Récupération de panier,Récupérer un panier par ID,Positif,Haute,"Un panier existe avec 2 items
+BasketId = GUID-123","BasketId = GUID-123","1. Appeler GET /api/baskets/{basketId}
+2. Vérifier les données retournées","- Code HTTP 200 OK
+- BasketId correct
+- CustomerId correct
+- Items.Count = 2",À tester,Lecture d'un panier
+TC_BASKET_021,Récupération de panier,Récupérer un panier inexistant,Négatif,Moyenne,Aucun panier avec cet ID,BasketId = GUID inexistant,"1. Appeler GET /api/baskets/{inexistantId}
+2. Vérifier l'erreur","- Code HTTP 404 Not Found
+- Message : ""Panier non trouvé""",À tester,Gestion panier inexistant
+TC_BASKET_022,Récupération par client,Récupérer le panier d'un client par CustomerId,Positif,Haute,"Un panier existe pour customer-456
+BasketId = GUID-789","CustomerId = ""customer-456""","1. Appeler GET /api/baskets/customer/{customerId}
+2. Vérifier le panier retourné","- Code HTTP 200 OK
+- CustomerId = ""customer-456""
+- BasketId = GUID-789
+- Items du panier retournés",À tester,Récupération par CustomerId
+TC_BASKET_023,Récupération par client,Récupérer le panier d'un client sans panier,Négatif,Moyenne,Aucun panier pour ce client,CustomerId = client inexistant,"1. Appeler GET /api/baskets/customer/{inexistantCustomerId}
+2. Vérifier la réponse","- Code HTTP 404 Not Found
+- Message : ""Aucun panier trouvé pour ce client""",À tester,Client sans panier
+TC_BASKET_024,Validation ID,Tenter d'ajouter un item avec un BasketId invalide,Négatif,Moyenne,Aucune,"BasketId = ""invalid-guid""","1. Appeler POST /api/baskets/invalid-guid/items
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Message : ""Format de BasketId invalide""",À tester,Validation format GUID
+TC_BASKET_025,Validation ID,Tenter d'ajouter un item avec un CatalogItemId invalide,Négatif,Moyenne,Un panier existe,"CatalogItemId = ""not-a-guid""","1. Appeler POST /api/baskets/{basketId}/items avec CatalogItemId invalide
+2. Vérifier l'erreur","- Code HTTP 400 Bad Request
+- Erreur de validation sur CatalogItemId",À tester,Validation format GUID produit
+TC_BASKET_026,Performance,Ajouter 50 produits différents au panier,Performance,Basse,Un panier existe,"50 produits différents
+Quantité = 1 pour chacun","1. Ajouter 50 produits via boucle
+2. Mesurer le temps de réponse
+3. Récupérer le panier","- Toutes les requêtes < 200ms
+- basket.Items.Count = 50
+- Tous les produits sont présents",À tester,Test de charge
+TC_BASKET_027,Concurrence,Deux utilisateurs ajoutent au même panier simultanément,Concurrence,Moyenne,Un panier existe,"User1 ajoute Produit A
+User2 ajoute Produit B
+Simultanément","1. Lancer 2 requêtes parallèles d'ajout
+2. Récupérer le panier
+3. Vérifier l'intégrité","- Les 2 produits sont présents
+- Aucune perte de données
+- Pas de conflit",À tester,Test de concurrence
+TC_BASKET_028,Intégration,Ajouter un produit qui n'existe plus dans le Catalog,Intégration,Moyenne,Le produit a été supprimé du Catalog,CatalogItemId = produit supprimé,"1. Supprimer un produit du Catalog
+2. Tenter de l'ajouter au panier
+3. Vérifier le comportement","- Code HTTP 400 Bad Request OU 404
+- Message : ""Produit non disponible""
+- L'item n'est pas ajouté",À tester,Validation avec Catalog service
+TC_BASKET_029,Intégration,Vérifier la propagation du changement de prix,Intégration,Haute,"Un panier contient le produit X à 99.99€
+Le prix change dans Catalog à 149.99€","Prix initial = 99.99
+Nouveau prix = 149.99","1. Ajouter produit X au panier (99.99€)
+2. Changer le prix dans Catalog (149.99€)
+3. Attendre l'événement RabbitMQ
+4. Récupérer le panier
+5. Vérifier le nouveau prix","- item.UnitPrice = 149.99
+- Mise à jour automatique via événement
+- Délai < 3 secondes",À tester,Test événement ProductPriceChanged
+TC_BASKET_030,Checkout,Transformer le panier en commande (checkout),Intégration,Haute,"Un panier avec 3 items
+Total = 500€","ShippingAddress, PaymentMethod, etc.","1. Récupérer le panier
+2. Appeler l'endpoint de checkout
+3. Vérifier la création de commande
+4. Vérifier que le panier est vidé","- Commande créée dans Ordering service
+- OrderId retourné
+- Panier vidé ou marqué comme ""checked out""
+- Items transférés à la commande",À tester,Flow checkout complet

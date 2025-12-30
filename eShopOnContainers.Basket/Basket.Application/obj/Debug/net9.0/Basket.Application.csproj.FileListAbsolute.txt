@@ -1,0 +1,15 @@
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Basket\Basket.Application\obj\Debug\net9.0\Basket.Application.csproj.AssemblyReference.cache
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Basket\Basket.Application\obj\Debug\net9.0\Basket.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Basket\Basket.Application\obj\Debug\net9.0\Basket.Application.AssemblyInfoInputs.cache
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Basket\Basket.Application\obj\Debug\net9.0\Basket.Application.AssemblyInfo.cs
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Basket\Basket.Application\obj\Debug\net9.0\Basket.Application.csproj.CoreCompileInputs.cache
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Basket\Basket.Application\bin\Debug\net9.0\Basket.Application.deps.json
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Basket\Basket.Application\bin\Debug\net9.0\Basket.Application.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Basket\Basket.Application\bin\Debug\net9.0\Basket.Application.pdb
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Basket\Basket.Application\bin\Debug\net9.0\Basket.Domain.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Basket\Basket.Application\bin\Debug\net9.0\Basket.Domain.pdb
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Basket\Basket.Application\obj\Debug\net9.0\Basket.A.E41EB0DD.Up2Date
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Basket\Basket.Application\obj\Debug\net9.0\Basket.Application.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Basket\Basket.Application\obj\Debug\net9.0\refint\Basket.Application.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Basket\Basket.Application\obj\Debug\net9.0\Basket.Application.pdb
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Basket\Basket.Application\obj\Debug\net9.0\ref\Basket.Application.dll

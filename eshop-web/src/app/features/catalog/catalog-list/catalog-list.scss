@@ -1,0 +1,33 @@
+.spacer {
+  flex: 1 1 auto;
+}
+
+.user-info {
+  margin-right: 16px;
+  font-size: 14px;
+}
+
+.catalog-container {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+mat-paginator {
+  margin-top: 20px;
+  background-color: transparent;
+}

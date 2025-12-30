@@ -1,0 +1,86 @@
+
+
+services:
+  # ====================================
+  # SQL SERVER - Pour Catalog & Basket
+  # ====================================
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: eshop-sqlserver
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "Dylane@775123"
+      MSSQL_PID: "Express"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - eshop-network
+    healthcheck:
+      test: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "Dylane@775123" -Q "SELECT 1" || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ====================================
+  # RABBITMQ - Message Broker
+  # ====================================
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: eshop-rabbitmq
+    ports:
+      - "5672:5672"    # Port AMQP (connexion applicative)
+      - "15672:15672"  # Port Management UI (http://localhost:15672)
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - eshop-network
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ====================================
+  # REDIS - Cache (Optionnel pour Basket)
+  # ====================================
+  redis:
+    image: redis:7-alpine
+    container_name: eshop-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - eshop-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: redis-server --appendonly yes
+
+# ====================================
+# VOLUMES PERSISTANTS
+# ====================================
+volumes:
+  sqlserver_data:
+    driver: local
+  rabbitmq_data:
+    driver: local
+  redis_data:
+    driver: local
+
+# ====================================
+# RÉSEAU COMMUN
+# ====================================
+networks:
+  eshop-network:
+    driver: bridge
+    name: eshop-network

@@ -1,0 +1,15 @@
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Identity\Identity.Application\bin\Debug\net9.0\Identity.Application.deps.json
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Identity\Identity.Application\bin\Debug\net9.0\Identity.Application.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Identity\Identity.Application\bin\Debug\net9.0\Identity.Application.pdb
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Identity\Identity.Application\bin\Debug\net9.0\Identity.Domain.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Identity\Identity.Application\bin\Debug\net9.0\Identity.Domain.pdb
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Identity\Identity.Application\obj\Debug\net9.0\Identity.Application.csproj.AssemblyReference.cache
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Identity\Identity.Application\obj\Debug\net9.0\Identity.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Identity\Identity.Application\obj\Debug\net9.0\Identity.Application.AssemblyInfoInputs.cache
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Identity\Identity.Application\obj\Debug\net9.0\Identity.Application.AssemblyInfo.cs
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Identity\Identity.Application\obj\Debug\net9.0\Identity.Application.csproj.CoreCompileInputs.cache
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Identity\Identity.Application\obj\Debug\net9.0\Identity.59D253F8.Up2Date
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Identity\Identity.Application\obj\Debug\net9.0\Identity.Application.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Identity\Identity.Application\obj\Debug\net9.0\refint\Identity.Application.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Identity\Identity.Application\obj\Debug\net9.0\Identity.Application.pdb
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Identity\Identity.Application\obj\Debug\net9.0\ref\Identity.Application.dll

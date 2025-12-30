@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "VNhGCeBnX6Y=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\stage.pmo\\Desktop\\EshopOnContainerCleanArchitecture\\eShopOnContainers.Ordering\\Ordering.Domain\\Ordering.Domain.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\stage.pmo\\.nuget\\packages\\mediatr\\12.4.1\\mediatr.12.4.1.nupkg.sha512",
+    "C:\\Users\\stage.pmo\\.nuget\\packages\\mediatr.contracts\\2.0.1\\mediatr.contracts.2.0.1.nupkg.sha512",
+    "C:\\Users\\stage.pmo\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.0\\microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

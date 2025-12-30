@@ -1,0 +1,12 @@
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Catalog\Catalog.Domain\bin\Debug\net9.0\Catalog.Domain.deps.json
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Catalog\Catalog.Domain\bin\Debug\net9.0\Catalog.Domain.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Catalog\Catalog.Domain\bin\Debug\net9.0\Catalog.Domain.pdb
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Catalog\Catalog.Domain\obj\Debug\net9.0\Catalog.Domain.csproj.AssemblyReference.cache
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Catalog\Catalog.Domain\obj\Debug\net9.0\Catalog.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Catalog\Catalog.Domain\obj\Debug\net9.0\Catalog.Domain.AssemblyInfoInputs.cache
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Catalog\Catalog.Domain\obj\Debug\net9.0\Catalog.Domain.AssemblyInfo.cs
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Catalog\Catalog.Domain\obj\Debug\net9.0\Catalog.Domain.csproj.CoreCompileInputs.cache
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Catalog\Catalog.Domain\obj\Debug\net9.0\Catalog.Domain.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Catalog\Catalog.Domain\obj\Debug\net9.0\refint\Catalog.Domain.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Catalog\Catalog.Domain\obj\Debug\net9.0\Catalog.Domain.pdb
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Catalog\Catalog.Domain\obj\Debug\net9.0\ref\Catalog.Domain.dll

@@ -1,0 +1,41 @@
+<mat-card class="product-card">
+  <img mat-card-image [src]="item.pictureUri || 'https://via.placeholder.com/300x200?text=No+Image'" [alt]="item.name">
+
+  <mat-card-header>
+    <mat-card-title>{{ item.name }}</mat-card-title>
+    <mat-card-subtitle>{{ item.catalogBrandName }} - {{ item.catalogTypeName }}</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <p class="description">{{ item.description }}</p>
+
+    <div class="product-info">
+      <div class="price">{{ item.price | currency:'USD' }}</div>
+
+      <div class="stock-info">
+        @if (item.availableStock > 0) {
+          <mat-chip>
+            <mat-icon>check_circle</mat-icon>
+            {{ item.availableStock }} in stock
+          </mat-chip>
+        } @else {
+          <mat-chip color="warn">
+            <mat-icon>block</mat-icon>
+            Out of stock
+          </mat-chip>
+        }
+      </div>
+    </div>
+  </mat-card-content>
+
+  <mat-card-actions>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="onAddToBasket()"
+      [disabled]="item.availableStock === 0">
+      <mat-icon>add_shopping_cart</mat-icon>
+      Add to Cart
+    </button>
+  </mat-card-actions>
+</mat-card>
