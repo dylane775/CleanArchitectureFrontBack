@@ -1,0 +1,162 @@
+<div class="product-detail-container">
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+    </div>
+  } @else if (product()) {
+    <div class="breadcrumb">
+      <button mat-button (click)="backToCatalog()">
+        <mat-icon>arrow_back</mat-icon>
+        Back to Catalog
+      </button>
+    </div>
+
+    <div class="product-content">
+      <!-- Product Image Section -->
+      <div class="product-image-section">
+        <div class="main-image">
+          <img [src]="product()!.pictureUri" [alt]="product()!.name" />
+        </div>
+        <div class="image-gallery">
+          <div class="thumbnail active">
+            <img [src]="product()!.pictureUri" [alt]="product()!.name" />
+          </div>
+          <div class="thumbnail">
+            <img [src]="product()!.pictureUri" [alt]="product()!.name" />
+          </div>
+          <div class="thumbnail">
+            <img [src]="product()!.pictureUri" [alt]="product()!.name" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Info Section -->
+      <div class="product-info-section">
+        <div class="product-header">
+          <h1>{{ product()!.name }}</h1>
+          <mat-chip [class]="getStockStatusClass()">
+            <mat-icon>{{ isInStock() ? 'check_circle' : 'cancel' }}</mat-icon>
+            {{ getStockStatus() }}
+          </mat-chip>
+        </div>
+
+        <div class="product-meta">
+          <div class="brand">
+            <mat-icon>business</mat-icon>
+            <span>{{ product()!.catalogBrandName }}</span>
+          </div>
+          <div class="category">
+            <mat-icon>category</mat-icon>
+            <span>{{ product()!.catalogTypeName }}</span>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="product-description">
+          <h3>Description</h3>
+          <p>{{ product()!.description }}</p>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="product-pricing">
+          <div class="price-section">
+            <span class="price-label">Price:</span>
+            <span class="price">${{ product()!.price.toFixed(2) }}</span>
+          </div>
+
+          @if (isInStock()) {
+            <div class="quantity-section">
+              <span class="quantity-label">Quantity:</span>
+              <div class="quantity-control">
+                <button mat-icon-button class="qty-btn" (click)="decreaseQuantity()" [disabled]="quantity() <= 1">
+                  <mat-icon>remove</mat-icon>
+                </button>
+                <span class="qty-display">{{ quantity() }}</span>
+                <button mat-icon-button class="qty-btn" (click)="increaseQuantity()" [disabled]="quantity() >= product()!.availableStock">
+                  <mat-icon>add</mat-icon>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="product-actions">
+          @if (isInStock()) {
+            <button mat-raised-button class="add-to-cart-btn" (click)="addToBasket()">
+              <mat-icon>shopping_cart</mat-icon>
+              Add to Cart
+            </button>
+          } @else {
+            <button mat-raised-button class="notify-btn" disabled>
+              <mat-icon>notifications</mat-icon>
+              Out of Stock
+            </button>
+          }
+          <button mat-stroked-button class="wishlist-btn">
+            <mat-icon>favorite_border</mat-icon>
+            Add to Wishlist
+          </button>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="product-features">
+          <h3>Features</h3>
+          <ul>
+            <li>
+              <mat-icon>local_shipping</mat-icon>
+              Free shipping on orders over $100
+            </li>
+            <li>
+              <mat-icon>verified_user</mat-icon>
+              1 year warranty included
+            </li>
+            <li>
+              <mat-icon>replay</mat-icon>
+              30-day return policy
+            </li>
+            <li>
+              <mat-icon>support_agent</mat-icon>
+              24/7 customer support
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Additional Information -->
+    <div class="additional-info">
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>info</mat-icon>
+            Product Details
+          </mat-card-title>
+        </mat-card-header>
+        <mat-divider></mat-divider>
+        <mat-card-content>
+          <div class="details-grid">
+            <div class="detail-item">
+              <span class="detail-label">Product ID:</span>
+              <span class="detail-value">{{ product()!.id }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Brand:</span>
+              <span class="detail-value">{{ product()!.catalogBrandName }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Category:</span>
+              <span class="detail-value">{{ product()!.catalogTypeName }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Stock:</span>
+              <span class="detail-value">{{ product()!.availableStock }} units</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+</div>

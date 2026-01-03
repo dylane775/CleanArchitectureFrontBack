@@ -1,0 +1,159 @@
+<div class="home-page">
+  <!-- Hero Carousel -->
+  <section class="hero-section">
+    <div class="hero-carousel">
+      @for (slide of heroSlides; track $index) {
+        <div class="hero-slide" [class.active]="currentHeroSlide() === $index"
+             [style.background-image]="'url(' + slide.image + ')'">
+          <div class="hero-overlay"></div>
+          <div class="hero-content">
+            <h1 class="hero-title">{{ slide.title }}</h1>
+            <p class="hero-subtitle">{{ slide.subtitle }}</p>
+            <button mat-raised-button class="hero-cta" [routerLink]="slide.link">
+              Shop Now
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </div>
+      }
+
+      <button class="carousel-nav prev" (click)="prevSlide()">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <button class="carousel-nav next" (click)="nextSlide()">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+
+      <div class="carousel-indicators">
+        @for (slide of heroSlides; track $index) {
+          <span class="indicator" [class.active]="currentHeroSlide() === $index"
+                (click)="currentHeroSlide.set($index)"></span>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories Grid -->
+  <section class="categories-section">
+    <div class="container">
+      <h2 class="section-title">Shop by Category</h2>
+      <div class="categories-grid">
+        @for (category of categories; track category.name) {
+          <a [routerLink]="['/catalog']" [queryParams]="{category: category.name}"
+             class="category-card" [style.--category-color]="category.color">
+            <div class="category-initial">{{ category.name.substring(0, 1) }}</div>
+            <span class="category-name">{{ category.name }}</span>
+          </a>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Products -->
+  <section class="products-section featured-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Featured Products</h2>
+        <a routerLink="/catalog" class="view-all">
+          View All
+          <mat-icon>arrow_forward</mat-icon>
+        </a>
+      </div>
+
+      <div class="products-carousel-wrapper">
+        <button class="scroll-btn left" (click)="scrollCarousel('left', 'featured-carousel')">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+
+        <div class="products-carousel featured-carousel">
+          @for (product of featuredProducts(); track product.id) {
+            <div class="product-card-wrapper">
+              <app-catalog-item [item]="product" [compact]="true"></app-catalog-item>
+            </div>
+          }
+        </div>
+
+        <button class="scroll-btn right" (click)="scrollCarousel('right', 'featured-carousel')">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Promo Banner -->
+  <section class="promo-banner">
+    <div class="container">
+      <div class="promo-content">
+        <div class="promo-text">
+          <h2>Limited Time Offer!</h2>
+          <p>Get 30% off on all electronics. Use code: TECH30</p>
+        </div>
+        <button mat-raised-button class="promo-btn" routerLink="/catalog">
+          Shop Electronics
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- New Arrivals -->
+  <section class="products-section new-arrivals-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">New Arrivals</h2>
+        <a routerLink="/catalog" [queryParams]="{filter: 'new'}" class="view-all">
+          View All
+          <mat-icon>arrow_forward</mat-icon>
+        </a>
+      </div>
+
+      <div class="products-carousel-wrapper">
+        <button class="scroll-btn left" (click)="scrollCarousel('left', 'new-arrivals-carousel')">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+
+        <div class="products-carousel new-arrivals-carousel">
+          @for (product of newArrivals(); track product.id) {
+            <div class="product-card-wrapper">
+              <app-catalog-item [item]="product" [compact]="true"></app-catalog-item>
+            </div>
+          }
+        </div>
+
+        <button class="scroll-btn right" (click)="scrollCarousel('right', 'new-arrivals-carousel')">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Best Sellers -->
+  <section class="products-section best-sellers-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Best Sellers</h2>
+        <a routerLink="/catalog" [queryParams]="{filter: 'popular'}" class="view-all">
+          View All
+          <mat-icon>arrow_forward</mat-icon>
+        </a>
+      </div>
+
+      <div class="products-carousel-wrapper">
+        <button class="scroll-btn left" (click)="scrollCarousel('left', 'best-sellers-carousel')">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+
+        <div class="products-carousel best-sellers-carousel">
+          @for (product of bestSellers(); track product.id) {
+            <div class="product-card-wrapper">
+              <app-catalog-item [item]="product" [compact]="true"></app-catalog-item>
+            </div>
+          }
+        </div>
+
+        <button class="scroll-btn right" (click)="scrollCarousel('right', 'best-sellers-carousel')">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+    </div>
+  </section>
+</div>

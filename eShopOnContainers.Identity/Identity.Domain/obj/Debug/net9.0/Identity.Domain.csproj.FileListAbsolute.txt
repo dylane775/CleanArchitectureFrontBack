@@ -10,3 +10,4 @@ C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.I
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Identity\Identity.Domain\obj\Debug\net9.0\refint\Identity.Domain.dll
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Identity\Identity.Domain\obj\Debug\net9.0\Identity.Domain.pdb
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Identity\Identity.Domain\obj\Debug\net9.0\ref\Identity.Domain.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Identity\Identity.Domain\obj\Debug\net9.0\Identity.Domain.sourcelink.json

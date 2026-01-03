@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../../core/services/auth.service';
 import { LoginRequest } from '../../../core/models/auth.model';
 
@@ -22,7 +23,8 @@ import { LoginRequest } from '../../../core/models/auth.model';
     MatInputModule,
     MatButtonModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatIconModule
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
@@ -30,6 +32,7 @@ import { LoginRequest } from '../../../core/models/auth.model';
 export class Login {
   loginForm: FormGroup;
   loading = signal(false);
+  hidePassword = true;
 
   constructor(
     private fb: FormBuilder,
@@ -53,12 +56,26 @@ export class Login {
 
     this.authService.login(request).subscribe({
       next: () => {
-        this.snackBar.open('Login successful!', 'Close', { duration: 3000 });
+        this.snackBar.open('Welcome back! Login successful', '✓', {
+          duration: 2500,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['success-snackbar']
+        });
         this.router.navigate(['/catalog']);
       },
       error: (error) => {
         this.loading.set(false);
-        this.snackBar.open(error.error?.message || 'Login failed. Please try again.', 'Close', { duration: 5000 });
+        this.snackBar.open(
+          error.error?.message || 'Login failed. Please check your credentials.',
+          'Close',
+          {
+            duration: 5000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['error-snackbar']
+          }
+        );
       },
       complete: () => {
         this.loading.set(false);

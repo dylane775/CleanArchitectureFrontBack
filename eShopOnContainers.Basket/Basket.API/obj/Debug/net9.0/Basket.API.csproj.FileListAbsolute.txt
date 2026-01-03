@@ -172,3 +172,4 @@ C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.B
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Basket\Basket.API\obj\Debug\net9.0\Basket.API.genruntimeconfig.cache
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Basket\Basket.API\obj\Debug\net9.0\ref\Basket.API.dll
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Basket\Basket.API\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Basket\Basket.API\obj\Debug\net9.0\Basket.API.sourcelink.json

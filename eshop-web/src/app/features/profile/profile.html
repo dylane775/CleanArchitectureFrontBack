@@ -1,0 +1,242 @@
+<div class="profile-container">
+  <div class="profile-header">
+    <div class="user-avatar">
+      <div class="avatar-circle">
+        <span>{{ getUserInitials() }}</span>
+      </div>
+    </div>
+    <div class="user-info">
+      <h1>{{ user()?.firstName }} {{ user()?.lastName }}</h1>
+      <p class="user-email">{{ user()?.email }}</p>
+      <div class="user-roles">
+        @for (role of user()?.roles || []; track role) {
+          <mat-chip>{{ role }}</mat-chip>
+        }
+      </div>
+    </div>
+  </div>
+
+  <mat-tab-group class="profile-tabs">
+    <!-- Personal Information Tab -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>person</mat-icon>
+        Personal Information
+      </ng-template>
+
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>account_circle</mat-icon>
+            Profile Details
+          </mat-card-title>
+        </mat-card-header>
+
+        <mat-divider></mat-divider>
+
+        <mat-card-content>
+          <form [formGroup]="profileForm" class="profile-form">
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>First Name</mat-label>
+                <mat-icon matPrefix>badge</mat-icon>
+                <input matInput formControlName="firstName" placeholder="Enter your first name" />
+                @if (profileForm.get('firstName')?.hasError('required') && profileForm.get('firstName')?.touched) {
+                  <mat-error>First name is required</mat-error>
+                }
+                @if (profileForm.get('firstName')?.hasError('minlength')) {
+                  <mat-error>First name must be at least 2 characters</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Last Name</mat-label>
+                <mat-icon matPrefix>badge</mat-icon>
+                <input matInput formControlName="lastName" placeholder="Enter your last name" />
+                @if (profileForm.get('lastName')?.hasError('required') && profileForm.get('lastName')?.touched) {
+                  <mat-error>Last name is required</mat-error>
+                }
+                @if (profileForm.get('lastName')?.hasError('minlength')) {
+                  <mat-error>Last name must be at least 2 characters</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline" class="form-field full-width">
+              <mat-label>Email Address</mat-label>
+              <mat-icon matPrefix>email</mat-icon>
+              <input matInput type="email" formControlName="email" placeholder="Enter your email" />
+              @if (profileForm.get('email')?.hasError('required') && profileForm.get('email')?.touched) {
+                <mat-error>Email is required</mat-error>
+              }
+              @if (profileForm.get('email')?.hasError('email')) {
+                <mat-error>Please enter a valid email</mat-error>
+              }
+            </mat-form-field>
+
+            <div class="form-actions">
+              @if (!editMode()) {
+                <button mat-raised-button color="primary" (click)="toggleEditMode()">
+                  <mat-icon>edit</mat-icon>
+                  Edit Profile
+                </button>
+              } @else {
+                <button mat-raised-button color="primary" (click)="saveProfile()" [disabled]="loading() || profileForm.invalid">
+                  <mat-icon>save</mat-icon>
+                  Save Changes
+                </button>
+                <button mat-stroked-button (click)="toggleEditMode()" [disabled]="loading()">
+                  <mat-icon>cancel</mat-icon>
+                  Cancel
+                </button>
+              }
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </mat-tab>
+
+    <!-- Security Tab -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>security</mat-icon>
+        Security
+      </ng-template>
+
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>lock</mat-icon>
+            Change Password
+          </mat-card-title>
+        </mat-card-header>
+
+        <mat-divider></mat-divider>
+
+        <mat-card-content>
+          <form [formGroup]="passwordForm" class="password-form">
+            <mat-form-field appearance="outline" class="form-field full-width">
+              <mat-label>Current Password</mat-label>
+              <mat-icon matPrefix>lock_outline</mat-icon>
+              <input matInput type="password" formControlName="currentPassword" placeholder="Enter current password" />
+              @if (passwordForm.get('currentPassword')?.hasError('required') && passwordForm.get('currentPassword')?.touched) {
+                <mat-error>Current password is required</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field full-width">
+              <mat-label>New Password</mat-label>
+              <mat-icon matPrefix>vpn_key</mat-icon>
+              <input matInput type="password" formControlName="newPassword" placeholder="Enter new password" />
+              @if (passwordForm.get('newPassword')?.hasError('required') && passwordForm.get('newPassword')?.touched) {
+                <mat-error>New password is required</mat-error>
+              }
+              @if (passwordForm.get('newPassword')?.hasError('minlength')) {
+                <mat-error>Password must be at least 6 characters</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field full-width">
+              <mat-label>Confirm New Password</mat-label>
+              <mat-icon matPrefix>vpn_key</mat-icon>
+              <input matInput type="password" formControlName="confirmPassword" placeholder="Confirm new password" />
+              @if (passwordForm.get('confirmPassword')?.hasError('required') && passwordForm.get('confirmPassword')?.touched) {
+                <mat-error>Please confirm your password</mat-error>
+              }
+              @if (passwordForm.hasError('passwordMismatch') && passwordForm.get('confirmPassword')?.touched) {
+                <mat-error>Passwords do not match</mat-error>
+              }
+            </mat-form-field>
+
+            <div class="form-actions">
+              <button mat-raised-button color="primary" (click)="changePassword()" [disabled]="loading() || passwordForm.invalid">
+                <mat-icon>key</mat-icon>
+                Change Password
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-divider class="section-divider"></mat-divider>
+
+      <mat-card class="danger-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>warning</mat-icon>
+            Danger Zone
+          </mat-card-title>
+        </mat-card-header>
+
+        <mat-divider></mat-divider>
+
+        <mat-card-content>
+          <div class="danger-content">
+            <div class="danger-info">
+              <h3>Delete Account</h3>
+              <p>Once you delete your account, there is no going back. Please be certain.</p>
+            </div>
+            <button mat-raised-button color="warn" (click)="deleteAccount()" [disabled]="loading()">
+              <mat-icon>delete_forever</mat-icon>
+              Delete Account
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </mat-tab>
+
+    <!-- Account Activity Tab -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>history</mat-icon>
+        Activity
+      </ng-template>
+
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>timeline</mat-icon>
+            Recent Activity
+          </mat-card-title>
+        </mat-card-header>
+
+        <mat-divider></mat-divider>
+
+        <mat-card-content>
+          <div class="activity-list">
+            <div class="activity-item">
+              <mat-icon>login</mat-icon>
+              <div class="activity-details">
+                <h4>Logged in</h4>
+                <p>Last login activity</p>
+              </div>
+              <span class="activity-time">Today</span>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div class="activity-item">
+              <mat-icon>shopping_cart</mat-icon>
+              <div class="activity-details">
+                <h4>Added items to cart</h4>
+                <p>Shopping activity</p>
+              </div>
+              <span class="activity-time">2 days ago</span>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div class="activity-item">
+              <mat-icon>person_outline</mat-icon>
+              <div class="activity-details">
+                <h4>Account created</h4>
+                <p>Welcome to eShop!</p>
+              </div>
+              <span class="activity-time">1 week ago</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </mat-tab>
+  </mat-tab-group>
+</div>

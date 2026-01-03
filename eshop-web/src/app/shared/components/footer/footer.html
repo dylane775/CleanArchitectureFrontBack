@@ -1,0 +1,84 @@
+<footer class="main-footer">
+  <div class="footer-container">
+    <!-- Footer Top Section -->
+    <div class="footer-top">
+      <div class="footer-column">
+        <div class="footer-brand">
+          <mat-icon class="brand-icon">shopping_bag</mat-icon>
+          <h3>eShop</h3>
+        </div>
+        <p class="brand-description">
+          Your premium online shopping destination. Quality products, great prices, and exceptional service.
+        </p>
+        <div class="social-links">
+          @for (social of socialLinks; track social.name) {
+            <a [href]="social.url" class="social-link" [attr.aria-label]="social.name">
+              <mat-icon>{{ social.icon }}</mat-icon>
+            </a>
+          }
+        </div>
+      </div>
+
+      <div class="footer-column">
+        <h4>Shop</h4>
+        <ul class="footer-links">
+          <li><a routerLink="/catalog">All Products</a></li>
+          <li><a routerLink="/catalog?filter=new">New Arrivals</a></li>
+          <li><a routerLink="/catalog?filter=sale">Special Offers</a></li>
+          <li><a routerLink="/catalog?filter=popular">Best Sellers</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h4>Customer Service</h4>
+        <ul class="footer-links">
+          <li><a routerLink="/help/contact">Contact Us</a></li>
+          <li><a routerLink="/help/shipping">Shipping Info</a></li>
+          <li><a routerLink="/help/returns">Returns & Exchanges</a></li>
+          <li><a routerLink="/help/faq">FAQ</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h4>About</h4>
+        <ul class="footer-links">
+          <li><a routerLink="/about">About Us</a></li>
+          <li><a routerLink="/careers">Careers</a></li>
+          <li><a routerLink="/privacy">Privacy Policy</a></li>
+          <li><a routerLink="/terms">Terms & Conditions</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h4>Newsletter</h4>
+        <p class="newsletter-text">Subscribe to get special offers and updates!</p>
+        <div class="newsletter-form">
+          <input type="email" placeholder="Enter your email" class="newsletter-input">
+          <button mat-raised-button color="primary" class="subscribe-btn">
+            Subscribe
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Bottom Section -->
+    <div class="footer-bottom">
+      <div class="payment-methods">
+        <span>We accept:</span>
+        <mat-icon>credit_card</mat-icon>
+        <mat-icon>payment</mat-icon>
+        <mat-icon>account_balance</mat-icon>
+      </div>
+      <div class="copyright">
+        <p>&copy; {{ currentYear }} eShop. All rights reserved.</p>
+      </div>
+      <div class="footer-links-bottom">
+        <a routerLink="/privacy">Privacy</a>
+        <span class="separator">•</span>
+        <a routerLink="/terms">Terms</a>
+        <span class="separator">•</span>
+        <a routerLink="/sitemap">Sitemap</a>
+      </div>
+    </div>
+  </div>
+</footer>

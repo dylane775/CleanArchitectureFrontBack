@@ -1,6 +1,5 @@
 export interface BasketItem {
-  id: string;
-  productId: string;
+  catalogItemId: string;
   productName: string;
   unitPrice: number;
   quantity: number;
@@ -9,16 +8,25 @@ export interface BasketItem {
 
 export interface Basket {
   id: string;
-  buyerId: string;
+  customerId: string;
   items: BasketItem[];
   totalPrice: number;
+  itemCount: number;
+}
+
+export interface CreateBasketRequest {
+  customerId: string;
 }
 
 export interface AddBasketItemRequest {
-  productId: string;
+  catalogItemId: string;
+  productName: string;
+  unitPrice: number;
   quantity: number;
+  pictureUrl: string;
 }
 
 export interface UpdateBasketItemRequest {
-  quantity: number;
+  catalogItemId: string;
+  newQuantity: number;
 }

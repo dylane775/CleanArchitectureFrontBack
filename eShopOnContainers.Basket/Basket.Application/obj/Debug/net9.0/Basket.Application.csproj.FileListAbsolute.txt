@@ -13,3 +13,4 @@ C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.B
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Basket\Basket.Application\obj\Debug\net9.0\refint\Basket.Application.dll
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Basket\Basket.Application\obj\Debug\net9.0\Basket.Application.pdb
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Basket\Basket.Application\obj\Debug\net9.0\ref\Basket.Application.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Basket\Basket.Application\obj\Debug\net9.0\Basket.Application.sourcelink.json

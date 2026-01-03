@@ -17,3 +17,4 @@ C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.I
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Identity\Identity.Infrastructure\obj\Debug\net9.0\Identity.Infrastructure.pdb
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Identity\Identity.Infrastructure\obj\Debug\net9.0\Identity.Infrastructure.genruntimeconfig.cache
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Identity\Identity.Infrastructure\obj\Debug\net9.0\ref\Identity.Infrastructure.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Identity\Identity.Infrastructure\obj\Debug\net9.0\Identity.Infrastructure.sourcelink.json

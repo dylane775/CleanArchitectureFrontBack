@@ -1,43 +1,179 @@
-<mat-toolbar color="primary">
-  <span>eShop - Product Catalog</span>
-  <span class="spacer"></span>
-
-  @if (authService.isAuthenticated()) {
-    <button mat-icon-button [matBadge]="basketService.itemCount()" matBadgeColor="warn">
-      <mat-icon>shopping_cart</mat-icon>
-    </button>
-    <span class="user-info">{{ authService.currentUser()?.email }}</span>
-    <button mat-button (click)="logout()">
-      <mat-icon>logout</mat-icon>
-      Logout
-    </button>
-  } @else {
-    <button mat-button routerLink="/auth/login">Login</button>
-  }
-</mat-toolbar>
-
-<div class="catalog-container">
-  @if (loading()) {
-    <div class="loading-container">
-      <mat-spinner></mat-spinner>
-    </div>
-  } @else {
-    <div class="catalog-grid">
-      @for (item of catalogItems(); track item.id) {
-        <app-catalog-item
-          [item]="item"
-          (addToBasket)="onAddToBasket($event)">
-        </app-catalog-item>
+<div class="catalog-wrapper">
+  <!-- Sidebar Filters -->
+  <aside class="filters-sidebar">
+    <div class="filters-header">
+      <h2>Filters</h2>
+      @if (getActiveFiltersCount() > 0) {
+        <button mat-button color="warn" (click)="clearAllFilters()" class="clear-all-btn">
+          <mat-icon>clear_all</mat-icon>
+          Clear All
+        </button>
       }
     </div>
 
-    <mat-paginator
-      [length]="totalItems()"
-      [pageSize]="pageSize"
-      [pageIndex]="pageIndex"
-      [pageSizeOptions]="[5, 10, 25, 50]"
-      (page)="onPageChange($event)"
-      aria-label="Select page">
-    </mat-paginator>
-  }
+    <!-- Price Range Filter -->
+    <mat-expansion-panel [expanded]="true" class="filter-panel">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon>payments</mat-icon>
+          Price Range
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <div class="price-filter-content">
+        <div class="price-values">
+          <span class="price-label">{{ formatPrice(priceMin) }}</span>
+          <span class="price-separator">-</span>
+          <span class="price-label">{{ formatPrice(priceMax) }}</span>
+        </div>
+        <mat-slider [min]="0" [max]="maxPrice" [step]="10" class="price-slider">
+          <input matSliderStartThumb [(ngModel)]="priceMin" (ngModelChange)="onPriceChange()">
+          <input matSliderEndThumb [(ngModel)]="priceMax" (ngModelChange)="onPriceChange()">
+        </mat-slider>
+      </div>
+    </mat-expansion-panel>
+
+    <!-- Categories Filter -->
+    <mat-expansion-panel [expanded]="true" class="filter-panel">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon>category</mat-icon>
+          Categories
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <div class="filter-options">
+        @for (category of categories(); track category.value) {
+          <mat-checkbox
+            [(ngModel)]="category.checked"
+            (change)="applyFilters()"
+            class="filter-checkbox">
+            <span class="filter-label">{{ category.label }}</span>
+            @if (category.count) {
+              <span class="filter-count">({{ category.count }})</span>
+            }
+          </mat-checkbox>
+        }
+      </div>
+    </mat-expansion-panel>
+
+    <!-- Brands Filter -->
+    <mat-expansion-panel [expanded]="true" class="filter-panel">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon>local_offer</mat-icon>
+          Brands
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <div class="filter-options">
+        @for (brand of brands(); track brand.value) {
+          <mat-checkbox
+            [(ngModel)]="brand.checked"
+            (change)="applyFilters()"
+            class="filter-checkbox">
+            <span class="filter-label">{{ brand.label }}</span>
+            @if (brand.count) {
+              <span class="filter-count">({{ brand.count }})</span>
+            }
+          </mat-checkbox>
+        }
+      </div>
+    </mat-expansion-panel>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="catalog-main">
+    @if (loading()) {
+      <div class="loading-container">
+        <mat-spinner></mat-spinner>
+      </div>
+    } @else {
+      <!-- Toolbar with Results Count and Sort -->
+      <div class="catalog-toolbar">
+        <div class="results-info">
+          <h1 class="results-title">All Products</h1>
+          <p class="results-count">{{ totalItems() }} products found</p>
+        </div>
+
+        <div class="sort-section">
+          <mat-chip-listbox [value]="sortBy()" (change)="onSortChange($event)" class="sort-chips">
+            <mat-chip-option value="featured">
+              <mat-icon>stars</mat-icon>
+              Featured
+            </mat-chip-option>
+            <mat-chip-option value="price-asc">
+              <mat-icon>arrow_upward</mat-icon>
+              Price: Low to High
+            </mat-chip-option>
+            <mat-chip-option value="price-desc">
+              <mat-icon>arrow_downward</mat-icon>
+              Price: High to Low
+            </mat-chip-option>
+            <mat-chip-option value="newest">
+              <mat-icon>new_releases</mat-icon>
+              Newest
+            </mat-chip-option>
+          </mat-chip-listbox>
+        </div>
+      </div>
+
+      <!-- Active Filters Chips -->
+      @if (getActiveFiltersCount() > 0) {
+        <div class="active-filters">
+          <span class="active-filters-label">Active filters:</span>
+          <mat-chip-set class="filter-chips">
+            @for (category of categories(); track category.value) {
+              @if (category.checked) {
+                <mat-chip (removed)="category.checked = false; applyFilters()">
+                  {{ category.label }}
+                  <button matChipRemove>
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip>
+              }
+            }
+            @for (brand of brands(); track brand.value) {
+              @if (brand.checked) {
+                <mat-chip (removed)="brand.checked = false; applyFilters()">
+                  {{ brand.label }}
+                  <button matChipRemove>
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip>
+              }
+            }
+            @if (priceRange()[0] !== 0 || priceRange()[1] !== maxPrice) {
+              <mat-chip (removed)="priceRange.set([0, maxPrice]); applyFilters()">
+                {{ formatPrice(priceRange()[0]) }} - {{ formatPrice(priceRange()[1]) }}
+                <button matChipRemove>
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </mat-chip>
+            }
+          </mat-chip-set>
+        </div>
+      }
+
+      <!-- Product Grid -->
+      <div class="catalog-grid">
+        @for (item of filteredItems(); track item.id) {
+          <app-catalog-item
+            [item]="item"
+            (addToBasket)="onAddToBasket($event)">
+          </app-catalog-item>
+        }
+      </div>
+
+      <!-- Pagination -->
+      <mat-paginator
+        [length]="totalItems()"
+        [pageSize]="pageSize"
+        [pageIndex]="pageIndex"
+        [pageSizeOptions]="[12, 24, 36, 48]"
+        (page)="onPageChange($event)"
+        aria-label="Select page">
+      </mat-paginator>
+    }
+  </main>
 </div>

@@ -13,3 +13,4 @@ C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.I
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Identity\Identity.Application\obj\Debug\net9.0\refint\Identity.Application.dll
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Identity\Identity.Application\obj\Debug\net9.0\Identity.Application.pdb
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Identity\Identity.Application\obj\Debug\net9.0\ref\Identity.Application.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Identity\Identity.Application\obj\Debug\net9.0\Identity.Application.sourcelink.json

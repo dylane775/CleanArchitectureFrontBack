@@ -1,0 +1,105 @@
+<header class="main-header">
+  <mat-toolbar class="toolbar">
+    <div class="toolbar-container">
+      <!-- Logo -->
+      <div class="brand-section">
+        <a routerLink="/" class="logo-link">
+          <mat-icon class="logo-icon">shopping_bag</mat-icon>
+          <span class="brand-name">eShop</span>
+        </a>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="search-section">
+        <div class="search-wrapper">
+          <mat-icon class="search-icon">search</mat-icon>
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Search for products, brands and more..."
+            [(ngModel)]="searchQuery"
+            (keyup.enter)="onSearch()"
+          />
+          @if (searchQuery()) {
+            <button class="clear-btn" (click)="searchQuery.set('')">
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+          <button mat-raised-button class="search-btn" (click)="onSearch()">
+            Search
+          </button>
+        </div>
+      </div>
+
+      <!-- User Actions -->
+      <div class="user-section">
+        <button mat-icon-button class="icon-btn" routerLink="/basket">
+          <mat-icon [matBadge]="basketItemCount() > 0 ? basketItemCount() : null" matBadgeColor="warn">shopping_cart</mat-icon>
+        </button>
+
+        @if (isAuthenticated()) {
+          <button mat-button [matMenuTriggerFor]="userMenu" class="user-button">
+            <mat-icon>account_circle</mat-icon>
+            <span class="user-name">{{ getUserDisplayName() }}</span>
+            <mat-icon class="dropdown-icon">arrow_drop_down</mat-icon>
+          </button>
+          <mat-menu #userMenu="matMenu">
+            @if (isAdmin()) {
+              <button mat-menu-item routerLink="/admin/dashboard">
+                <mat-icon>admin_panel_settings</mat-icon>
+                <span>Admin Dashboard</span>
+              </button>
+              <mat-divider></mat-divider>
+            }
+            <button mat-menu-item (click)="navigateToProfile()">
+              <mat-icon>person</mat-icon>
+              <span>Profile</span>
+            </button>
+            <button mat-menu-item (click)="navigateToOrders()">
+              <mat-icon>receipt_long</mat-icon>
+              <span>My Orders</span>
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item (click)="logout()">
+              <mat-icon>logout</mat-icon>
+              <span>Logout</span>
+            </button>
+          </mat-menu>
+        } @else {
+          <button mat-raised-button class="login-btn" routerLink="/auth/login">
+            <mat-icon>login</mat-icon>
+            <span>Login</span>
+          </button>
+        }
+      </div>
+    </div>
+  </mat-toolbar>
+
+  <!-- Navigation Bar -->
+  <div class="nav-bar">
+    <div class="nav-container">
+      <nav class="nav-links">
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">
+          <mat-icon>home</mat-icon>
+          <span>Home</span>
+        </a>
+        <a routerLink="/catalog" routerLinkActive="active" class="nav-link">
+          <mat-icon>store</mat-icon>
+          <span>All Products</span>
+        </a>
+        <a routerLink="/catalog" [queryParams]="{filter: 'new'}" class="nav-link">
+          <mat-icon>new_releases</mat-icon>
+          <span>New Arrivals</span>
+        </a>
+        <a routerLink="/catalog" [queryParams]="{filter: 'sale'}" class="nav-link">
+          <mat-icon>local_offer</mat-icon>
+          <span>Deals</span>
+        </a>
+        <a routerLink="/orders" routerLinkActive="active" class="nav-link">
+          <mat-icon>receipt_long</mat-icon>
+          <span>Orders</span>
+        </a>
+      </nav>
+    </div>
+  </div>
+</header>

@@ -172,3 +172,4 @@ C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.O
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Ordering\Ordering.API\obj\Debug\net9.0\Ordering.API.genruntimeconfig.cache
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Ordering\Ordering.API\obj\Debug\net9.0\ref\Ordering.API.dll
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Ordering\Ordering.API\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Ordering\Ordering.API\obj\Debug\net9.0\Ordering.API.sourcelink.json

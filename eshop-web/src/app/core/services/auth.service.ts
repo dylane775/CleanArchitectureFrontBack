@@ -65,8 +65,15 @@ export class AuthService {
   private handleAuthResponse(response: AuthResponse): void {
     localStorage.setItem(this.ACCESS_TOKEN_KEY, response.accessToken);
     localStorage.setItem(this.REFRESH_TOKEN_KEY, response.refreshToken);
-    localStorage.setItem('user', JSON.stringify(response.user));
-    this.currentUser.set(response.user);
+
+    // If backend doesn't return user object, decode it from JWT token
+    let user = response.user;
+    if (!user) {
+      user = this.decodeUserFromToken(response.accessToken);
+    }
+
+    localStorage.setItem('user', JSON.stringify(user));
+    this.currentUser.set(user);
     this.isAuthenticated.set(true);
   }
 
@@ -74,7 +81,7 @@ export class AuthService {
     const token = this.getAccessToken();
     const userStr = localStorage.getItem('user');
 
-    if (token && userStr) {
+    if (token) {
       try {
         // Vérifier si le token n'est pas expiré
         if (this.isTokenExpired(token)) {
@@ -83,7 +90,22 @@ export class AuthService {
           return;
         }
 
-        const user = JSON.parse(userStr) as User;
+        // Try to parse user from localStorage, or decode from token if invalid
+        let user: User | null = null;
+        if (userStr && userStr !== 'undefined') {
+          try {
+            user = JSON.parse(userStr) as User;
+          } catch {
+            // If parsing fails, decode from token
+            user = this.decodeUserFromToken(token);
+            localStorage.setItem('user', JSON.stringify(user));
+          }
+        } else {
+          // If user is missing or "undefined", decode from token
+          user = this.decodeUserFromToken(token);
+          localStorage.setItem('user', JSON.stringify(user));
+        }
+
         this.currentUser.set(user);
         this.isAuthenticated.set(true);
       } catch (error) {
@@ -100,6 +122,24 @@ export class AuthService {
       return expirationDate < new Date();
     } catch (error) {
       return true;
+    }
+  }
+
+  private decodeUserFromToken(token: string): User {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+
+      // Extract user information from JWT claims
+      return {
+        id: payload.nameid || payload.sub || '',
+        email: payload.email || '',
+        firstName: payload.FirstName || payload.given_name || '',
+        lastName: payload.LastName || payload.family_name || '',
+        roles: Array.isArray(payload.role) ? payload.role : (payload.role ? [payload.role] : [])
+      };
+    } catch (error) {
+      console.error('Error decoding user from token:', error);
+      throw new Error('Invalid token');
     }
   }
 }

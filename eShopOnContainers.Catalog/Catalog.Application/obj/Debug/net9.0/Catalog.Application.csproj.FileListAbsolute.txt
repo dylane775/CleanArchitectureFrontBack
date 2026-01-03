@@ -13,3 +13,4 @@ C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.C
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Catalog\Catalog.Application\obj\Debug\net9.0\refint\Catalog.Application.dll
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Catalog\Catalog.Application\obj\Debug\net9.0\Catalog.Application.pdb
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Catalog\Catalog.Application\obj\Debug\net9.0\ref\Catalog.Application.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Catalog\Catalog.Application\obj\Debug\net9.0\Catalog.Application.sourcelink.json

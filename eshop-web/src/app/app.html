@@ -1,1 +1,11 @@
-<router-outlet />
+<div class="app-container">
+  @if (showHeaderFooter()) {
+    <app-header></app-header>
+  }
+  <main class="main-content">
+    <router-outlet />
+  </main>
+  @if (showHeaderFooter()) {
+    <app-footer></app-footer>
+  }
+</div>

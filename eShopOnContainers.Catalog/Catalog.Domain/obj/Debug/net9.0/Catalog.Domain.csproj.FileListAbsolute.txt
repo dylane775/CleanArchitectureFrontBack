@@ -10,3 +10,4 @@ C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.C
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Catalog\Catalog.Domain\obj\Debug\net9.0\refint\Catalog.Domain.dll
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Catalog\Catalog.Domain\obj\Debug\net9.0\Catalog.Domain.pdb
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Catalog\Catalog.Domain\obj\Debug\net9.0\ref\Catalog.Domain.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Catalog\Catalog.Domain\obj\Debug\net9.0\Catalog.Domain.sourcelink.json

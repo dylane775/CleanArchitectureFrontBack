@@ -12,7 +12,7 @@ export class CatalogService {
 
   constructor(private http: HttpClient) {}
 
-  getCatalogItems(pageIndex: number = 0, pageSize: number = 10): Observable<PaginatedItems<CatalogItem>> {
+  getCatalogItems(pageIndex: number = 1, pageSize: number = 10): Observable<PaginatedItems<CatalogItem>> {
     const params = new HttpParams()
       .set('pageIndex', pageIndex.toString())
       .set('pageSize', pageSize.toString());

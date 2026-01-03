@@ -17,3 +17,4 @@ C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.O
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Ordering\Ordering.Infrastructure\obj\Debug\net9.0\Ordering.Infrastructure.pdb
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Ordering\Ordering.Infrastructure\obj\Debug\net9.0\Ordering.Infrastructure.genruntimeconfig.cache
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Ordering\Ordering.Infrastructure\obj\Debug\net9.0\ref\Ordering.Infrastructure.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Ordering\Ordering.Infrastructure\obj\Debug\net9.0\Ordering.Infrastructure.sourcelink.json

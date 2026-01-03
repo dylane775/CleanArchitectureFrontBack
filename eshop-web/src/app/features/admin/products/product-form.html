@@ -1,0 +1,124 @@
+<div class="product-form-container">
+  <div class="page-header">
+    <h1>{{ isEditMode() ? 'Edit Product' : 'Add New Product' }}</h1>
+    <p class="subtitle">{{ isEditMode() ? 'Update product information' : 'Create a new catalog item' }}</p>
+  </div>
+
+  <mat-card class="form-card">
+    <mat-card-content>
+      <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+        <div class="form-grid">
+          <!-- Product Name -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Product Name</mat-label>
+            <input matInput formControlName="name" placeholder="Enter product name" />
+            <mat-icon matPrefix>inventory_2</mat-icon>
+            @if (productForm.get('name')?.hasError('required') && productForm.get('name')?.touched) {
+              <mat-error>Product name is required</mat-error>
+            }
+            @if (productForm.get('name')?.hasError('minlength')) {
+              <mat-error>Name must be at least 3 characters</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Description -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Description</mat-label>
+            <textarea matInput formControlName="description" rows="4" placeholder="Enter product description"></textarea>
+            <mat-icon matPrefix>description</mat-icon>
+            @if (productForm.get('description')?.hasError('required') && productForm.get('description')?.touched) {
+              <mat-error>Description is required</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Price -->
+          <mat-form-field appearance="outline">
+            <mat-label>Price</mat-label>
+            <input matInput type="number" formControlName="price" placeholder="0.00" step="0.01" />
+            <span matPrefix>$&nbsp;</span>
+            @if (productForm.get('price')?.hasError('required') && productForm.get('price')?.touched) {
+              <mat-error>Price is required</mat-error>
+            }
+            @if (productForm.get('price')?.hasError('min')) {
+              <mat-error>Price must be positive</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Picture File Name -->
+          <mat-form-field appearance="outline">
+            <mat-label>Picture File Name</mat-label>
+            <input matInput formControlName="pictureFileName" placeholder="product.jpg" />
+            <mat-icon matPrefix>image</mat-icon>
+            @if (productForm.get('pictureFileName')?.hasError('required') && productForm.get('pictureFileName')?.touched) {
+              <mat-error>Picture file name is required</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Brand -->
+          <mat-form-field appearance="outline">
+            <mat-label>Brand</mat-label>
+            <mat-select formControlName="catalogBrandId">
+              @for (brand of brands(); track brand.id) {
+                <mat-option [value]="brand.id">{{ brand.brand }}</mat-option>
+              }
+            </mat-select>
+            <mat-icon matPrefix>label</mat-icon>
+            @if (productForm.get('catalogBrandId')?.hasError('required') && productForm.get('catalogBrandId')?.touched) {
+              <mat-error>Brand is required</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Type -->
+          <mat-form-field appearance="outline">
+            <mat-label>Type</mat-label>
+            <mat-select formControlName="catalogTypeId">
+              @for (type of types(); track type.id) {
+                <mat-option [value]="type.id">{{ type.type }}</mat-option>
+              }
+            </mat-select>
+            <mat-icon matPrefix>category</mat-icon>
+            @if (productForm.get('catalogTypeId')?.hasError('required') && productForm.get('catalogTypeId')?.touched) {
+              <mat-error>Type is required</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Available Stock -->
+          <mat-form-field appearance="outline">
+            <mat-label>Available Stock</mat-label>
+            <input matInput type="number" formControlName="availableStock" placeholder="0" />
+            <mat-icon matPrefix>inventory</mat-icon>
+            @if (productForm.get('availableStock')?.hasError('required') && productForm.get('availableStock')?.touched) {
+              <mat-error>Stock is required</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Restock Threshold -->
+          <mat-form-field appearance="outline">
+            <mat-label>Restock Threshold</mat-label>
+            <input matInput type="number" formControlName="restockThreshold" placeholder="5" />
+            <mat-icon matPrefix>notifications</mat-icon>
+          </mat-form-field>
+
+          <!-- Max Stock Threshold -->
+          <mat-form-field appearance="outline">
+            <mat-label>Max Stock Threshold</mat-label>
+            <input matInput type="number" formControlName="maxStockThreshold" placeholder="100" />
+            <mat-icon matPrefix>storefront</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button mat-raised-button type="button" (click)="cancel()">
+            <mat-icon>cancel</mat-icon>
+            Cancel
+          </button>
+          <button mat-raised-button color="primary" type="submit" [disabled]="loading() || productForm.invalid">
+            <mat-icon>{{ isEditMode() ? 'save' : 'add' }}</mat-icon>
+            {{ isEditMode() ? 'Update Product' : 'Create Product' }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

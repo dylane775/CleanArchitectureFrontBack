@@ -25,7 +25,7 @@ namespace Basket.Application.Features.Query.GetBasketByCustomer
             var basket = await _basketRepository.GetByCustomerIdAsync(request.CustomerId);
 
             if (basket == null)
-                throw new KeyNotFoundException($"No basket found for customer {request.CustomerId}");
+                return null;
 
             return _mapper.Map<BasketDto>(basket);
         }

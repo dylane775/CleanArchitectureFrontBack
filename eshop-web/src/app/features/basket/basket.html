@@ -1,0 +1,132 @@
+<div class="basket-container">
+  <div class="basket-header">
+    <h1>Shopping Basket</h1>
+    <p class="basket-count">{{ basketItems().length }} item{{ basketItems().length !== 1 ? 's' : '' }}</p>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+    </div>
+  } @else if (basketItems().length === 0) {
+    <!-- Empty Basket State -->
+    <div class="empty-basket">
+      <mat-icon class="empty-icon">shopping_cart</mat-icon>
+      <h2>Your basket is empty</h2>
+      <p>Add items to your basket to get started</p>
+      <button mat-raised-button color="primary" (click)="continueShopping()" class="shop-btn">
+        <mat-icon>storefront</mat-icon>
+        Continue Shopping
+      </button>
+    </div>
+  } @else {
+    <div class="basket-content">
+      <!-- Basket Items Section -->
+      <div class="basket-items">
+        @for (item of basketItems(); track item.catalogItemId) {
+          <mat-card class="basket-item">
+            <div class="item-image">
+              <img [src]="item.pictureUrl || 'https://via.placeholder.com/100'" [alt]="item.productName">
+            </div>
+
+            <div class="item-details">
+              <h3 class="item-name">{{ item.productName }}</h3>
+              <p class="item-price">${{ item.unitPrice.toFixed(2) }}</p>
+            </div>
+
+            <div class="item-quantity">
+              <button mat-icon-button (click)="updateQuantity(item, item.quantity - 1)" class="qty-btn">
+                <mat-icon>remove</mat-icon>
+              </button>
+              <span class="qty-display">{{ item.quantity }}</span>
+              <button mat-icon-button (click)="updateQuantity(item, item.quantity + 1)" class="qty-btn">
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
+
+            <div class="item-total">
+              <p class="total-label">Total</p>
+              <p class="total-price">${{ (item.unitPrice * item.quantity).toFixed(2) }}</p>
+            </div>
+
+            <button mat-icon-button (click)="removeItem(item)" class="remove-btn">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </mat-card>
+        }
+
+        <div class="basket-actions">
+          <button mat-stroked-button (click)="continueShopping()" class="continue-btn">
+            <mat-icon>arrow_back</mat-icon>
+            Continue Shopping
+          </button>
+          <button mat-stroked-button color="warn" (click)="clearBasket()" class="clear-btn">
+            <mat-icon>delete_sweep</mat-icon>
+            Clear Basket
+          </button>
+        </div>
+      </div>
+
+      <!-- Order Summary Section -->
+      <div class="order-summary">
+        <mat-card class="summary-card">
+          <h2>Order Summary</h2>
+          <mat-divider></mat-divider>
+
+          <div class="summary-row">
+            <span>Subtotal ({{ basketItems().length }} items)</span>
+            <span>${{ subtotal().toFixed(2) }}</span>
+          </div>
+
+          <div class="summary-row">
+            <span>Shipping</span>
+            <span>
+              @if (shipping() === 0) {
+                <span class="free-shipping">FREE</span>
+              } @else {
+                ${{ shipping().toFixed(2) }}
+              }
+            </span>
+          </div>
+
+          @if (subtotal() < 100 && subtotal() > 0) {
+            <div class="shipping-notice">
+              <mat-icon>local_shipping</mat-icon>
+              <span>Add ${{ (100 - subtotal()).toFixed(2) }} more for FREE shipping</span>
+            </div>
+          }
+
+          <div class="summary-row">
+            <span>Tax (10%)</span>
+            <span>${{ tax().toFixed(2) }}</span>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <div class="summary-total">
+            <span>Total</span>
+            <span>${{ total().toFixed(2) }}</span>
+          </div>
+
+          <button mat-raised-button color="primary" (click)="proceedToCheckout()" class="checkout-btn">
+            <mat-icon>payment</mat-icon>
+            Proceed to Checkout
+          </button>
+
+          <div class="payment-icons">
+            <mat-icon>credit_card</mat-icon>
+            <mat-icon>account_balance</mat-icon>
+            <mat-icon>payments</mat-icon>
+          </div>
+        </mat-card>
+
+        <!-- Promo Card -->
+        <mat-card class="promo-card">
+          <mat-icon class="promo-icon">local_offer</mat-icon>
+          <h3>Special Offers</h3>
+          <p>Get 10% off on orders over $200!</p>
+        </mat-card>
+      </div>
+    </div>
+  }
+</div>

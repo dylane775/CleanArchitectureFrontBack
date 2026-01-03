@@ -1,56 +1,111 @@
-<div class="register-container">
-  <mat-card class="register-card">
-    <mat-card-header>
-      <mat-card-title>Register for eShop</mat-card-title>
-    </mat-card-header>
-
-    <mat-card-content>
-      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Email</mat-label>
-          <input matInput type="email" formControlName="email" placeholder="Enter your email">
-          @if (registerForm.get('email')?.hasError('required') && registerForm.get('email')?.touched) {
-            <mat-error>Email is required</mat-error>
-          }
-          @if (registerForm.get('email')?.hasError('email') && registerForm.get('email')?.touched) {
-            <mat-error>Please enter a valid email</mat-error>
-          }
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Password</mat-label>
-          <input matInput type="password" formControlName="password" placeholder="Enter your password">
-          @if (registerForm.get('password')?.hasError('required') && registerForm.get('password')?.touched) {
-            <mat-error>Password is required</mat-error>
-          }
-          @if (registerForm.get('password')?.hasError('minlength') && registerForm.get('password')?.touched) {
-            <mat-error>Password must be at least 6 characters</mat-error>
-          }
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Confirm Password</mat-label>
-          <input matInput type="password" formControlName="confirmPassword" placeholder="Confirm your password">
-          @if (registerForm.get('confirmPassword')?.hasError('required') && registerForm.get('confirmPassword')?.touched) {
-            <mat-error>Please confirm your password</mat-error>
-          }
-          @if (registerForm.get('confirmPassword')?.hasError('passwordMismatch') && registerForm.get('confirmPassword')?.touched) {
-            <mat-error>Passwords do not match</mat-error>
-          }
-        </mat-form-field>
-
-        <button mat-raised-button color="primary" type="submit" class="full-width" [disabled]="loading()">
-          @if (loading()) {
-            <mat-spinner diameter="20"></mat-spinner>
-          } @else {
-            Register
-          }
-        </button>
-      </form>
-
-      <div class="login-link">
-        Already have an account? <a routerLink="/auth/login">Login here</a>
+<div class="register-wrapper">
+  <div class="register-container">
+    <!-- Left side - Branding -->
+    <div class="register-left">
+      <div class="branding">
+        <h1 class="brand-title">eShop</h1>
+        <p class="brand-subtitle">Join our community today</p>
       </div>
-    </mat-card-content>
-  </mat-card>
+      <div class="illustration">
+        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="200" cy="150" r="80" fill="#FFD700" opacity="0.2"/>
+          <circle cx="200" cy="150" r="60" fill="#FFD700" opacity="0.4"/>
+          <circle cx="200" cy="150" r="40" fill="#FFD700"/>
+          <path d="M 160 130 L 180 150 L 220 110" stroke="white" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="features">
+        <div class="feature">
+          <mat-icon>verified</mat-icon>
+          <span>Secure Account</span>
+        </div>
+        <div class="feature">
+          <mat-icon>local_shipping</mat-icon>
+          <span>Fast Delivery</span>
+        </div>
+        <div class="feature">
+          <mat-icon>stars</mat-icon>
+          <span>Exclusive Deals</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right side - Register Form -->
+    <div class="register-right">
+      <div class="register-form-wrapper">
+        <div class="register-header">
+          <h2>Create Account</h2>
+          <p>Sign up to start shopping</p>
+        </div>
+
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+          <div class="form-group">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Email Address</mat-label>
+              <input matInput type="email" formControlName="email" placeholder="your@email.com">
+              <mat-icon matPrefix>email</mat-icon>
+              @if (registerForm.get('email')?.hasError('required') && registerForm.get('email')?.touched) {
+                <mat-error>Email is required</mat-error>
+              }
+              @if (registerForm.get('email')?.hasError('email') && registerForm.get('email')?.touched) {
+                <mat-error>Please enter a valid email</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <div class="form-group">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Password</mat-label>
+              <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password">
+              <mat-icon matPrefix>lock</mat-icon>
+              <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
+                <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+              </button>
+              @if (registerForm.get('password')?.hasError('required') && registerForm.get('password')?.touched) {
+                <mat-error>Password is required</mat-error>
+              }
+              @if (registerForm.get('password')?.hasError('minlength') && registerForm.get('password')?.touched) {
+                <mat-error>Password must be at least 6 characters</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <div class="form-group">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Confirm Password</mat-label>
+              <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" formControlName="confirmPassword">
+              <mat-icon matPrefix>lock</mat-icon>
+              <button mat-icon-button matSuffix (click)="hideConfirmPassword = !hideConfirmPassword" type="button">
+                <mat-icon>{{hideConfirmPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+              </button>
+              @if (registerForm.get('confirmPassword')?.hasError('required') && registerForm.get('confirmPassword')?.touched) {
+                <mat-error>Please confirm your password</mat-error>
+              }
+              @if (registerForm.get('confirmPassword')?.hasError('passwordMismatch') && registerForm.get('confirmPassword')?.touched) {
+                <mat-error>Passwords do not match</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <button mat-raised-button color="primary" type="submit" class="register-button" [disabled]="loading()">
+            @if (loading()) {
+              <mat-spinner diameter="24" color="accent"></mat-spinner>
+            } @else {
+              <ng-container>
+                <span>Create Account</span>
+                <mat-icon>arrow_forward</mat-icon>
+              </ng-container>
+            }
+          </button>
+        </form>
+
+        <div class="divider"><span>OR</span></div>
+
+        <div class="login-section">
+          <p>Already have an account?</p>
+          <a routerLink="/auth/login" class="login-link">Sign In</a>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

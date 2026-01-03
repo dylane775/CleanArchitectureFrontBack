@@ -1,0 +1,155 @@
+<div class="admin-dashboard">
+  <div class="dashboard-header">
+    <h1>Admin Dashboard</h1>
+    <p class="subtitle">Manage your eShop platform</p>
+  </div>
+
+  <!-- Quick Stats -->
+  <div class="stats-grid">
+    <mat-card class="stat-card users-card">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>people</mat-icon>
+        </div>
+        <div class="stat-details">
+          <h3>Total Users</h3>
+          <p class="stat-value">1,247</p>
+          <span class="stat-change positive">+12% this month</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card products-card">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>inventory_2</mat-icon>
+        </div>
+        <div class="stat-details">
+          <h3>Products</h3>
+          <p class="stat-value">523</p>
+          <span class="stat-change positive">+8 new</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card orders-card">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>shopping_bag</mat-icon>
+        </div>
+        <div class="stat-details">
+          <h3>Total Orders</h3>
+          <p class="stat-value">3,892</p>
+          <span class="stat-change positive">+156 this week</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card revenue-card">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>attach_money</mat-icon>
+        </div>
+        <div class="stat-details">
+          <h3>Revenue</h3>
+          <p class="stat-value">$84,392</p>
+          <span class="stat-change positive">+23% this month</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Quick Actions -->
+  <mat-card class="quick-actions-card">
+    <mat-card-header>
+      <mat-card-title>Quick Actions</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="actions-grid">
+        <button mat-raised-button color="primary" routerLink="/admin/products/new">
+          <mat-icon>add</mat-icon>
+          Add Product
+        </button>
+        <button mat-raised-button color="accent" routerLink="/admin/orders">
+          <mat-icon>receipt_long</mat-icon>
+          View Orders
+        </button>
+        <button mat-raised-button routerLink="/admin/users">
+          <mat-icon>person_add</mat-icon>
+          Manage Users
+        </button>
+        <button mat-raised-button routerLink="/admin/brands">
+          <mat-icon>label</mat-icon>
+          Manage Brands
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Management Sections -->
+  <div class="management-grid">
+    <mat-card class="management-card" routerLink="/admin/products">
+      <mat-card-header>
+        <mat-icon class="section-icon">inventory</mat-icon>
+        <mat-card-title>Product Management</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Manage catalog items, stock levels, pricing, and product details</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button color="primary">
+          Manage Products
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+
+    <mat-card class="management-card" routerLink="/admin/orders">
+      <mat-card-header>
+        <mat-icon class="section-icon">shopping_cart</mat-icon>
+        <mat-card-title>Order Management</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Process orders, update shipping status, and handle cancellations</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button color="primary">
+          Manage Orders
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+
+    <mat-card class="management-card" routerLink="/admin/users">
+      <mat-card-header>
+        <mat-icon class="section-icon">group</mat-icon>
+        <mat-card-title>User Management</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Manage user accounts, assign roles, and control access permissions</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button color="primary">
+          Manage Users
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+
+    <mat-card class="management-card" routerLink="/admin/brands">
+      <mat-card-header>
+        <mat-icon class="section-icon">category</mat-icon>
+        <mat-card-title>Catalog Setup</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Configure product brands, types, and categorization structure</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button color="primary">
+          Manage Catalog
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>
