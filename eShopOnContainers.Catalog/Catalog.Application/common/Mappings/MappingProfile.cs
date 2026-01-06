@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Catalog.Domain.Entities;
 using Catalog.Domain.Repositories;
+using Catalog.Domain.ValueObjects;
 using Catalog.Application.DTOs.Output;
 using Catalog.Application.DTOs.Input;
 using Catalog.Application.Commands.CreateCatalogItem;  // ✅ AJOUTER
@@ -24,34 +25,34 @@ namespace Catalog.Application.common.Mappings
             // Domain → DTO (lecture)
             CreateMap<CatalogItem, CatalogItemDto>()
                 // Mappings automatiques pour les propriétés avec le même nom :
-                // - Id, Name, Description, Price, PictureUri, AvailableStock, OnReorder
+                // - Id, Name, Description, Price, AvailableStock, OnReorder
                 // - CatalogTypeId, CatalogBrandId
                 // - CreatedAt, CreatedBy, ModifiedAt, ModifiedBy
-                
+
+                // Mapping personnalisé pour PictureUri - construire le chemin complet
+                .ForMember(dest => dest.PictureUri,
+                    opt => opt.MapFrom(src =>
+                        !string.IsNullOrEmpty(src.PictureUri)
+                            ? $"/images/products/{src.PictureUri}"
+                            : string.Empty))
+
                 // Mappings personnalisés pour les navigation properties
                 .ForMember(dest => dest.CatalogTypeName,
                     opt => opt.MapFrom(src => src.CatalogType != null ? src.CatalogType.Type : string.Empty))
-                
+
                 .ForMember(dest => dest.CatalogBrandName,
-                    opt => opt.MapFrom(src => src.CatalogBrand != null ? src.CatalogBrand.Brand : string.Empty));
+                    opt => opt.MapFrom(src => src.CatalogBrand != null ? src.CatalogBrand.Brand : string.Empty))
+
+                // Mapping pour les spécifications
+                .ForMember(dest => dest.Specifications,
+                    opt => opt.MapFrom(src => src.Specifications.GetAllAttributes()));
 
             // DTO → Domain (rarement utilisé, préférer le constructeur)
             // On ne crée généralement PAS ce mapping car on utilise le constructeur
             
              // ✅ AJOUTER: Command → Domain (création)
-            CreateMap<CreateCatalogItemCommand, CatalogItem>()
-                .ConstructUsing(cmd => new CatalogItem(
-                    cmd.Name,
-                    cmd.Description ?? string.Empty,
-                    cmd.Price,
-                    cmd.PictureFileName,
-                    cmd.CatalogTypeId,
-                    cmd.CatalogBrandId,
-                    cmd.AvailableStock,
-                    cmd.RestockThreshold,
-                    cmd.MaxStockThreshold,
-                    cmd.PictureFileName // Utilise PictureFileName comme PictureUri
-                ));
+            // Note: Le constructeur avec paramètres optionnels ne fonctionne pas dans ConstructUsing
+            // On ne peut pas mapper directement, on va créer manuellement dans le Handler
 
             // ✅ AJOUTER: Command → Domain (mise à jour)
             CreateMap<UpdateCatalogItemCommand, CatalogItem>()

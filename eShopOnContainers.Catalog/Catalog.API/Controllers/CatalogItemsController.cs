@@ -39,7 +39,7 @@ namespace Catalog.API.Controllers
             [FromQuery] int pageIndex = 1,
             [FromQuery] int pageSize = 10)
         {
-            if (pageIndex < 0 || pageSize <= 0 || pageSize > 100)
+            if (pageIndex < 1 || pageSize <= 0 || pageSize > 1000)
             {
                 return BadRequest("Paramètres de pagination invalides");
             }

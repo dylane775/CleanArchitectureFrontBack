@@ -173,3 +173,4 @@ C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.C
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Catalog\Catalog.API\obj\Debug\net9.0\ref\Catalog.API.dll
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Catalog\Catalog.API\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Catalog\Catalog.API\obj\Debug\net9.0\Catalog.API.sourcelink.json
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Catalog\Catalog.API\bin\Debug\net9.0\Catalog.API.staticwebassets.runtime.json

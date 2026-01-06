@@ -2,9 +2,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Catalog.Application.common.Interfaces;
+using Catalog.Application.Common.Interfaces;
 using Catalog.Domain.Repositories;
 using Catalog.Infrastructure.Data;
 using Catalog.Infrastructure.Data.Repositories;
+using Catalog.Infrastructure.Services;
 using MassTransit;
 using System.Reflection;
 
@@ -50,8 +52,14 @@ namespace Catalog.Infrastructure
             // ====================================
             // 3. UNIT OF WORK (Transactions + Events)
             // ====================================
-            
+
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            // ====================================
+            // 3.5 FILE STORAGE SERVICE
+            // ====================================
+
+            services.AddScoped<IFileStorageService, LocalFileStorageService>();
 
             // ====================================
             // 4. MEDIATR DOMAIN EVENT HANDLERS ✅ AJOUTÉ

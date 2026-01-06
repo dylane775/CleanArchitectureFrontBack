@@ -19,5 +19,8 @@ namespace Catalog.Application.Commands.CreateCatalogItem
         public int AvailableStock { get; init; }
         public int RestockThreshold{ get; init; }
         public int MaxStockThreshold { get; init; }
+
+        // Spécifications dynamiques du produit (optionnel)
+        public Dictionary<string, string>? Specifications { get; init; }
     }
 }

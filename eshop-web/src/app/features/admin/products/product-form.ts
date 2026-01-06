@@ -38,6 +38,14 @@ export class ProductForm implements OnInit {
   loading = signal(false);
   isEditMode = signal(false);
   productId = signal<string | null>(null);
+  imagePreview = signal<string | null>(null);
+  uploadingImage = signal(false);
+  selectedFile: File | null = null;
+
+  // Specifications management
+  specifications = signal<Array<{ key: string; value: string }>>([]);
+  newSpecKey = signal('');
+  newSpecValue = signal('');
 
   constructor(
     private fb: FormBuilder,
@@ -102,6 +110,16 @@ export class ProductForm implements OnInit {
           restockThreshold: 5,
           maxStockThreshold: 100
         });
+
+        // Load specifications if they exist
+        if (product.specifications) {
+          const specsArray = Object.entries(product.specifications).map(([key, value]) => ({
+            key,
+            value
+          }));
+          this.specifications.set(specsArray);
+        }
+
         this.loading.set(false);
       },
       error: (error) => {
@@ -122,7 +140,18 @@ export class ProductForm implements OnInit {
     }
 
     this.loading.set(true);
-    const formValue = this.productForm.value;
+    const formValue = { ...this.productForm.value };
+
+    // Convert specifications array to object if there are specifications
+    if (this.specifications().length > 0) {
+      const specsObject: { [key: string]: string } = {};
+      this.specifications().forEach(spec => {
+        if (spec.key && spec.value) {
+          specsObject[spec.key] = spec.value;
+        }
+      });
+      formValue.specifications = specsObject;
+    }
 
     if (this.isEditMode() && this.productId()) {
       this.adminService.updateProduct(this.productId()!, formValue).subscribe({
@@ -169,5 +198,133 @@ export class ProductForm implements OnInit {
 
   cancel(): void {
     this.router.navigate(['/admin/products']);
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        this.snackBar.open('Please select an image file', 'Close', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+        return;
+      }
+
+      // Validate file size (5MB max)
+      if (file.size > 5 * 1024 * 1024) {
+        this.snackBar.open('Image size must be less than 5MB', 'Close', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+        return;
+      }
+
+      this.selectedFile = file;
+
+      // Show preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.imagePreview.set(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  uploadImage(): void {
+    if (!this.selectedFile) {
+      this.snackBar.open('Please select an image first', 'Close', {
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+
+    this.uploadingImage.set(true);
+
+    this.adminService.uploadProductImage(this.selectedFile).subscribe({
+      next: (response) => {
+        this.productForm.patchValue({
+          pictureFileName: response.fileName
+        });
+        this.snackBar.open('Image uploaded successfully', '✓', {
+          duration: 2500,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['success-snackbar']
+        });
+        this.uploadingImage.set(false);
+      },
+      error: (error) => {
+        console.error('Error uploading image:', error);
+        this.snackBar.open('Failed to upload image', 'Close', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+        this.uploadingImage.set(false);
+      }
+    });
+  }
+
+  removeImage(): void {
+    this.selectedFile = null;
+    this.imagePreview.set(null);
+    this.productForm.patchValue({
+      pictureFileName: ''
+    });
+  }
+
+  getImageUrl(fileName: string): string {
+    return this.adminService.getProductImageUrl(fileName);
+  }
+
+  // Specifications management methods
+  addSpecification(): void {
+    const key = this.newSpecKey().trim();
+    const value = this.newSpecValue().trim();
+
+    if (!key || !value) {
+      this.snackBar.open('Please enter both key and value', 'Close', {
+        duration: 2000,
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+
+    // Check if key already exists
+    if (this.specifications().some(spec => spec.key === key)) {
+      this.snackBar.open('Specification key already exists', 'Close', {
+        duration: 2000,
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+
+    this.specifications.update(specs => [...specs, { key, value }]);
+    this.newSpecKey.set('');
+    this.newSpecValue.set('');
+  }
+
+  removeSpecification(index: number): void {
+    this.specifications.update(specs => specs.filter((_, i) => i !== index));
+  }
+
+  updateSpecificationKey(index: number, newKey: string): void {
+    this.specifications.update(specs => {
+      const updated = [...specs];
+      updated[index] = { ...updated[index], key: newKey };
+      return updated;
+    });
+  }
+
+  updateSpecificationValue(index: number, newValue: string): void {
+    this.specifications.update(specs => {
+      const updated = [...specs];
+      updated[index] = { ...updated[index], value: newValue };
+      return updated;
+    });
   }
 }

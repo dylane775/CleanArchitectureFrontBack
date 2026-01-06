@@ -1,0 +1,28 @@
+<div class="confirm-wrapper">
+  <div class="confirm-container">
+    @if (loading) {
+      <mat-card class="status-card loading-card">
+        <mat-icon class="status-icon">hourglass_empty</mat-icon>
+        <h1>Confirming Your Email...</h1>
+        <p>Please wait while we verify your account</p>
+        <mat-spinner diameter="50"></mat-spinner>
+      </mat-card>
+    } @else if (error) {
+      <mat-card class="status-card error-card">
+        <mat-icon class="status-icon error">error</mat-icon>
+        <h1>Confirmation Failed</h1>
+        <p>{{ error }}</p>
+        <button mat-raised-button color="primary" (click)="goToLogin()">
+          Go to Login
+        </button>
+      </mat-card>
+    } @else {
+      <mat-card class="status-card success-card">
+        <mat-icon class="status-icon success">check_circle</mat-icon>
+        <h1>Email Confirmed Successfully!</h1>
+        <p>Your account has been verified. You are now logged in.</p>
+        <p class="redirect-message">Redirecting to the store...</p>
+      </mat-card>
+    }
+  </div>
+</div>

@@ -1,0 +1,78 @@
+<section class="hero-section">
+  <div class="hero-carousel">
+    <!-- Carousel Container -->
+    <div class="carousel-wrapper">
+      <div class="carousel-track" [style.transform]="'translateX(-' + currentSlide() * 100 + '%)'">
+        @for (slide of slides; track slide.id) {
+          <div class="hero-slide">
+            <!-- Background Image -->
+            <div class="slide-background" [style.background-image]="'url(' + slide.imageUrl + ')'"></div>
+
+            <!-- Content Overlay -->
+            <div class="slide-content">
+              <div class="content-wrapper">
+                @if (slide.badge) {
+                  <span class="hero-badge">{{ slide.badge }}</span>
+                }
+
+                <h1 class="hero-title">{{ slide.title }}</h1>
+
+                @if (slide.subtitle) {
+                  <p class="hero-subtitle">{{ slide.subtitle }}</p>
+                }
+
+                <div class="hero-actions">
+                  <button mat-raised-button class="cta-primary" [routerLink]="slide.ctaLink">
+                    {{ slide.ctaText }}
+                    <mat-icon>arrow_forward</mat-icon>
+                  </button>
+
+                  @if (slide.secondaryCtaText) {
+                    <button mat-stroked-button class="cta-secondary" [routerLink]="slide.secondaryCtaLink">
+                      {{ slide.secondaryCtaText }}
+                    </button>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Navigation Arrows -->
+      <button mat-icon-button class="carousel-nav prev" (click)="previousSlide()" [attr.aria-label]="'Previous slide'">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <button mat-icon-button class="carousel-nav next" (click)="nextSlide()" [attr.aria-label]="'Next slide'">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+
+      <!-- Dots Indicator -->
+      <div class="carousel-indicators">
+        @for (slide of slides; track slide.id; let i = $index) {
+          <button
+            class="indicator-dot"
+            [class.active]="i === currentSlide()"
+            (click)="goToSlide(i)"
+            [attr.aria-label]="'Go to slide ' + (i + 1)">
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Links Section (Amazon-style categories) -->
+  <div class="quick-links">
+    <div class="quick-links-container">
+      @for (link of quickLinks; track link.id) {
+        <a [routerLink]="link.route" class="quick-link-card">
+          <div class="link-icon">
+            <mat-icon>{{ link.icon }}</mat-icon>
+          </div>
+          <h3 class="link-title">{{ link.title }}</h3>
+          <p class="link-subtitle">{{ link.subtitle }}</p>
+        </a>
+      }
+    </div>
+  </div>
+</section>

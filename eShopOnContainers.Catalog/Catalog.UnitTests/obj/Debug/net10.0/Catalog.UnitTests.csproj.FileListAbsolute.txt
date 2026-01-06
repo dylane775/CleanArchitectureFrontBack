@@ -114,3 +114,4 @@ C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.C
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Catalog\Catalog.UnitTests\obj\Debug\net10.0\Catalog.UnitTests.pdb
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Catalog\Catalog.UnitTests\obj\Debug\net10.0\Catalog.UnitTests.genruntimeconfig.cache
 C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Catalog\Catalog.UnitTests\obj\Debug\net10.0\ref\Catalog.UnitTests.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Catalog\Catalog.UnitTests\obj\Debug\net10.0\Catalog.UnitTests.sourcelink.json

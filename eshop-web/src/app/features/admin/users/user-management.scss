@@ -1,0 +1,262 @@
+@use '../../../../styles/theme' as *;
+
+.user-management-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  min-height: calc(100vh - 150px);
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 20px;
+
+  .header-content {
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: $dark-text;
+      margin: 0 0 8px 0;
+    }
+
+    .subtitle {
+      color: $light-text;
+      font-size: 1.1rem;
+      margin: 0;
+    }
+  }
+
+  .header-stats {
+    .stat-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px 32px;
+      background: linear-gradient(135deg, $primary-yellow 0%, $primary-yellow-dark 100%);
+      border-radius: $radius-lg;
+      box-shadow: $shadow-md;
+
+      mat-icon {
+        font-size: 48px;
+        width: 48px;
+        height: 48px;
+        color: $dark-text;
+      }
+
+      .stat-info {
+        display: flex;
+        flex-direction: column;
+
+        .stat-value {
+          font-size: 2rem;
+          font-weight: 700;
+          color: $dark-text;
+          line-height: 1;
+        }
+
+        .stat-label {
+          font-size: 0.9rem;
+          color: rgba(0, 0, 0, 0.7);
+          margin-top: 4px;
+        }
+      }
+    }
+  }
+}
+
+.table-card {
+  border-radius: $radius-lg !important;
+  box-shadow: $shadow-md !important;
+
+  mat-card-content {
+    padding: 0 !important;
+  }
+}
+
+.loading-container, .empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  color: $light-text;
+
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+    color: rgba(0, 0, 0, 0.2);
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    margin: 16px 0 8px 0;
+    color: $dark-text;
+  }
+
+  p {
+    font-size: 1rem;
+    margin: 0;
+  }
+}
+
+.users-table {
+  width: 100%;
+
+  th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: $dark-text;
+    font-size: 0.95rem;
+    padding: 20px 16px !important;
+  }
+
+  td {
+    padding: 20px 16px !important;
+  }
+
+  .user-cell {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .user-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, $primary-blue 0%, $primary-blue-dark 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+
+      .user-name {
+        font-size: 1rem;
+        font-weight: 600;
+        color: $dark-text;
+      }
+
+      .user-id {
+        font-size: 0.85rem;
+        color: $light-text;
+        font-family: monospace;
+      }
+    }
+  }
+
+  .email-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: $dark-text;
+
+    .email-icon {
+      color: $light-text;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .roles-cell {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+
+    .role-chip {
+      font-size: 0.85rem;
+      font-weight: 500;
+      height: 28px !important;
+      padding: 0 12px !important;
+    }
+
+    .no-roles {
+      color: $light-text;
+      font-style: italic;
+    }
+  }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: $radius-md;
+    font-size: 0.85rem;
+    font-weight: 600;
+
+    &.active {
+      background-color: rgba(46, 204, 113, 0.15);
+      color: #27ae60;
+    }
+
+    &.inactive {
+      background-color: rgba(231, 76, 60, 0.15);
+      color: #c0392b;
+    }
+  }
+
+  .actions-header {
+    text-align: right;
+    width: 120px;
+  }
+
+  .actions-cell {
+    text-align: right;
+
+    button {
+      &:hover {
+        transform: scale(1.1);
+        transition: transform 0.2s ease;
+      }
+    }
+  }
+
+  .user-row {
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.02);
+    }
+  }
+}
+
+.users-paginator {
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  background-color: #f8f9fa;
+}
+
+@media (max-width: $breakpoint-md) {
+  .user-management-container {
+    padding: 30px 16px;
+  }
+
+  .page-header {
+    flex-direction: column;
+
+    .header-stats .stat-card {
+      width: 100%;
+    }
+  }
+
+  .users-table {
+    .user-cell .user-avatar {
+      width: 40px;
+      height: 40px;
+      font-size: 1rem;
+    }
+
+    .user-id {
+      display: none;
+    }
+  }
+}

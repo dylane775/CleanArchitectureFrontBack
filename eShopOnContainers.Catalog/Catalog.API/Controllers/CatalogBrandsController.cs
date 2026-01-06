@@ -18,7 +18,6 @@ namespace Catalog.API.Controllers
     [ApiController]
     [Route("api/catalog/brands")]
     [Produces("application/json")]
-    [Authorize]
     public class CatalogBrandsController : ControllerBase
     {
         private readonly ICatalogBrandRepository _repository;

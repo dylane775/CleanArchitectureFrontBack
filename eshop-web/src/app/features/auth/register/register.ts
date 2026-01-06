@@ -42,7 +42,10 @@ export class Register {
     private snackBar: MatSnackBar
   ) {
     this.registerForm = this.fb.group({
+      firstName: ['', [Validators.required, Validators.minLength(2)]],
+      lastName: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
+      phoneNumber: [''],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required]]
     }, { validators: this.passwordMatchValidator });
@@ -65,17 +68,40 @@ export class Register {
     }
 
     this.loading.set(true);
-    const request: RegisterRequest = this.registerForm.value;
+
+    // Remove confirmPassword before sending to API
+    const { confirmPassword, password, email, ...registerData } = this.registerForm.value;
+    const request: RegisterRequest = { ...registerData, email, password };
 
     this.authService.register(request).subscribe({
       next: () => {
-        this.snackBar.open('Account created successfully! Welcome aboard', '✓', {
-          duration: 3000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['success-snackbar']
+        // After successful registration, automatically log the user in
+        this.authService.login({ email, password }).subscribe({
+          next: () => {
+            this.snackBar.open('Account created successfully! Welcome aboard', '✓', {
+              duration: 3000,
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+              panelClass: ['success-snackbar']
+            });
+            this.router.navigate(['/catalog']);
+          },
+          error: (loginError) => {
+            this.loading.set(false);
+            // Registration succeeded but login failed - redirect to login page
+            this.snackBar.open(
+              'Account created! Please log in to continue.',
+              'OK',
+              {
+                duration: 5000,
+                horizontalPosition: 'end',
+                verticalPosition: 'top',
+                panelClass: ['success-snackbar']
+              }
+            );
+            this.router.navigate(['/auth/login']);
+          }
         });
-        this.router.navigate(['/catalog']);
       },
       error: (error) => {
         this.loading.set(false);

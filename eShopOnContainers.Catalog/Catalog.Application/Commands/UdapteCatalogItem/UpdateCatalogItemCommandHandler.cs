@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Catalog.Domain.Repositories;
+using Catalog.Domain.ValueObjects;
 using MediatR;
 using AutoMapper;
 using Catalog.Application.common.Interfaces;
@@ -46,9 +47,19 @@ namespace Catalog.Application.Commands.UdapteCatalogItem
 
             // Utiliser la méthode métier qui génère le Domain Event
             catalogItem.UpdateDetails(request.Name, request.Description, request.Price);
+
+            // Mettre à jour les spécifications si fournies
+            if (request.Specifications != null)
+            {
+                var specifications = request.Specifications.Count > 0
+                    ? ProductSpecifications.Create(request.Specifications)
+                    : ProductSpecifications.Empty();
+                catalogItem.UpdateSpecifications(specifications);
+            }
+
             catalogItem.SetModified("system");
 
-            _logger.LogWarning("🔥 AFTER UpdateDetails - DomainEvents count: {Count}", 
+            _logger.LogWarning("🔥 AFTER UpdateDetails - DomainEvents count: {Count}",
                 catalogItem.DomainEvents?.Count ?? 0);
 
             await _catalogRepository.UpdateAsync(catalogItem);

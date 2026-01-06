@@ -39,6 +39,32 @@
         </div>
 
         <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>First Name</mat-label>
+              <input matInput type="text" formControlName="firstName" placeholder="John">
+              <mat-icon matPrefix>person</mat-icon>
+              @if (registerForm.get('firstName')?.hasError('required') && registerForm.get('firstName')?.touched) {
+                <mat-error>First name is required</mat-error>
+              }
+              @if (registerForm.get('firstName')?.hasError('minlength') && registerForm.get('firstName')?.touched) {
+                <mat-error>First name must be at least 2 characters</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Last Name</mat-label>
+              <input matInput type="text" formControlName="lastName" placeholder="Doe">
+              <mat-icon matPrefix>person</mat-icon>
+              @if (registerForm.get('lastName')?.hasError('required') && registerForm.get('lastName')?.touched) {
+                <mat-error>Last name is required</mat-error>
+              }
+              @if (registerForm.get('lastName')?.hasError('minlength') && registerForm.get('lastName')?.touched) {
+                <mat-error>Last name must be at least 2 characters</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
           <div class="form-group">
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Email Address</mat-label>
@@ -50,6 +76,14 @@
               @if (registerForm.get('email')?.hasError('email') && registerForm.get('email')?.touched) {
                 <mat-error>Please enter a valid email</mat-error>
               }
+            </mat-form-field>
+          </div>
+
+          <div class="form-group">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Phone Number (Optional)</mat-label>
+              <input matInput type="tel" formControlName="phoneNumber" placeholder="+1 234 567 8900">
+              <mat-icon matPrefix>phone</mat-icon>
             </mat-form-field>
           </div>
 

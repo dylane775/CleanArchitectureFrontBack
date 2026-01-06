@@ -10,6 +10,7 @@ export interface CatalogItem {
   catalogTypeName: string;
   catalogBrandId: string;
   catalogBrandName: string;
+  specifications?: { [key: string]: string }; // Spécifications dynamiques
   createdAt: Date;
   createdBy: string;
   modifiedAt?: Date;
@@ -43,4 +44,5 @@ export interface CreateCatalogItemRequest {
   availableStock: number;
   restockThreshold: number;
   maxStockThreshold: number;
+  specifications?: { [key: string]: string }; // Spécifications dynamiques (optionnel)
 }

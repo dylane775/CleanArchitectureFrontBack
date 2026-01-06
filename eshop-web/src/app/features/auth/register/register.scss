@@ -134,8 +134,18 @@
     margin-bottom: 16px;
   }
 
+  .form-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
   .full-width {
     width: 100%;
+  }
+
+  .half-width {
+    flex: 1;
   }
 
   mat-form-field {

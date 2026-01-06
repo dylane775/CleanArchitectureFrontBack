@@ -7,6 +7,7 @@ import { MatCardModule } from '@angular/material/card';
 import { CatalogService } from '../../core/services/catalog.service';
 import { CatalogItem } from '../../core/models/catalog.model';
 import { CatalogItemComponent } from '../catalog/catalog-item/catalog-item';
+import { HeroSection } from '../../shared/components/hero-section/hero-section';
 
 @Component({
   selector: 'app-home',
@@ -17,7 +18,8 @@ import { CatalogItemComponent } from '../catalog/catalog-item/catalog-item';
     MatButtonModule,
     MatIconModule,
     MatCardModule,
-    CatalogItemComponent
+    CatalogItemComponent,
+    HeroSection
   ],
   templateUrl: './home.html',
   styleUrl: './home.scss'
@@ -78,7 +80,8 @@ export class Home implements OnInit, AfterViewInit {
   }
 
   loadProducts(): void {
-    this.catalogService.getCatalogItems(0, 8).subscribe({
+    // Backend uses 1-based pagination
+    this.catalogService.getCatalogItems(1, 8).subscribe({
       next: (result) => {
         const products = result.data;
         this.featuredProducts.set(products.slice(0, 4));

@@ -1,0 +1,118 @@
+@use '../../../../styles/theme' as *;
+
+.confirm-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, $primary-blue 0%, $primary-yellow 50%, $white 100%);
+  padding: 20px;
+}
+
+.confirm-container {
+  width: 100%;
+  max-width: 500px;
+}
+
+.status-card {
+  padding: 60px 40px !important;
+  text-align: center;
+  border-radius: $radius-xl !important;
+  box-shadow: $shadow-xl !important;
+
+  .status-icon {
+    font-size: 100px;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 30px;
+    animation: scaleIn 0.5s ease-out;
+
+    &.success {
+      color: #4CAF50;
+    }
+
+    &.error {
+      color: #f44336;
+    }
+  }
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: $dark-text;
+    margin: 0 0 16px 0;
+  }
+
+  p {
+    font-size: 1.1rem;
+    color: $light-text;
+    margin: 0 0 24px 0;
+    line-height: 1.6;
+  }
+
+  .redirect-message {
+    font-size: 0.95rem;
+    color: $primary-blue;
+    font-weight: 500;
+    margin-top: 30px;
+  }
+
+  mat-spinner {
+    margin: 30px auto 0;
+  }
+
+  button {
+    margin-top: 20px;
+    min-width: 200px;
+    height: 48px !important;
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+  }
+}
+
+.success-card {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.05) 0%, $white 100%);
+}
+
+.error-card {
+  background: linear-gradient(135deg, rgba(244, 67, 54, 0.05) 0%, $white 100%);
+}
+
+.loading-card {
+  background: linear-gradient(135deg, rgba(33, 150, 243, 0.05) 0%, $white 100%);
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media (max-width: $breakpoint-md) {
+  .confirm-container {
+    max-width: 90%;
+  }
+
+  .status-card {
+    padding: 40px 20px !important;
+
+    .status-icon {
+      font-size: 80px;
+      width: 80px;
+      height: 80px;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+    }
+
+    p {
+      font-size: 1rem;
+    }
+  }
+}

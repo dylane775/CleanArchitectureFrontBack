@@ -12,6 +12,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BasketService } from '../../core/services/basket.service';
 import { AuthService } from '../../core/services/auth.service';
 import { BasketItem } from '../../core/models/basket.model';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-basket',
@@ -197,5 +198,20 @@ export class Basket implements OnInit {
 
   continueShopping(): void {
     this.router.navigate(['/catalog']);
+  }
+
+  getImageUrl(pictureUrl: string): string {
+    if (!pictureUrl) {
+      return 'https://via.placeholder.com/100';
+    }
+
+    // Si l'URL commence déjà par http, la retourner telle quelle
+    if (pictureUrl.startsWith('http')) {
+      return pictureUrl;
+    }
+
+    // Sinon, construire l'URL complète avec le serveur Catalog
+    const catalogBaseUrl = environment.catalogApiUrl.replace('/api', '');
+    return `${catalogBaseUrl}${pictureUrl}`;
   }
 }

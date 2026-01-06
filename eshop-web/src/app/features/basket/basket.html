@@ -26,12 +26,12 @@
         @for (item of basketItems(); track item.catalogItemId) {
           <mat-card class="basket-item">
             <div class="item-image">
-              <img [src]="item.pictureUrl || 'https://via.placeholder.com/100'" [alt]="item.productName">
+              <img [src]="getImageUrl(item.pictureUrl)" [alt]="item.productName">
             </div>
 
             <div class="item-details">
               <h3 class="item-name">{{ item.productName }}</h3>
-              <p class="item-price">${{ item.unitPrice.toFixed(2) }}</p>
+              <p class="item-price">{{ item.unitPrice | number:'1.0-0' }} FCFA</p>
             </div>
 
             <div class="item-quantity">
@@ -46,7 +46,7 @@
 
             <div class="item-total">
               <p class="total-label">Total</p>
-              <p class="total-price">${{ (item.unitPrice * item.quantity).toFixed(2) }}</p>
+              <p class="total-price">{{ (item.unitPrice * item.quantity) | number:'1.0-0' }} FCFA</p>
             </div>
 
             <button mat-icon-button (click)="removeItem(item)" class="remove-btn">
@@ -75,7 +75,7 @@
 
           <div class="summary-row">
             <span>Subtotal ({{ basketItems().length }} items)</span>
-            <span>${{ subtotal().toFixed(2) }}</span>
+            <span>{{ subtotal() | number:'1.0-0' }} FCFA</span>
           </div>
 
           <div class="summary-row">
@@ -84,7 +84,7 @@
               @if (shipping() === 0) {
                 <span class="free-shipping">FREE</span>
               } @else {
-                ${{ shipping().toFixed(2) }}
+                {{ shipping() | number:'1.0-0' }} FCFA
               }
             </span>
           </div>
@@ -92,20 +92,20 @@
           @if (subtotal() < 100 && subtotal() > 0) {
             <div class="shipping-notice">
               <mat-icon>local_shipping</mat-icon>
-              <span>Add ${{ (100 - subtotal()).toFixed(2) }} more for FREE shipping</span>
+              <span>Add {{ (100 - subtotal()) | number:'1.0-0' }} FCFA more for FREE shipping</span>
             </div>
           }
 
           <div class="summary-row">
             <span>Tax (10%)</span>
-            <span>${{ tax().toFixed(2) }}</span>
+            <span>{{ tax() | number:'1.0-0' }} FCFA</span>
           </div>
 
           <mat-divider></mat-divider>
 
           <div class="summary-total">
             <span>Total</span>
-            <span>${{ total().toFixed(2) }}</span>
+            <span>{{ total() | number:'1.0-0' }} FCFA</span>
           </div>
 
           <button mat-raised-button color="primary" (click)="proceedToCheckout()" class="checkout-btn">

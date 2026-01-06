@@ -4,155 +4,275 @@
       <mat-spinner></mat-spinner>
     </div>
   } @else if (product()) {
+    <!-- Breadcrumb Navigation -->
     <div class="breadcrumb">
       <button mat-button (click)="backToCatalog()">
         <mat-icon>arrow_back</mat-icon>
         Back to Catalog
       </button>
+      <span class="breadcrumb-separator">›</span>
+      <span class="breadcrumb-category">{{ product()!.catalogTypeName }}</span>
+      <span class="breadcrumb-separator">›</span>
+      <span class="breadcrumb-brand">{{ product()!.catalogBrandName }}</span>
     </div>
 
-    <div class="product-content">
-      <!-- Product Image Section -->
+    <!-- Main Product Section (Amazon-style layout) -->
+    <div class="product-main-section">
+      <!-- Left: Product Image Gallery -->
       <div class="product-image-section">
         <div class="main-image">
-          <img [src]="product()!.pictureUri" [alt]="product()!.name" />
+          <img [src]="getImageUrl(product()!.pictureUri)" [alt]="product()!.name" />
         </div>
         <div class="image-gallery">
           <div class="thumbnail active">
-            <img [src]="product()!.pictureUri" [alt]="product()!.name" />
+            <img [src]="getImageUrl(product()!.pictureUri)" [alt]="product()!.name" />
           </div>
           <div class="thumbnail">
-            <img [src]="product()!.pictureUri" [alt]="product()!.name" />
+            <img [src]="getImageUrl(product()!.pictureUri)" [alt]="product()!.name" />
           </div>
           <div class="thumbnail">
-            <img [src]="product()!.pictureUri" [alt]="product()!.name" />
+            <img [src]="getImageUrl(product()!.pictureUri)" [alt]="product()!.name" />
           </div>
         </div>
       </div>
 
-      <!-- Product Info Section -->
+      <!-- Center: Product Info & Highlights -->
       <div class="product-info-section">
-        <div class="product-header">
-          <h1>{{ product()!.name }}</h1>
-          <mat-chip [class]="getStockStatusClass()">
-            <mat-icon>{{ isInStock() ? 'check_circle' : 'cancel' }}</mat-icon>
-            {{ getStockStatus() }}
-          </mat-chip>
-        </div>
+        <!-- Product Title -->
+        <h1 class="product-title">{{ product()!.name }}</h1>
 
+        <!-- Brand & Category -->
         <div class="product-meta">
-          <div class="brand">
-            <mat-icon>business</mat-icon>
-            <span>{{ product()!.catalogBrandName }}</span>
-          </div>
-          <div class="category">
-            <mat-icon>category</mat-icon>
-            <span>{{ product()!.catalogTypeName }}</span>
-          </div>
+          <a class="brand-link">Brand: <span>{{ product()!.catalogBrandName }}</span></a>
+          <span class="separator">|</span>
+          <span class="category">{{ product()!.catalogTypeName }}</span>
         </div>
 
-        <mat-divider></mat-divider>
+        <mat-divider class="section-divider"></mat-divider>
 
-        <div class="product-description">
-          <h3>Description</h3>
-          <p>{{ product()!.description }}</p>
-        </div>
-
-        <mat-divider></mat-divider>
-
-        <div class="product-pricing">
-          <div class="price-section">
+        <!-- Price Section -->
+        <div class="price-section">
+          <div class="price-row">
             <span class="price-label">Price:</span>
-            <span class="price">${{ product()!.price.toFixed(2) }}</span>
+            <span class="price-value">{{ product()!.price | number:'1.0-0' }} FCFA</span>
           </div>
-
-          @if (isInStock()) {
-            <div class="quantity-section">
-              <span class="quantity-label">Quantity:</span>
-              <div class="quantity-control">
-                <button mat-icon-button class="qty-btn" (click)="decreaseQuantity()" [disabled]="quantity() <= 1">
-                  <mat-icon>remove</mat-icon>
-                </button>
-                <span class="qty-display">{{ quantity() }}</span>
-                <button mat-icon-button class="qty-btn" (click)="increaseQuantity()" [disabled]="quantity() >= product()!.availableStock">
-                  <mat-icon>add</mat-icon>
-                </button>
-              </div>
-            </div>
-          }
         </div>
 
-        <div class="product-actions">
-          @if (isInStock()) {
-            <button mat-raised-button class="add-to-cart-btn" (click)="addToBasket()">
-              <mat-icon>shopping_cart</mat-icon>
-              Add to Cart
-            </button>
-          } @else {
-            <button mat-raised-button class="notify-btn" disabled>
-              <mat-icon>notifications</mat-icon>
-              Out of Stock
-            </button>
-          }
-          <button mat-stroked-button class="wishlist-btn">
-            <mat-icon>favorite_border</mat-icon>
-            Add to Wishlist
-          </button>
+        <!-- Stock Badge -->
+        <div class="stock-badge" [ngClass]="getStockStatusClass()">
+          <mat-icon>{{ isInStock() ? 'check_circle' : 'cancel' }}</mat-icon>
+          <span>{{ getStockStatus() }}</span>
         </div>
 
-        <mat-divider></mat-divider>
+        <mat-divider class="section-divider"></mat-divider>
 
-        <div class="product-features">
-          <h3>Features</h3>
-          <ul>
+        <!-- About this item (Key Features) -->
+        <div class="product-highlights">
+          <h3 class="section-title">About this item</h3>
+          <ul class="highlights-list">
             <li>
-              <mat-icon>local_shipping</mat-icon>
-              Free shipping on orders over $100
+              <mat-icon>check_circle</mat-icon>
+              <span>{{ product()!.description }}</span>
             </li>
             <li>
-              <mat-icon>verified_user</mat-icon>
-              1 year warranty included
+              <mat-icon>check_circle</mat-icon>
+              <span>High quality {{ product()!.catalogBrandName }} product</span>
             </li>
             <li>
-              <mat-icon>replay</mat-icon>
-              30-day return policy
+              <mat-icon>check_circle</mat-icon>
+              <span>Available in {{ product()!.catalogTypeName }} category</span>
             </li>
             <li>
-              <mat-icon>support_agent</mat-icon>
-              24/7 customer support
+              <mat-icon>check_circle</mat-icon>
+              <span>{{ product()!.availableStock }} units currently in stock</span>
             </li>
           </ul>
         </div>
       </div>
+
+      <!-- Right: Buy Box (Purchase Section) -->
+      <div class="buy-box">
+        <mat-card class="buy-box-card">
+          <mat-card-content>
+            <!-- Price in Buy Box -->
+            <div class="buy-box-price">
+              <span class="price">{{ product()!.price | number:'1.0-0' }} FCFA</span>
+            </div>
+
+            <!-- Delivery Info -->
+            <div class="delivery-info">
+              <mat-icon>local_shipping</mat-icon>
+              <div class="delivery-text">
+                <strong>FREE Delivery</strong>
+                <span>on orders over 100,000 FCFA</span>
+              </div>
+            </div>
+
+            <!-- Stock Status -->
+            <div class="buy-box-stock" [ngClass]="getStockStatusClass()">
+              <mat-icon>{{ isInStock() ? 'inventory' : 'error_outline' }}</mat-icon>
+              <span>{{ getStockStatus() }}</span>
+            </div>
+
+            @if (isInStock()) {
+              <!-- Quantity Selector -->
+              <div class="quantity-selector">
+                <label>Quantity:</label>
+                <div class="quantity-controls">
+                  <button mat-icon-button (click)="decreaseQuantity()" [disabled]="quantity() <= 1">
+                    <mat-icon>remove</mat-icon>
+                  </button>
+                  <span class="quantity-value">{{ quantity() }}</span>
+                  <button mat-icon-button (click)="increaseQuantity()" [disabled]="quantity() >= product()!.availableStock">
+                    <mat-icon>add</mat-icon>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Add to Cart Button -->
+              <button mat-raised-button class="add-to-cart-btn" (click)="addToBasket()">
+                <mat-icon>shopping_cart</mat-icon>
+                Add to Cart
+              </button>
+
+              <!-- Buy Now Button (optional) -->
+              <button mat-stroked-button class="buy-now-btn">
+                <mat-icon>flash_on</mat-icon>
+                Buy Now
+              </button>
+            } @else {
+              <button mat-raised-button class="out-of-stock-btn" disabled>
+                <mat-icon>block</mat-icon>
+                Currently Unavailable
+              </button>
+            }
+
+            <mat-divider></mat-divider>
+
+            <!-- Security & Trust Badges -->
+            <div class="trust-badges">
+              <div class="trust-item">
+                <mat-icon>verified_user</mat-icon>
+                <span>Secure transaction</span>
+              </div>
+              <div class="trust-item">
+                <mat-icon>replay</mat-icon>
+                <span>30-day returns</span>
+              </div>
+              <div class="trust-item">
+                <mat-icon>local_offer</mat-icon>
+                <span>Best price guarantee</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
     </div>
 
-    <!-- Additional Information -->
-    <div class="additional-info">
-      <mat-card class="info-card">
+    <!-- Product Details Section (Below the fold) -->
+    <div class="product-details-section">
+      <!-- Product Description Card -->
+      <mat-card class="detail-card">
         <mat-card-header>
           <mat-card-title>
-            <mat-icon>info</mat-icon>
-            Product Details
+            <mat-icon>description</mat-icon>
+            Product Description
           </mat-card-title>
         </mat-card-header>
         <mat-divider></mat-divider>
         <mat-card-content>
-          <div class="details-grid">
-            <div class="detail-item">
-              <span class="detail-label">Product ID:</span>
-              <span class="detail-value">{{ product()!.id }}</span>
+          <p class="description-text">{{ product()!.description }}</p>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Technical Specifications Card -->
+      @if (hasSpecifications()) {
+        <mat-card class="detail-card specifications-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>settings</mat-icon>
+              Technical Specifications
+            </mat-card-title>
+          </mat-card-header>
+          <mat-divider></mat-divider>
+          <mat-card-content>
+            <table class="specifications-table">
+              <tbody>
+                @for (spec of getSpecificationsArray(); track spec.key) {
+                  <tr>
+                    <td class="spec-label">{{ spec.key }}</td>
+                    <td class="spec-value">{{ spec.value }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </mat-card-content>
+        </mat-card>
+      }
+
+      <!-- Product Information Card -->
+      <mat-card class="detail-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>info</mat-icon>
+            Product Information
+          </mat-card-title>
+        </mat-card-header>
+        <mat-divider></mat-divider>
+        <mat-card-content>
+          <table class="info-table">
+            <tbody>
+              <tr>
+                <td class="info-label">Product ID</td>
+                <td class="info-value">{{ product()!.id }}</td>
+              </tr>
+              <tr>
+                <td class="info-label">Brand</td>
+                <td class="info-value">{{ product()!.catalogBrandName }}</td>
+              </tr>
+              <tr>
+                <td class="info-label">Category</td>
+                <td class="info-value">{{ product()!.catalogTypeName }}</td>
+              </tr>
+              <tr>
+                <td class="info-label">Availability</td>
+                <td class="info-value">{{ product()!.availableStock }} units in stock</td>
+              </tr>
+            </tbody>
+          </table>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Additional Information Card -->
+      <mat-card class="detail-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>help_outline</mat-icon>
+            Additional Information
+          </mat-card-title>
+        </mat-card-header>
+        <mat-divider></mat-divider>
+        <mat-card-content>
+          <div class="additional-info-grid">
+            <div class="info-block">
+              <mat-icon>local_shipping</mat-icon>
+              <h4>Shipping & Delivery</h4>
+              <p>Free delivery on orders over 100,000 FCFA. Standard delivery in 3-5 business days.</p>
             </div>
-            <div class="detail-item">
-              <span class="detail-label">Brand:</span>
-              <span class="detail-value">{{ product()!.catalogBrandName }}</span>
+            <div class="info-block">
+              <mat-icon>verified_user</mat-icon>
+              <h4>Warranty</h4>
+              <p>1 year manufacturer warranty included. Extended warranty options available.</p>
             </div>
-            <div class="detail-item">
-              <span class="detail-label">Category:</span>
-              <span class="detail-value">{{ product()!.catalogTypeName }}</span>
+            <div class="info-block">
+              <mat-icon>replay</mat-icon>
+              <h4>Returns</h4>
+              <p>30-day hassle-free returns. No questions asked if product is unopened.</p>
             </div>
-            <div class="detail-item">
-              <span class="detail-label">Stock:</span>
-              <span class="detail-value">{{ product()!.availableStock }} units</span>
+            <div class="info-block">
+              <mat-icon>support_agent</mat-icon>
+              <h4>Customer Support</h4>
+              <p>24/7 customer service available via phone, email, or live chat.</p>
             </div>
           </div>
         </mat-card-content>

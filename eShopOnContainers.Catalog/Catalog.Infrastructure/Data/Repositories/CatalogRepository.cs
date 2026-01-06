@@ -58,11 +58,12 @@ namespace Catalog.Infrastructure.Data.Repositories
             var totalItems = await _context.CatalogItems.LongCountAsync();
 
             // Récupérer les éléments de la page demandée
+            // PageIndex is 1-based, so subtract 1 for Skip calculation
             var items = await _context.CatalogItems
                 .Include(x => x.CatalogType)
                 .Include(x => x.CatalogBrand)
                 .OrderBy(x => x.Name)  // Tri par nom
-                .Skip(pageIndex * pageSize)  // Sauter les pages précédentes
+                .Skip((pageIndex - 1) * pageSize)  // Sauter les pages précédentes (1-based pagination)
                 .Take(pageSize)  // Prendre uniquement pageSize éléments
                 .ToListAsync();
 

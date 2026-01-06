@@ -12,6 +12,7 @@ import { CatalogService } from '../../core/services/catalog.service';
 import { BasketService } from '../../core/services/basket.service';
 import { AuthService } from '../../core/services/auth.service';
 import { CatalogItem } from '../../core/models/catalog.model';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-product-detail',
@@ -157,5 +158,35 @@ export class ProductDetail implements OnInit {
     if (product.availableStock === 0) return 'out-of-stock';
     if (product.availableStock < 10) return 'low-stock';
     return 'in-stock';
+  }
+
+  getImageUrl(pictureUri: string): string {
+    if (!pictureUri) {
+      return 'https://via.placeholder.com/600x800?text=No+Image';
+    }
+
+    // Si l'URL commence déjà par http, la retourner telle quelle
+    if (pictureUri.startsWith('http')) {
+      return pictureUri;
+    }
+
+    // Sinon, construire l'URL complète avec le serveur Catalog
+    const catalogBaseUrl = environment.catalogApiUrl.replace('/api', '');
+    return `${catalogBaseUrl}${pictureUri}`;
+  }
+
+  hasSpecifications(): boolean {
+    const product = this.product();
+    return !!(product?.specifications && Object.keys(product.specifications).length > 0);
+  }
+
+  getSpecificationsArray(): Array<{ key: string; value: string }> {
+    const product = this.product();
+    if (!product?.specifications) return [];
+
+    return Object.entries(product.specifications).map(([key, value]) => ({
+      key,
+      value
+    }));
   }
 }

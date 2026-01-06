@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
@@ -8,10 +8,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { CatalogService } from '../../../core/services/catalog.service';
 import { AdminService } from '../../../core/services/admin/admin.service';
 import { CatalogItem } from '../../../core/models/catalog.model';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-product-list',
@@ -26,7 +28,8 @@ import { CatalogItem } from '../../../core/models/catalog.model';
     MatChipsModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
-    MatDialogModule
+    MatPaginatorModule,
+    MatTooltipModule
   ],
   templateUrl: './product-list.html',
   styleUrl: './product-list.scss'
@@ -36,12 +39,18 @@ export class ProductList implements OnInit {
   loading = signal(false);
   displayedColumns: string[] = ['image', 'name', 'brand', 'type', 'price', 'stock', 'status', 'actions'];
 
+  // Pagination
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  totalItems = signal(0);
+  pageSize = signal(10);
+  pageIndex = signal(0);
+  pageSizeOptions = [5, 10, 25, 50, 100];
+
   constructor(
     private catalogService: CatalogService,
     private adminService: AdminService,
     private router: Router,
-    private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -50,9 +59,13 @@ export class ProductList implements OnInit {
 
   loadProducts(): void {
     this.loading.set(true);
-    this.catalogService.getCatalogItems(0, 100).subscribe({
+    // Backend uses 1-based pagination, Angular Material uses 0-based
+    const backendPageIndex = this.pageIndex() + 1;
+
+    this.catalogService.getCatalogItems(backendPageIndex, this.pageSize()).subscribe({
       next: (result) => {
         this.products.set(result.data);
+        this.totalItems.set(result.count);
         this.loading.set(false);
       },
       error: (error) => {
@@ -64,6 +77,12 @@ export class ProductList implements OnInit {
         this.loading.set(false);
       }
     });
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.pageIndex.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
+    this.loadProducts();
   }
 
   editProduct(product: CatalogItem): void {
@@ -103,5 +122,20 @@ export class ProductList implements OnInit {
     if (stock === 0) return 'Out of Stock';
     if (stock < 10) return 'Low Stock';
     return 'In Stock';
+  }
+
+  getImageUrl(pictureUri: string): string {
+    if (!pictureUri) {
+      return 'https://via.placeholder.com/60';
+    }
+
+    // Si l'URL commence déjà par http, la retourner telle quelle
+    if (pictureUri.startsWith('http')) {
+      return pictureUri;
+    }
+
+    // Sinon, construire l'URL complète avec le serveur Catalog
+    const catalogBaseUrl = environment.catalogApiUrl.replace('/api', '');
+    return `${catalogBaseUrl}${pictureUri}`;
   }
 }

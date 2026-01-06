@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Catalog.Domain.Common;
 using Catalog.Domain.Events;
 using Catalog.Domain.Exceptions;
+using Catalog.Domain.ValueObjects;
 
 namespace Catalog.Domain.Entities
 {
@@ -38,7 +39,15 @@ namespace Catalog.Domain.Entities
         public int MaxStockThreshold { get; private set; }
         public bool OnReorder { get; private set; }
 
-        protected CatalogItem() { }
+        // Spécifications dynamiques du produit
+        // Stocke des attributs personnalisés selon le type de produit
+        // Exemples: Taille, Couleur, Processeur, RAM, Matière, etc.
+        public ProductSpecifications Specifications { get; private set; }
+
+        protected CatalogItem()
+        {
+            Specifications = ProductSpecifications.Empty();
+        }
 
         public CatalogItem(
             string name,
@@ -50,7 +59,8 @@ namespace Catalog.Domain.Entities
             int availableStock = 0,
             int restockThreshold = 0,
             int maxStockThreshold = 0,
-            string? pictureUri = null)
+            string? pictureUri = null,
+            ProductSpecifications? specifications = null)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Name cannot be null or empty", nameof(name));
@@ -72,6 +82,7 @@ namespace Catalog.Domain.Entities
             RestockThreshold = restockThreshold;
             MaxStockThreshold = maxStockThreshold;
             OnReorder = false;
+            Specifications = specifications ?? ProductSpecifications.Empty();
         }
 
         public void UpdateDetails(string name, string description, decimal price)
@@ -176,6 +187,32 @@ namespace Catalog.Domain.Entities
 
             RestockThreshold = restockThreshold;
             MaxStockThreshold = maxStockThreshold;
+        }
+
+        // ====== MÉTHODES POUR GÉRER LES SPÉCIFICATIONS ======
+
+        /// <summary>
+        /// Met à jour toutes les spécifications du produit
+        /// </summary>
+        public void UpdateSpecifications(ProductSpecifications specifications)
+        {
+            Specifications = specifications ?? ProductSpecifications.Empty();
+        }
+
+        /// <summary>
+        /// Ajoute ou met à jour un attribut de spécification
+        /// </summary>
+        public void AddOrUpdateSpecification(string key, string value)
+        {
+            Specifications.AddOrUpdateAttribute(key, value);
+        }
+
+        /// <summary>
+        /// Supprime un attribut de spécification
+        /// </summary>
+        public void RemoveSpecification(string key)
+        {
+            Specifications.RemoveAttribute(key);
         }
 
     }

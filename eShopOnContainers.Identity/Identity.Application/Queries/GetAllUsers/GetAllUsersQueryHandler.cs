@@ -1,5 +1,6 @@
 using AutoMapper;
 using Identity.Application.Common.Interfaces;
+using Identity.Application.Common.Models;
 using Identity.Application.DTOs.Output;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +10,7 @@ namespace Identity.Application.Queries.GetAllUsers
     /// <summary>
     /// Handler for GetAllUsersQuery
     /// </summary>
-    public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, List<UserDto>>
+    public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, PaginatedItems<UserDto>>
     {
         private readonly IIdentityDbContext _context;
         private readonly IMapper _mapper;
@@ -22,7 +23,7 @@ namespace Identity.Application.Queries.GetAllUsers
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<List<UserDto>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
+        public async Task<PaginatedItems<UserDto>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
         {
             var query = _context.Users
                 .Include(u => u.Roles)
@@ -34,6 +35,9 @@ namespace Identity.Application.Queries.GetAllUsers
                 query = query.Where(u => u.IsActive == request.IsActive.Value);
             }
 
+            // Get total count
+            var totalCount = await query.CountAsync(cancellationToken);
+
             // Apply pagination
             var users = await query
                 .OrderBy(u => u.Email)
@@ -41,7 +45,14 @@ namespace Identity.Application.Queries.GetAllUsers
                 .Take(request.PageSize)
                 .ToListAsync(cancellationToken);
 
-            return _mapper.Map<List<UserDto>>(users);
+            var userDtos = _mapper.Map<List<UserDto>>(users);
+
+            return new PaginatedItems<UserDto>(
+                pageIndex: request.PageNumber,
+                pageSize: request.PageSize,
+                count: totalCount,
+                data: userDtos
+            );
         }
     }
 }

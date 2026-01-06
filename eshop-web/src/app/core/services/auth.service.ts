@@ -62,6 +62,17 @@ export class AuthService {
     return localStorage.getItem(this.REFRESH_TOKEN_KEY);
   }
 
+  setTokens(accessToken: string, refreshToken: string): void {
+    localStorage.setItem(this.ACCESS_TOKEN_KEY, accessToken);
+    localStorage.setItem(this.REFRESH_TOKEN_KEY, refreshToken);
+
+    // Decode user from access token
+    const user = this.decodeUserFromToken(accessToken);
+    localStorage.setItem('user', JSON.stringify(user));
+    this.currentUser.set(user);
+    this.isAuthenticated.set(true);
+  }
+
   private handleAuthResponse(response: AuthResponse): void {
     localStorage.setItem(this.ACCESS_TOKEN_KEY, response.accessToken);
     localStorage.setItem(this.REFRESH_TOKEN_KEY, response.refreshToken);

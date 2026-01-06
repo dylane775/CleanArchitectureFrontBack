@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Catalog.Domain.Repositories;
 using Catalog.Domain.Entities;
+using Catalog.Domain.ValueObjects;
 using Catalog.Application.common.Interfaces;
 using AutoMapper;
 using Catalog.Application.Commands.CreateCatalogItem;
@@ -29,7 +30,26 @@ namespace Catalog.Application.Commands.CreateCatalogItemHandlers
 
         public async Task<CatalogItemDto> Handle(CreateCatalogItemCommand request, CancellationToken cancellationToken)
         {
-            var catalogItem = _mapper.Map<CatalogItem>(request);
+            // Créer les spécifications si fournies
+            var specifications = request.Specifications != null && request.Specifications.Count > 0
+                ? ProductSpecifications.Create(request.Specifications)
+                : ProductSpecifications.Empty();
+
+            // Créer l'entité manuellement car AutoMapper ne supporte pas les paramètres optionnels dans ConstructUsing
+            var catalogItem = new CatalogItem(
+                name: request.Name,
+                description: request.Description ?? string.Empty,
+                price: request.Price,
+                pictureFileName: request.PictureFileName,
+                catalogTypeId: request.CatalogTypeId,
+                catalogBrandId: request.CatalogBrandId,
+                availableStock: request.AvailableStock,
+                restockThreshold: request.RestockThreshold,
+                maxStockThreshold: request.MaxStockThreshold,
+                pictureUri: request.PictureFileName,
+                specifications: specifications
+            );
+
             catalogItem.SetCreated("system");
 
             catalogItem = await _catalogRepository.AddAsync(catalogItem);

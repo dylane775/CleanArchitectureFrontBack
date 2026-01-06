@@ -1,7 +1,8 @@
 <header class="main-header">
+  <!-- Main Toolbar (Amazon-style) -->
   <mat-toolbar class="toolbar">
     <div class="toolbar-container">
-      <!-- Logo -->
+      <!-- Logo Section -->
       <div class="brand-section">
         <a routerLink="/" class="logo-link">
           <mat-icon class="logo-icon">shopping_bag</mat-icon>
@@ -9,41 +10,60 @@
         </a>
       </div>
 
-      <!-- Search Bar -->
+      <!-- Search Bar (Central - Amazon style) -->
       <div class="search-section">
-        <div class="search-wrapper">
-          <mat-icon class="search-icon">search</mat-icon>
+        <form class="search-wrapper" (submit)="onSearch(); $event.preventDefault()">
           <input
             type="text"
             class="search-input"
             placeholder="Search for products, brands and more..."
             [(ngModel)]="searchQuery"
-            (keyup.enter)="onSearch()"
+            name="search"
           />
           @if (searchQuery()) {
-            <button class="clear-btn" (click)="searchQuery.set('')">
+            <button type="button" class="clear-btn" (click)="searchQuery.set('')">
               <mat-icon>close</mat-icon>
             </button>
           }
-          <button mat-raised-button class="search-btn" (click)="onSearch()">
-            Search
+          <button type="submit" class="search-btn" mat-flat-button>
+            <mat-icon>search</mat-icon>
           </button>
-        </div>
+        </form>
       </div>
 
-      <!-- User Actions -->
+      <!-- User Actions Section -->
       <div class="user-section">
-        <button mat-icon-button class="icon-btn" routerLink="/basket">
-          <mat-icon [matBadge]="basketItemCount() > 0 ? basketItemCount() : null" matBadgeColor="warn">shopping_cart</mat-icon>
+        <!-- Returns & Orders -->
+        <button mat-button routerLink="/orders" class="orders-btn">
+          <div class="orders-content">
+            <span class="orders-greeting">Returns</span>
+            <strong class="orders-label">& Orders</strong>
+          </div>
         </button>
 
+        <!-- Shopping Cart -->
+        <button mat-button routerLink="/basket" class="cart-btn">
+          <div class="cart-icon-wrapper">
+            <mat-icon class="cart-icon">shopping_cart</mat-icon>
+            @if (basketItemCount() > 0) {
+              <span class="cart-badge">{{ basketItemCount() }}</span>
+            }
+          </div>
+          <span class="cart-label">Cart</span>
+        </button>
+
+        <!-- Account Menu (à l'extrême droite) -->
         @if (isAuthenticated()) {
-          <button mat-button [matMenuTriggerFor]="userMenu" class="user-button">
-            <mat-icon>account_circle</mat-icon>
-            <span class="user-name">{{ getUserDisplayName() }}</span>
-            <mat-icon class="dropdown-icon">arrow_drop_down</mat-icon>
+          <button mat-button [matMenuTriggerFor]="userMenu" class="account-btn">
+            <div class="account-content">
+              <span class="account-greeting">Hello, {{ getUserDisplayName() }}</span>
+              <div class="account-label">
+                <strong>Account & Lists</strong>
+                <mat-icon class="dropdown-icon">arrow_drop_down</mat-icon>
+              </div>
+            </div>
           </button>
-          <mat-menu #userMenu="matMenu">
+          <mat-menu #userMenu="matMenu" class="user-menu-panel">
             @if (isAdmin()) {
               <button mat-menu-item routerLink="/admin/dashboard">
                 <mat-icon>admin_panel_settings</mat-icon>
@@ -53,51 +73,76 @@
             }
             <button mat-menu-item (click)="navigateToProfile()">
               <mat-icon>person</mat-icon>
-              <span>Profile</span>
+              <span>Your Profile</span>
             </button>
             <button mat-menu-item (click)="navigateToOrders()">
               <mat-icon>receipt_long</mat-icon>
-              <span>My Orders</span>
+              <span>Your Orders</span>
             </button>
             <mat-divider></mat-divider>
             <button mat-menu-item (click)="logout()">
               <mat-icon>logout</mat-icon>
-              <span>Logout</span>
+              <span>Sign Out</span>
             </button>
           </mat-menu>
         } @else {
-          <button mat-raised-button class="login-btn" routerLink="/auth/login">
-            <mat-icon>login</mat-icon>
-            <span>Login</span>
+          <button mat-button routerLink="/auth/login" class="account-btn">
+            <div class="account-content">
+              <span class="account-greeting">Hello, Sign in</span>
+              <div class="account-label">
+                <strong>Account & Lists</strong>
+              </div>
+            </div>
           </button>
         }
       </div>
     </div>
   </mat-toolbar>
 
-  <!-- Navigation Bar -->
+  <!-- Navigation Bar (Categories - Amazon style) -->
   <div class="nav-bar">
     <div class="nav-container">
       <nav class="nav-links">
-        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">
-          <mat-icon>home</mat-icon>
-          <span>Home</span>
-        </a>
-        <a routerLink="/catalog" routerLinkActive="active" class="nav-link">
-          <mat-icon>store</mat-icon>
-          <span>All Products</span>
-        </a>
+        <!-- All Categories Menu -->
+        <button mat-button [matMenuTriggerFor]="categoriesMenu" class="nav-link categories-link">
+          <mat-icon>menu</mat-icon>
+          <span>All</span>
+        </button>
+        <mat-menu #categoriesMenu="matMenu">
+          <button mat-menu-item routerLink="/catalog">
+            <mat-icon>store</mat-icon>
+            <span>All Products</span>
+          </button>
+          <mat-divider></mat-divider>
+          <button mat-menu-item routerLink="/catalog" [queryParams]="{category: 'electronics'}">
+            <mat-icon>devices</mat-icon>
+            <span>Electronics</span>
+          </button>
+          <button mat-menu-item routerLink="/catalog" [queryParams]="{category: 'fashion'}">
+            <mat-icon>checkroom</mat-icon>
+            <span>Fashion</span>
+          </button>
+          <button mat-menu-item routerLink="/catalog" [queryParams]="{category: 'home'}">
+            <mat-icon>home</mat-icon>
+            <span>Home & Kitchen</span>
+          </button>
+        </mat-menu>
+
+        <!-- Quick Links -->
         <a routerLink="/catalog" [queryParams]="{filter: 'new'}" class="nav-link">
-          <mat-icon>new_releases</mat-icon>
           <span>New Arrivals</span>
         </a>
-        <a routerLink="/catalog" [queryParams]="{filter: 'sale'}" class="nav-link">
-          <mat-icon>local_offer</mat-icon>
-          <span>Deals</span>
+        <a routerLink="/catalog" [queryParams]="{filter: 'bestsellers'}" class="nav-link">
+          <span>Best Sellers</span>
+        </a>
+        <a routerLink="/catalog" [queryParams]="{filter: 'deals'}" class="nav-link deals-link">
+          <span>Today's Deals</span>
+        </a>
+        <a routerLink="/catalog" [queryParams]="{filter: 'gift'}" class="nav-link">
+          <span>Gift Ideas</span>
         </a>
         <a routerLink="/orders" routerLinkActive="active" class="nav-link">
-          <mat-icon>receipt_long</mat-icon>
-          <span>Orders</span>
+          <span>Track Orders</span>
         </a>
       </nav>
     </div>

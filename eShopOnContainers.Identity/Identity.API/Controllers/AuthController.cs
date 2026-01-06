@@ -9,6 +9,9 @@ using Identity.Application.Commands.RefreshToken;
 using Identity.Application.Commands.ConfirmEmail;
 using Identity.Application.DTOs.Input;
 using Identity.Application.DTOs.Output;
+using Identity.Application.Common.Interfaces;
+using Identity.Application.Queries.GetUserById;
+using Microsoft.EntityFrameworkCore;
 
 namespace Identity.API.Controllers
 {
@@ -22,11 +25,19 @@ namespace Identity.API.Controllers
     {
         private readonly IMediator _mediator;
         private readonly ILogger<AuthController> _logger;
+        private readonly ITokenService _tokenService;
+        private readonly IIdentityDbContext _context;
 
-        public AuthController(IMediator mediator, ILogger<AuthController> logger)
+        public AuthController(
+            IMediator mediator,
+            ILogger<AuthController> logger,
+            ITokenService tokenService,
+            IIdentityDbContext context)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         // ====================================
@@ -169,9 +180,9 @@ namespace Identity.API.Controllers
         /// </summary>
         /// <param name="userId">User ID</param>
         /// <param name="token">Confirmation token</param>
-        /// <returns>HTML page with confirmation result</returns>
+        /// <returns>Redirect to frontend with authentication tokens</returns>
         [HttpGet("confirm-email")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status302Found)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ConfirmEmailViaLink([FromQuery] Guid userId, [FromQuery] string token)
         {
@@ -189,233 +200,59 @@ namespace Identity.API.Controllers
 
                 _logger.LogInformation("Email confirmed successfully for user {UserId}", userId);
 
-                // Return success HTML page
-                var successHtml = @"
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset='utf-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <title>Email Confirmé - eShop</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        .container {
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            text-align: center;
-            max-width: 500px;
-        }
-        .success-icon {
-            width: 80px;
-            height: 80px;
-            background: #4CAF50;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            animation: scaleIn 0.5s ease-out;
-        }
-        .success-icon::after {
-            content: '✓';
-            color: white;
-            font-size: 50px;
-            font-weight: bold;
-        }
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-        p {
-            color: #666;
-            line-height: 1.6;
-            margin-bottom: 30px;
-        }
-        .button {
-            display: inline-block;
-            padding: 12px 30px;
-            background: #4CAF50;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
-        .button:hover {
-            background: #45a049;
-        }
-        @keyframes scaleIn {
-            from { transform: scale(0); }
-            to { transform: scale(1); }
-        }
-    </style>
-</head>
-<body>
-    <div class='container'>
-        <div class='success-icon'></div>
-        <h1>Email Confirmé avec Succès! 🎉</h1>
-        <p>Votre adresse email a été vérifiée. Vous pouvez maintenant vous connecter à votre compte eShop et profiter de tous nos services.</p>
-        <a href='http://localhost:5245/swagger' class='button'>Aller à l'API</a>
-    </div>
-</body>
-</html>";
+                // Get user and generate authentication tokens
+                var user = await _context.Users
+                    .Include(u => u.Roles)
+                    .FirstOrDefaultAsync(u => u.Id == userId);
 
-                return Content(successHtml, "text/html");
+                if (user == null)
+                {
+                    throw new InvalidOperationException("User not found after confirmation");
+                }
+
+                // Generate tokens
+                var accessToken = _tokenService.GenerateAccessToken(user);
+                var refreshTokenString = _tokenService.GenerateRefreshToken();
+                var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+
+                // Create refresh token entity using the constructor
+                var refreshTokenEntity = new Identity.Domain.Entities.RefreshToken(
+                    refreshTokenString,
+                    userId,
+                    DateTime.UtcNow.AddDays(7),
+                    ipAddress
+                );
+
+                // Save refresh token
+                _context.RefreshTokens.Add(refreshTokenEntity);
+                await _context.SaveChangesAsync(default);
+
+                // Redirect to frontend with tokens
+                var frontendUrl = "http://localhost:4200/auth/confirm-success";
+                var redirectUrl = $"{frontendUrl}?accessToken={Uri.EscapeDataString(accessToken)}&refreshToken={Uri.EscapeDataString(refreshTokenString)}";
+
+                return Redirect(redirectUrl);
             }
             catch (InvalidOperationException ex)
             {
                 _logger.LogWarning(ex, "Email confirmation failed for user {UserId}", userId);
 
-                // Return error HTML page
-                var errorHtml = $@"
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset='utf-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <title>Erreur de Confirmation - eShop</title>
-    <style>
-        body {{
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }}
-        .container {{
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            text-align: center;
-            max-width: 500px;
-        }}
-        .error-icon {{
-            width: 80px;
-            height: 80px;
-            background: #f44336;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-        }}
-        .error-icon::after {{
-            content: '✕';
-            color: white;
-            font-size: 50px;
-            font-weight: bold;
-        }}
-        h1 {{
-            color: #333;
-            margin-bottom: 10px;
-        }}
-        p {{
-            color: #666;
-            line-height: 1.6;
-            margin-bottom: 30px;
-        }}
-        .error-message {{
-            background: #ffebee;
-            border-left: 4px solid #f44336;
-            padding: 15px;
-            margin: 20px 0;
-            text-align: left;
-        }}
-    </style>
-</head>
-<body>
-    <div class='container'>
-        <div class='error-icon'></div>
-        <h1>Erreur de Confirmation</h1>
-        <div class='error-message'>
-            <strong>Erreur:</strong> {ex.Message}
-        </div>
-        <p>Si le problème persiste, veuillez contacter le support ou demander un nouveau lien de confirmation.</p>
-    </div>
-</body>
-</html>";
-
-                return Content(errorHtml, "text/html");
+                // Redirect to frontend error page with error message
+                var frontendUrl = "http://localhost:4200/auth/confirm-error";
+                var redirectUrl = $"{frontendUrl}?error={Uri.EscapeDataString(ex.Message)}";
+                return Redirect(redirectUrl);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred during email confirmation");
 
-                var errorHtml = @"
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset='utf-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <title>Erreur - eShop</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        .container {
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            text-align: center;
-            max-width: 500px;
-        }
-        .error-icon {
-            width: 80px;
-            height: 80px;
-            background: #f44336;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-        }
-        .error-icon::after {
-            content: '✕';
-            color: white;
-            font-size: 50px;
-            font-weight: bold;
-        }
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-        p {
-            color: #666;
-            line-height: 1.6;
-        }
-    </style>
-</head>
-<body>
-    <div class='container'>
-        <div class='error-icon'></div>
-        <h1>Une Erreur est Survenue</h1>
-        <p>Nous sommes désolés, une erreur inattendue s'est produite lors de la confirmation de votre email. Veuillez réessayer plus tard ou contacter le support.</p>
-    </div>
-</body>
-</html>";
-
-                return Content(errorHtml, "text/html");
+                // Redirect to frontend error page
+                var frontendUrl = "http://localhost:4200/auth/confirm-error";
+                var redirectUrl = $"{frontendUrl}?error=An unexpected error occurred";
+                return Redirect(redirectUrl);
             }
         }
+
 
         /// <summary>
         /// Confirms a user's email address using the confirmation token (POST endpoint for API calls)

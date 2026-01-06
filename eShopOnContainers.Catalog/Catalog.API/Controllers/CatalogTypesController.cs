@@ -21,7 +21,6 @@ namespace Catalog.API.Controllers
     [ApiController]
     [Route("api/catalog/types")]
     [Produces("application/json")]
-    [Authorize]
     public class CatalogTypesController : ControllerBase
     {
         private readonly ICatalogTypeRepository _repository;

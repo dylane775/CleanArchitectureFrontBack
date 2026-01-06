@@ -1,12 +1,20 @@
-<div class="catalog-wrapper">
+<div class="catalog-wrapper" [class.sidebar-collapsed]="sidebarCollapsed()">
+  <!-- Sidebar Toggle Button -->
+  <button mat-icon-button class="sidebar-toggle-btn" (click)="toggleSidebar()" [attr.aria-label]="sidebarCollapsed() ? 'Show filters' : 'Hide filters'">
+    <mat-icon>{{ sidebarCollapsed() ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+  </button>
+
   <!-- Sidebar Filters -->
-  <aside class="filters-sidebar">
+  <aside class="filters-sidebar" [class.collapsed]="sidebarCollapsed()">
     <div class="filters-header">
-      <h2>Filters</h2>
+      <h2>
+        <mat-icon>filter_list</mat-icon>
+        Filters
+      </h2>
       @if (getActiveFiltersCount() > 0) {
-        <button mat-button color="warn" (click)="clearAllFilters()" class="clear-all-btn">
-          <mat-icon>clear_all</mat-icon>
-          Clear All
+        <button mat-button (click)="clearAllFilters()" class="clear-all-btn">
+          <mat-icon>clear</mat-icon>
+          Clear
         </button>
       }
     </div>
@@ -92,28 +100,26 @@
       <!-- Toolbar with Results Count and Sort -->
       <div class="catalog-toolbar">
         <div class="results-info">
-          <h1 class="results-title">All Products</h1>
-          <p class="results-count">{{ totalItems() }} products found</p>
+          <h1 class="results-title">
+            @if (searchQuery()) {
+              Results for "{{ searchQuery() }}"
+            } @else {
+              All Products
+            }
+          </h1>
+          <p class="results-count">
+            <span class="count-number">{{ totalItems() }}</span>
+            {{ totalItems() === 1 ? 'result' : 'results' }}
+          </p>
         </div>
 
         <div class="sort-section">
-          <mat-chip-listbox [value]="sortBy()" (change)="onSortChange($event)" class="sort-chips">
-            <mat-chip-option value="featured">
-              <mat-icon>stars</mat-icon>
-              Featured
-            </mat-chip-option>
-            <mat-chip-option value="price-asc">
-              <mat-icon>arrow_upward</mat-icon>
-              Price: Low to High
-            </mat-chip-option>
-            <mat-chip-option value="price-desc">
-              <mat-icon>arrow_downward</mat-icon>
-              Price: High to Low
-            </mat-chip-option>
-            <mat-chip-option value="newest">
-              <mat-icon>new_releases</mat-icon>
-              Newest
-            </mat-chip-option>
+          <label class="sort-label">Sort by:</label>
+          <mat-chip-listbox [value]="sortBy()" (change)="onSortChange($event)" class="sort-chips" aria-label="Sort options">
+            <mat-chip-option value="featured">Featured</mat-chip-option>
+            <mat-chip-option value="price-asc">Price: Low to High</mat-chip-option>
+            <mat-chip-option value="price-desc">Price: High to Low</mat-chip-option>
+            <mat-chip-option value="newest">Newest Arrivals</mat-chip-option>
           </mat-chip-listbox>
         </div>
       </div>
@@ -121,13 +127,12 @@
       <!-- Active Filters Chips -->
       @if (getActiveFiltersCount() > 0) {
         <div class="active-filters">
-          <span class="active-filters-label">Active filters:</span>
           <mat-chip-set class="filter-chips">
             @for (category of categories(); track category.value) {
               @if (category.checked) {
                 <mat-chip (removed)="category.checked = false; applyFilters()">
                   {{ category.label }}
-                  <button matChipRemove>
+                  <button matChipRemove aria-label="Remove filter">
                     <mat-icon>cancel</mat-icon>
                   </button>
                 </mat-chip>
@@ -137,16 +142,16 @@
               @if (brand.checked) {
                 <mat-chip (removed)="brand.checked = false; applyFilters()">
                   {{ brand.label }}
-                  <button matChipRemove>
+                  <button matChipRemove aria-label="Remove filter">
                     <mat-icon>cancel</mat-icon>
                   </button>
                 </mat-chip>
               }
             }
             @if (priceRange()[0] !== 0 || priceRange()[1] !== maxPrice) {
-              <mat-chip (removed)="priceRange.set([0, maxPrice]); applyFilters()">
+              <mat-chip (removed)="resetPriceFilter()">
                 {{ formatPrice(priceRange()[0]) }} - {{ formatPrice(priceRange()[1]) }}
-                <button matChipRemove>
+                <button matChipRemove aria-label="Remove price filter">
                   <mat-icon>cancel</mat-icon>
                 </button>
               </mat-chip>
@@ -155,25 +160,91 @@
         </div>
       }
 
-      <!-- Product Grid -->
-      <div class="catalog-grid">
-        @for (item of filteredItems(); track item.id) {
-          <app-catalog-item
-            [item]="item"
-            (addToBasket)="onAddToBasket($event)">
-          </app-catalog-item>
-        }
-      </div>
+      <!-- Category Sections with Horizontal Carousels -->
+      @if (categorySections().length > 0) {
+        <div class="category-sections">
+          @for (section of categorySections(); track section.category.value) {
+            <section class="category-section">
+              <div class="section-header">
+                <h2 class="section-title">
+                  <mat-icon>category</mat-icon>
+                  {{ section.category.label }}
+                </h2>
+                <span class="section-count">{{ section.items.length }} {{ section.items.length === 1 ? 'item' : 'items' }}</span>
+              </div>
 
-      <!-- Pagination -->
-      <mat-paginator
-        [length]="totalItems()"
-        [pageSize]="pageSize"
-        [pageIndex]="pageIndex"
-        [pageSizeOptions]="[12, 24, 36, 48]"
-        (page)="onPageChange($event)"
-        aria-label="Select page">
-      </mat-paginator>
+              <div class="carousel-container">
+                <div class="carousel-track" [class.auto-scroll]="section.items.length >= 5">
+                  @for (item of section.items; track item.id + '-1') {
+                    <div class="carousel-item">
+                      <app-catalog-item
+                        [item]="item"
+                        [compact]="true"
+                        (addToBasket)="onAddToBasket($event)">
+                      </app-catalog-item>
+                    </div>
+                  }
+                  <!-- Duplicate items for seamless loop (only if >= 5 items) -->
+                  @if (section.items.length >= 5) {
+                    @for (item of section.items; track item.id + '-2') {
+                      <div class="carousel-item">
+                        <app-catalog-item
+                          [item]="item"
+                          [compact]="true"
+                          (addToBasket)="onAddToBasket($event)">
+                        </app-catalog-item>
+                      </div>
+                    }
+                  }
+                </div>
+              </div>
+            </section>
+          }
+        </div>
+      }
+
+      <!-- All Products Grid -->
+      @if (paginatedItems().length > 0) {
+        <section class="all-products-section">
+          <div class="section-header">
+            <h2 class="section-title">
+              <mat-icon>apps</mat-icon>
+              All Results
+            </h2>
+          </div>
+
+          <div class="products-grid">
+            @for (item of paginatedItems(); track item.id) {
+              <app-catalog-item
+                [item]="item"
+                (addToBasket)="onAddToBasket($event)">
+              </app-catalog-item>
+            }
+          </div>
+
+          <!-- Pagination -->
+          @if (totalItems() > pageSize) {
+            <mat-paginator
+              [length]="totalItems()"
+              [pageSize]="pageSize"
+              [pageIndex]="pageIndex"
+              [pageSizeOptions]="[12, 24, 48, 96]"
+              (page)="onPageChange($event)"
+              aria-label="Select page"
+              class="products-paginator">
+            </mat-paginator>
+          }
+        </section>
+      } @else {
+        <div class="no-results">
+          <mat-icon>search_off</mat-icon>
+          <h3>No products found</h3>
+          <p>Try adjusting your filters or search query</p>
+          <button mat-raised-button color="primary" (click)="clearAllFilters()">
+            Clear All Filters
+          </button>
+        </div>
+      }
     }
   </main>
 </div>

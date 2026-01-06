@@ -25,7 +25,11 @@ namespace Catalog.Application.DTOs.Output
         
         public Guid CatalogBrandId { get; init; }
         public string CatalogBrandName { get; init; }="";
-        
+
+        // Spécifications dynamiques du produit
+        // Dictionnaire clé-valeur pour attributs personnalisés (taille, couleur, etc.)
+        public IReadOnlyDictionary<string, string>? Specifications { get; init; }
+
         // Audit (optionnel - à exposer selon les besoins)
         public DateTime CreatedAt { get; init; }
         public string CreatedBy { get; init; }="";

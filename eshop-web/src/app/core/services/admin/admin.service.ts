@@ -158,4 +158,42 @@ export class AdminService {
     // This would typically be a dedicated endpoint, but we'll aggregate for now
     return this.http.get<AdminStats>(`${this.identityApiUrl}/admin/stats`);
   }
+
+  // ============= IMAGE UPLOAD =============
+  uploadProductImage(file: File): Observable<ImageUploadResponse> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return this.http.post<ImageUploadResponse>(
+      `${this.catalogApiUrl}/catalog/images/upload`,
+      formData
+    );
+  }
+
+  deleteProductImage(fileName: string): Observable<void> {
+    return this.http.delete<void>(
+      `${this.catalogApiUrl}/catalog/images/${fileName}`
+    );
+  }
+
+  getProductImageUrl(fileName: string): string {
+    if (!fileName) return '';
+    if (fileName.startsWith('http')) return fileName;
+
+    // Si le fileName contient déjà le chemin complet (commence par /images), on le combine avec le base URL
+    if (fileName.startsWith('/images')) {
+      const catalogBaseUrl = environment.catalogApiUrl.replace('/api', '');
+      return `${catalogBaseUrl}${fileName}`;
+    }
+
+    // Sinon, c'est juste le nom du fichier, on construit le chemin complet
+    const catalogBaseUrl = environment.catalogApiUrl.replace('/api', '');
+    return `${catalogBaseUrl}/images/products/${fileName}`;
+  }
+}
+
+export interface ImageUploadResponse {
+  fileName: string;
+  fileUrl: string;
+  originalFileName: string;
 }

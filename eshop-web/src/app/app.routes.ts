@@ -16,6 +16,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/register/register').then(m => m.Register)
   },
   {
+    path: 'auth/confirm-success',
+    loadComponent: () => import('./features/auth/confirm-success/confirm-success').then(m => m.ConfirmSuccess)
+  },
+  {
     path: 'catalog',
     loadComponent: () => import('./features/catalog/catalog-list/catalog-list').then(m => m.CatalogList)
   },
@@ -41,6 +45,7 @@ export const routes: Routes = [
   {
     path: 'admin',
     canActivate: [adminGuard],
+    loadComponent: () => import('./features/admin/admin-layout/admin-layout').then(m => m.AdminLayout),
     children: [
       {
         path: '',
@@ -62,6 +67,18 @@ export const routes: Routes = [
       {
         path: 'products/edit/:id',
         loadComponent: () => import('./features/admin/products/product-form').then(m => m.ProductForm)
+      },
+      {
+        path: 'brands',
+        loadComponent: () => import('./features/admin/brands/brand-management').then(m => m.BrandManagement)
+      },
+      {
+        path: 'categories',
+        loadComponent: () => import('./features/admin/types/type-management').then(m => m.TypeManagement)
+      },
+      {
+        path: 'users',
+        loadComponent: () => import('./features/admin/users/user-management').then(m => m.UserManagement)
       }
     ]
   },

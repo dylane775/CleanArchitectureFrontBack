@@ -12,5 +12,8 @@ namespace Catalog.Application.Commands.UdapteCatalogItem
         public string Name { get; init; } = string.Empty;
         public string Description { get; init; } = string.Empty;
         public decimal Price { get; init; }
+
+        // Spécifications dynamiques du produit (optionnel)
+        public Dictionary<string, string>? Specifications { get; init; }
     }
 }

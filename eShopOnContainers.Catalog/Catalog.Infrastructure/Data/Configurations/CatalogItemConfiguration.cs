@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Catalog.Domain.Entities;
+using Catalog.Domain.ValueObjects;
 
 namespace Catalog.Infrastructure.Data.Configurations
 {
@@ -70,6 +72,27 @@ namespace Catalog.Infrastructure.Data.Configurations
 
             builder.Property(x => x.OnReorder)
                 .IsRequired();
+
+            // ====================================
+            // SPÉCIFICATIONS (Value Object JSON)
+            // ====================================
+
+            // Configuration pour stocker les spécifications en JSON avec ValueConverter
+            builder.OwnsOne(x => x.Specifications, specifications =>
+            {
+                // Stocke le dictionnaire Attributes en format JSON avec conversion
+                specifications.Property(s => s.Attributes)
+                    .HasColumnName("Specifications")
+                    .HasColumnType("nvarchar(max)")
+                    .HasConversion(
+                        // Convertir Dictionary -> JSON string pour la base de données
+                        v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                        // Convertir JSON string -> Dictionary lors de la lecture
+                        v => JsonSerializer.Deserialize<Dictionary<string, string>>(v, (JsonSerializerOptions?)null)
+                            ?? new Dictionary<string, string>()
+                    )
+                    .IsRequired(false); // Peut être vide ou null
+            });
 
             // ====================================
             // PROPRIÉTÉS D'AUDIT

@@ -219,9 +219,29 @@ namespace Catalog.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.OwnsOne("Catalog.Domain.ValueObjects.ProductSpecifications", "Specifications", b1 =>
+                        {
+                            b1.Property<Guid>("CatalogItemId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("Attributes")
+                                .HasColumnType("nvarchar(max)")
+                                .HasColumnName("Specifications");
+
+                            b1.HasKey("CatalogItemId");
+
+                            b1.ToTable("CatalogItems");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CatalogItemId");
+                        });
+
                     b.Navigation("CatalogBrand");
 
                     b.Navigation("CatalogType");
+
+                    b.Navigation("Specifications")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

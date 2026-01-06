@@ -1,3 +1,4 @@
+using Identity.Application.Common.Models;
 using Identity.Application.DTOs.Output;
 using MediatR;
 
@@ -6,7 +7,7 @@ namespace Identity.Application.Queries.GetAllUsers
     /// <summary>
     /// Query to get all users with optional pagination
     /// </summary>
-    public record GetAllUsersQuery : IRequest<List<UserDto>>
+    public record GetAllUsersQuery : IRequest<PaginatedItems<UserDto>>
     {
         /// <summary>
         /// Page number (1-based)

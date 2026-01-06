@@ -1,0 +1,95 @@
+<div class="brand-management-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Brand Management</h1>
+      <p class="subtitle">Manage catalog brands</p>
+    </div>
+    <button mat-raised-button color="primary" (click)="openCreateForm()" [disabled]="loading()">
+      <mat-icon>add</mat-icon>
+      Add New Brand
+    </button>
+  </div>
+
+  <!-- Create/Edit Form -->
+  @if (showForm()) {
+    <mat-card class="form-card">
+      <mat-card-content>
+        <h2>{{ editingBrand() ? 'Edit Brand' : 'Create New Brand' }}</h2>
+        <form [formGroup]="brandForm" (ngSubmit)="saveBrand()">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Brand Name</mat-label>
+            <input matInput formControlName="brand" placeholder="Enter brand name" />
+            <mat-icon matPrefix>label</mat-icon>
+            @if (brandForm.get('brand')?.hasError('required') && brandForm.get('brand')?.touched) {
+              <mat-error>Brand name is required</mat-error>
+            }
+            @if (brandForm.get('brand')?.hasError('minlength')) {
+              <mat-error>Brand name must be at least 2 characters</mat-error>
+            }
+          </mat-form-field>
+
+          <div class="form-actions">
+            <button mat-button type="button" (click)="cancelForm()">
+              <mat-icon>cancel</mat-icon>
+              Cancel
+            </button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="loading() || brandForm.invalid">
+              <mat-icon>{{ editingBrand() ? 'save' : 'add' }}</mat-icon>
+              {{ editingBrand() ? 'Update' : 'Create' }}
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- Brands Table -->
+  <mat-card class="table-card">
+    <mat-card-content>
+      <div class="table-header">
+        <h2>All Brands ({{ brands().length }})</h2>
+      </div>
+
+      @if (loading()) {
+        <div class="loading-container">
+          <p>Loading brands...</p>
+        </div>
+      } @else if (brands().length === 0) {
+        <div class="empty-state">
+          <mat-icon>label_off</mat-icon>
+          <h3>No Brands Found</h3>
+          <p>Create your first brand to get started</p>
+        </div>
+      } @else {
+        <table mat-table [dataSource]="brands()" class="brands-table">
+          <!-- Brand Column -->
+          <ng-container matColumnDef="brand">
+            <th mat-header-cell *matHeaderCellDef>Brand Name</th>
+            <td mat-cell *matCellDef="let brand">
+              <div class="brand-cell">
+                <mat-icon class="brand-icon">label</mat-icon>
+                <span class="brand-name">{{ brand.brand }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="actions-header">Actions</th>
+            <td mat-cell *matCellDef="let brand" class="actions-cell">
+              <button mat-icon-button color="primary" (click)="openEditForm(brand)" [disabled]="loading()">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteBrand(brand)" [disabled]="loading()">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="brand-row"></tr>
+        </table>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

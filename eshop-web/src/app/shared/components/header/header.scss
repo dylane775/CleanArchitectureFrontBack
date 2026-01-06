@@ -1,121 +1,119 @@
 @use '../../../../styles/theme' as *;
 
+// ===================================
+// MAIN HEADER (Sticky - Amazon style)
+// ===================================
 .main-header {
   position: sticky;
   top: 0;
   z-index: 1000;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
-// Toolbar Section
+// ===================================
+// TOOLBAR (Primary Bar - Dark Amazon style)
+// ===================================
 .toolbar {
-  background: $white !important;
+  background: linear-gradient(180deg, #232f3e 0%, #131921 100%) !important;
   padding: 0 !important;
-  height: 80px !important;
-  border-bottom: 1px solid #e8e8e8;
+  height: 60px !important;
+  border: none;
 }
 
 .toolbar-container {
   width: 100%;
-  max-width: $breakpoint-xl;
+  max-width: 1600px;
   margin: 0 auto;
-  padding: 0 24px;
-  display: grid;
-  grid-template-columns: 200px 1fr auto;
-  gap: 32px;
+  padding: 0 20px;
+  display: flex;
   align-items: center;
+  gap: 20px;
   height: 100%;
 }
 
-// Brand Section
+// ===================================
+// BRAND / LOGO SECTION
+// ===================================
 .brand-section {
+  flex-shrink: 0;
+
   .logo-link {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
     text-decoration: none;
-    transition: $transition-fast;
+    padding: 8px 12px;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    transition: border-color 0.2s;
 
     &:hover {
-      opacity: 0.8;
+      border-color: $white;
     }
 
     .logo-icon {
-      font-size: 32px;
-      width: 32px;
-      height: 32px;
-      color: $primary-yellow;
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+      color: #febd69;
     }
 
     .brand-name {
-      font-size: 1.8rem;
+      font-size: 1.5rem;
       font-weight: 700;
-      background: $gradient-primary;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: $white;
+      letter-spacing: -0.5px;
     }
   }
 }
 
-// Search Section
+// ===================================
+// SEARCH SECTION (Central - Amazon style)
+// ===================================
 .search-section {
   flex: 1;
-  max-width: 700px;
+  max-width: 900px;
 }
 
 .search-wrapper {
-  position: relative;
   display: flex;
-  align-items: center;
-  background: $off-white;
-  border-radius: 8px;
+  align-items: stretch;
+  background: $white;
+  border-radius: 4px;
   overflow: hidden;
-  border: 2px solid transparent;
-  transition: $transition-normal;
+  height: 40px;
+  transition: box-shadow 0.2s;
 
   &:focus-within {
-    border-color: $primary-yellow;
-    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
-  }
-
-  .search-icon {
-    position: absolute;
-    left: 16px;
-    color: $light-text;
-    font-size: 24px;
-    width: 24px;
-    height: 24px;
-    pointer-events: none;
+    box-shadow: 0 0 0 3px #f90, 0 0 0 4px rgba(255, 153, 0, 0.3);
   }
 
   .search-input {
     flex: 1;
-    padding: 14px 16px 14px 52px;
+    padding: 0 12px;
     border: none;
     outline: none;
-    background: transparent;
     font-size: 0.95rem;
-    color: $dark-text;
+    color: #0f1111;
 
     &::placeholder {
-      color: $light-text;
+      color: #565959;
     }
   }
 
   .clear-btn {
     background: none;
     border: none;
-    padding: 8px;
+    padding: 0 8px;
     cursor: pointer;
-    color: $light-text;
+    color: #565959;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: $transition-fast;
+    transition: color 0.2s;
 
     &:hover {
-      color: $dark-text;
+      color: #0f1111;
     }
 
     mat-icon {
@@ -126,197 +124,395 @@
   }
 
   .search-btn {
-    background: $gradient-primary !important;
-    color: $dark-text !important;
-    font-weight: 600;
-    border-radius: 0 !important;
-    padding: 0 24px !important;
-    height: 50px !important;
-    border: none;
-    margin: 0 !important;
+    background: #febd69 !important;
+    color: #111 !important;
+    border: none !important;
+    border-radius: 0 4px 4px 0 !important;
+    padding: 0 12px !important;
+    height: 40px !important;
+    min-width: 45px !important;
+    box-shadow: none !important;
+    transition: background 0.2s;
 
     &:hover {
-      opacity: 0.9;
+      background: #f3a847 !important;
+    }
+
+    mat-icon {
+      font-size: 22px;
+      width: 22px;
+      height: 22px;
     }
   }
 }
 
-// User Section
+// ===================================
+// USER SECTION (Account, Orders, Cart)
+// ===================================
 .user-section {
   display: flex;
-  align-items: center;
-  gap: 16px;
+  align-items: stretch;
+  gap: 8px;
+  flex-shrink: 0;
 
-  .icon-btn {
-    color: $dark-text;
-
-    mat-icon {
-      font-size: 28px;
-      width: 28px;
-      height: 28px;
-    }
-  }
-
-  .user-button {
-    color: $dark-text;
-    font-weight: 500;
-    padding: 8px 16px;
-    border-radius: 8px;
-    transition: $transition-normal;
+  // Common button style
+  button {
+    color: $white !important;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    padding: 8px 10px !important;
+    transition: border-color 0.2s;
 
     &:hover {
-      background-color: $off-white;
-    }
-
-    .user-name {
-      max-width: 150px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .dropdown-icon {
-      margin-left: 4px;
-    }
-  }
-
-  .login-btn {
-    background: $gradient-primary !important;
-    color: $dark-text !important;
-    font-weight: 600;
-    padding: 0 24px !important;
-    height: 42px !important;
-    border-radius: 8px !important;
-    box-shadow: $shadow-sm !important;
-    transition: $transition-normal;
-
-    &:hover {
-      box-shadow: $shadow-md !important;
-      transform: translateY(-2px);
-    }
-
-    mat-icon {
-      margin-right: 8px;
+      border-color: $white;
     }
   }
 }
 
-// Navigation Bar
+// Account Button (Amazon "Hello, Sign in" style)
+.account-btn {
+  min-width: 120px !important;
+
+  .account-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.2;
+    text-align: left;
+
+    .account-greeting {
+      font-size: 0.75rem;
+      color: #ccc;
+      font-weight: 400;
+    }
+
+    .account-label {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      font-size: 0.875rem;
+      color: $white;
+
+      strong {
+        font-weight: 700;
+      }
+
+      .dropdown-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        color: #bbb;
+      }
+    }
+  }
+}
+
+// Returns & Orders Button
+.orders-btn {
+  .orders-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.2;
+
+    .orders-greeting {
+      font-size: 0.75rem;
+      color: #ccc;
+      font-weight: 400;
+    }
+
+    .orders-label {
+      font-size: 0.875rem;
+      color: $white;
+      font-weight: 700;
+    }
+  }
+}
+
+// Shopping Cart Button (Amazon style)
+.cart-btn {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+
+  .cart-icon-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .cart-icon {
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+      color: $white;
+    }
+
+    .cart-badge {
+      position: absolute;
+      top: -2px;
+      right: -8px;
+      background: #f08804;
+      color: #111;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 3px;
+      min-width: 18px;
+      text-align: center;
+      line-height: 1.4;
+    }
+  }
+
+  .cart-label {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: $white;
+  }
+}
+
+// ===================================
+// NAVIGATION BAR (Secondary - Amazon style)
+// ===================================
 .nav-bar {
-  background: $white;
-  border-bottom: 1px solid #e8e8e8;
+  background: #232f3e;
+  height: 40px;
+  display: flex;
+  align-items: center;
 }
 
 .nav-container {
-  max-width: $breakpoint-xl;
+  width: 100%;
+  max-width: 1600px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 20px;
 }
 
 .nav-links {
   display: flex;
-  gap: 8px;
-  padding: 0;
+  align-items: center;
+  gap: 0;
+  height: 40px;
 }
 
 .nav-link {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 12px 16px;
+  gap: 4px;
+  padding: 0 10px;
+  height: 40px;
   text-decoration: none;
-  color: $dark-text;
-  font-weight: 500;
-  font-size: 0.95rem;
-  border-radius: 8px;
-  transition: $transition-normal;
-  position: relative;
+  color: $white;
+  font-size: 0.875rem;
+  font-weight: 400;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  transition: border-color 0.2s;
 
   mat-icon {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
   }
 
   &:hover {
-    background: $off-white;
-    color: $primary-yellow-dark;
+    border-color: $white;
+  }
+
+  &.categories-link {
+    background: #37475a;
+    font-weight: 700;
+    padding: 0 12px;
+
+    &:hover {
+      background: #485769;
+    }
+  }
+
+  &.deals-link {
+    color: #febd69;
+    font-weight: 500;
   }
 
   &.active {
-    color: $primary-yellow-dark;
+    border-bottom: 2px solid $white;
+  }
+}
 
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 16px;
-      right: 16px;
-      height: 3px;
-      background: $primary-yellow;
-      border-radius: 3px 3px 0 0;
+// User Menu Panel Styling
+.user-menu-panel {
+  mat-icon {
+    color: #565959;
+    margin-right: 12px;
+  }
+}
+
+// ===================================
+// RESPONSIVE DESIGN
+// ===================================
+@media (max-width: $breakpoint-lg) {
+  .toolbar-container {
+    gap: 16px;
+  }
+
+  .search-section {
+    max-width: 600px;
+  }
+
+  .account-btn,
+  .orders-btn {
+    .account-greeting,
+    .orders-greeting {
+      display: none;
     }
   }
 }
 
-// Responsive
 @media (max-width: $breakpoint-md) {
   .toolbar {
     height: auto !important;
   }
 
   .toolbar-container {
-    grid-template-columns: 1fr;
-    gap: 16px;
-    padding: 16px 20px;
+    flex-wrap: wrap;
+    padding: 10px 16px;
+    gap: 12px;
   }
 
   .brand-section {
-    grid-row: 1;
+    flex: 0 0 auto;
   }
 
   .search-section {
-    grid-row: 2;
+    flex: 1 1 100%;
     max-width: 100%;
+    order: 3;
   }
 
   .user-section {
-    grid-row: 1;
-    justify-self: end;
+    flex: 0 0 auto;
+    gap: 4px;
   }
 
-  .nav-links {
-    flex-wrap: wrap;
+  .orders-btn {
+    display: none !important;
+  }
 
-    .nav-link span {
-      display: none;
+  .account-btn {
+    min-width: auto !important;
+
+    .account-label strong {
+      font-size: 0.75rem;
     }
   }
-}
 
-@media (max-width: $breakpoint-xs) {
-  .toolbar-container {
-    padding: 12px 16px;
-  }
-
-  .brand-section .brand-name {
-    font-size: 1.4rem;
-  }
-
-  .search-wrapper .search-input {
-    font-size: 0.9rem;
-  }
-
-  .user-section .user-name {
-    display: none;
+  .cart-btn {
+    .cart-label {
+      display: none;
+    }
   }
 
   .nav-bar {
     overflow-x: auto;
-    scrollbar-width: none;
+    scrollbar-width: thin;
+    scrollbar-color: #485769 #232f3e;
 
     &::-webkit-scrollbar {
-      display: none;
+      height: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #232f3e;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #485769;
+      border-radius: 2px;
+    }
+  }
+
+  .nav-links {
+    gap: 4px;
+  }
+
+  .nav-link {
+    padding: 0 8px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  .toolbar-container {
+    padding: 8px 12px;
+  }
+
+  .brand-section .logo-link {
+    .brand-name {
+      font-size: 1.2rem;
+    }
+  }
+
+  .search-wrapper {
+    height: 36px;
+
+    .search-input {
+      font-size: 0.875rem;
+      padding: 0 10px;
+    }
+
+    .search-btn {
+      height: 36px !important;
+      min-width: 40px !important;
+    }
+  }
+
+  .user-section {
+    gap: 2px;
+
+    button {
+      padding: 6px 8px !important;
+    }
+  }
+
+  .account-btn {
+    .account-content {
+      .account-label {
+        font-size: 0.7rem;
+
+        .dropdown-icon {
+          display: none;
+        }
+      }
+    }
+  }
+
+  .cart-btn {
+    gap: 4px !important;
+
+    .cart-icon-wrapper .cart-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+  }
+
+  .nav-bar {
+    height: 36px;
+  }
+
+  .nav-links {
+    height: 36px;
+  }
+
+  .nav-link {
+    padding: 0 6px;
+    height: 36px;
+    font-size: 0.75rem;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
     }
   }
 }

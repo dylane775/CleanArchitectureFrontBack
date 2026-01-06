@@ -241,6 +241,7 @@
                 font-size: 0.95rem;
                 color: $light-text;
                 margin: 0;
+                white-space: nowrap;
               }
             }
 
@@ -248,6 +249,7 @@
               font-size: 1.2rem;
               font-weight: 700;
               color: $primary-blue-dark;
+              white-space: nowrap;
             }
           }
         }
@@ -297,6 +299,7 @@
             font-size: 1.8rem;
             font-weight: 800;
             color: $dark-text;
+            white-space: nowrap;
           }
         }
       }

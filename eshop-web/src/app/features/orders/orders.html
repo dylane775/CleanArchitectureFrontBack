@@ -51,14 +51,14 @@
                 @for (item of order.items; track item.productName) {
                   <div class="order-item">
                     <div class="item-image">
-                      <img [src]="item.pictureUrl || 'https://via.placeholder.com/100'" [alt]="item.productName" />
+                      <img [src]="getImageUrl(item.pictureUrl)" [alt]="item.productName" />
                     </div>
                     <div class="item-details">
                       <h4>{{ item.productName }}</h4>
-                      <p class="item-price">${{ item.unitPrice.toFixed(2) }} x {{ item.quantity }}</p>
+                      <p class="item-price">{{ item.unitPrice | number:'1.0-0' }} FCFA x {{ item.quantity }}</p>
                     </div>
                     <div class="item-total">
-                      ${{ (item.unitPrice * item.quantity).toFixed(2) }}
+                      {{ (item.unitPrice * item.quantity) | number:'1.0-0' }} FCFA
                     </div>
                   </div>
                 }
@@ -75,7 +75,7 @@
             <div class="order-summary">
               <div class="summary-row total">
                 <span>Total:</span>
-                <span class="total-amount">${{ order.total.toFixed(2) }}</span>
+                <span class="total-amount">{{ order.total | number:'1.0-0' }} FCFA</span>
               </div>
             </div>
           </mat-card-content>

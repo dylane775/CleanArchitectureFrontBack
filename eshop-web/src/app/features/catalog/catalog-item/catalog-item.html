@@ -1,59 +1,86 @@
-<mat-card class="product-card" [class.compact]="compact" (click)="navigateToDetail()" style="cursor: pointer;">
-  <div class="product-image-wrapper">
-    <img [src]="item.pictureUri || 'https://via.placeholder.com/300x400?text=No+Image'" [alt]="item.name" class="product-image">
+<mat-card class="product-card" [class.compact]="compact">
+  <!-- Image Section -->
+  <div class="product-image-wrapper" (click)="navigateToDetail()">
+    <img [src]="getImageUrl()" [alt]="item.name" class="product-image">
 
     <!-- Badges -->
-    <div class="product-badges">
-      @if (isNew()) {
-        <span class="badge new">NEW</span>
-      }
-      @if (getDiscountPercentage() > 15) {
-        <span class="badge discount">-{{ getDiscountPercentage() }}%</span>
-      }
-    </div>
-
-    <!-- Quick actions overlay -->
-    <div class="quick-actions">
-      <button mat-mini-fab color="primary" class="quick-btn" (click)="onAddToBasket(); $event.stopPropagation()" [disabled]="item.availableStock === 0">
-        <mat-icon>add_shopping_cart</mat-icon>
-      </button>
-      <button mat-mini-fab class="quick-btn wishlist" (click)="$event.stopPropagation()">
-        <mat-icon>favorite_border</mat-icon>
-      </button>
-    </div>
+    @if (getDiscountPercentage() > 15) {
+      <div class="discount-badge">-{{ getDiscountPercentage() }}%</div>
+    }
+    @if (isNew()) {
+      <div class="new-badge">NEW</div>
+    }
   </div>
 
   <mat-card-content class="product-info">
-    <div class="product-brand">{{ item.catalogBrandName }}</div>
-    <h3 class="product-name">{{ item.name }}</h3>
+    <!-- Brand -->
+    <div class="product-brand" (click)="navigateToDetail()">{{ item.catalogBrandName }}</div>
 
-    @if (!compact) {
-      <p class="product-description">{{ item.description }}</p>
-    }
+    <!-- Product Name (clickable) -->
+    <h3 class="product-name" (click)="navigateToDetail()">{{ item.name }}</h3>
 
-    <div class="product-footer">
-      <div class="price-section">
-        <span class="current-price">{{ item.price | currency:'USD' }}</span>
-        @if (getDiscountPercentage() > 15) {
-          <span class="original-price">{{ item.price * 1.3 | currency:'USD' }}</span>
+    <!-- Star Rating -->
+    <div class="rating-section">
+      <div class="stars">
+        @for (star of [1,2,3,4,5]; track star) {
+          <mat-icon class="star" [class.filled]="star <= getRating()">
+            {{ star <= getRating() ? 'star' : 'star_border' }}
+          </mat-icon>
         }
       </div>
-
-      <div class="stock-badge" [class.in-stock]="item.availableStock > 0" [class.out-stock]="item.availableStock === 0">
-        <mat-icon>{{ item.availableStock > 0 ? 'check_circle' : 'block' }}</mat-icon>
-        @if (item.availableStock > 0) {
-          <span>{{ item.availableStock }} left</span>
-        } @else {
-          <span>Out of stock</span>
-        }
-      </div>
+      <span class="rating-count">({{ getReviewCount() }})</span>
     </div>
 
-    @if (!compact) {
-      <button mat-raised-button color="primary" class="add-to-cart-btn" (click)="onAddToBasket(); $event.stopPropagation()" [disabled]="item.availableStock === 0">
-        <mat-icon>shopping_cart</mat-icon>
-        Add to Cart
-      </button>
+    <!-- Price Section -->
+    <div class="price-section">
+      @if (getDiscountPercentage() > 15) {
+        <div class="price-row">
+          <span class="discount-label">-{{ getDiscountPercentage() }}%</span>
+          <span class="current-price">{{ item.price | number:'1.0-0' }} FCFA</span>
+        </div>
+        <div class="original-price">
+          List: <span class="strikethrough">{{ item.price * 1.3 | number:'1.0-0' }} FCFA</span>
+        </div>
+      } @else {
+        <div class="current-price solo">{{ item.price | number:'1.0-0' }} FCFA</div>
+      }
+    </div>
+
+    <!-- Delivery Info -->
+    @if (item.availableStock > 0) {
+      <div class="delivery-info">
+        <mat-icon>local_shipping</mat-icon>
+        <span>FREE delivery</span>
+      </div>
+    }
+
+    <!-- Stock Status -->
+    <div class="stock-status" [class.in-stock]="item.availableStock > 10"
+         [class.low-stock]="item.availableStock > 0 && item.availableStock <= 10"
+         [class.out-of-stock]="item.availableStock === 0">
+      @if (item.availableStock > 10) {
+        <span>In Stock</span>
+      } @else if (item.availableStock > 0) {
+        <span>Only {{ item.availableStock }} left in stock - order soon</span>
+      } @else {
+        <span>Currently unavailable</span>
+      }
+    </div>
+
+    <!-- Add to Cart Button -->
+    <button mat-raised-button class="add-to-cart-btn"
+            (click)="onAddToBasket()"
+            [disabled]="item.availableStock === 0">
+      <mat-icon>add_shopping_cart</mat-icon>
+      Add to Cart
+    </button>
+
+    <!-- Prime Badge (demo) -->
+    @if (hasPrime()) {
+      <div class="prime-badge">
+        <mat-icon>workspace_premium</mat-icon>
+        <span>prime</span>
+      </div>
     }
   </mat-card-content>
 </mat-card>

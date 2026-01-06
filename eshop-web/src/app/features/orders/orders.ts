@@ -8,6 +8,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { AuthService } from '../../core/services/auth.service';
+import { environment } from '../../../environments/environment';
 
 interface OrderItem {
   productName: string;
@@ -168,5 +169,20 @@ export class Orders implements OnInit {
 
   continueShopping(): void {
     this.router.navigate(['/catalog']);
+  }
+
+  getImageUrl(pictureUrl: string): string {
+    if (!pictureUrl) {
+      return 'https://via.placeholder.com/100';
+    }
+
+    // Si l'URL commence déjà par http, la retourner telle quelle
+    if (pictureUrl.startsWith('http')) {
+      return pictureUrl;
+    }
+
+    // Sinon, construire l'URL complète avec le serveur Catalog
+    const catalogBaseUrl = environment.catalogApiUrl.replace('/api', '');
+    return `${catalogBaseUrl}${pictureUrl}`;
   }
 }

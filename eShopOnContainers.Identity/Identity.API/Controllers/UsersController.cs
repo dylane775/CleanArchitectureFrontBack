@@ -14,6 +14,7 @@ using Identity.Application.Queries.GetUserRoles;
 using Identity.Application.Queries.GetUserByEmail;
 using Identity.Application.DTOs.Input;
 using Identity.Application.DTOs.Output;
+using Identity.Application.Common.Models;
 
 namespace Identity.API.Controllers
 {
@@ -134,11 +135,11 @@ namespace Identity.API.Controllers
         /// <param name="page">Page number (default: 1)</param>
         /// <param name="pageSize">Items per page (default: 10)</param>
         /// <param name="isActive">Filter by active status (optional)</param>
-        /// <returns>List of users</returns>
+        /// <returns>Paginated list of users</returns>
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<UserDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PaginatedItems<UserDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<IEnumerable<UserDto>>> GetAllUsers(
+        public async Task<ActionResult<PaginatedItems<UserDto>>> GetAllUsers(
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 10,
             [FromQuery] bool? isActive = null)
@@ -157,15 +158,9 @@ namespace Identity.API.Controllers
 
                 var result = await _mediator.Send(query);
 
-                // Apply pagination manually if needed (or implement in query handler)
-                var paginatedResult = result
-                    .Skip((page - 1) * pageSize)
-                    .Take(pageSize)
-                    .ToList();
+                _logger.LogInformation("Retrieved {Count} of {Total} users", result.Data.Count(), result.Count);
 
-                _logger.LogInformation("Retrieved {Count} users", paginatedResult.Count);
-
-                return Ok(paginatedResult);
+                return Ok(result);
             }
             catch (Exception ex)
             {

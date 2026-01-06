@@ -46,6 +46,256 @@
   mat-form-field {
     width: 100%;
   }
+
+  // Image Upload Section
+  .image-upload-section {
+    padding: 24px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: $radius-lg;
+    border: 2px dashed rgba(0, 0, 0, 0.1);
+
+    .section-title {
+      margin: 0 0 20px 0;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: $dark-text;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .image-upload-content {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      gap: 24px;
+      align-items: start;
+
+      @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .image-preview-container {
+      .image-preview {
+        position: relative;
+        width: 250px;
+        height: 250px;
+        border-radius: $radius-md;
+        overflow: hidden;
+        background: $white;
+        border: 2px solid rgba(0, 0, 0, 0.1);
+        box-shadow: $shadow-sm;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .remove-image-btn {
+          position: absolute;
+          top: 8px;
+          right: 8px;
+          background: rgba(231, 76, 60, 0.9);
+          color: white;
+          transition: all 0.3s ease;
+
+          &:hover:not(:disabled) {
+            background: rgba(231, 76, 60, 1);
+            transform: scale(1.1);
+          }
+
+          &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+          }
+        }
+      }
+
+      .image-placeholder {
+        width: 250px;
+        height: 250px;
+        border-radius: $radius-md;
+        background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        border: 2px dashed rgba(0, 0, 0, 0.2);
+
+        mat-icon {
+          font-size: 64px;
+          width: 64px;
+          height: 64px;
+          color: rgba(0, 0, 0, 0.3);
+        }
+
+        p {
+          margin: 0;
+          color: rgba(0, 0, 0, 0.4);
+          font-weight: 500;
+        }
+      }
+    }
+
+    .upload-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+
+      button {
+        align-self: flex-start;
+        min-width: 180px;
+
+        mat-icon {
+          margin-right: 8px;
+        }
+      }
+
+      .upload-success {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 16px;
+        background: rgba(46, 204, 113, 0.1);
+        border-radius: $radius-md;
+        color: #27ae60;
+        font-weight: 500;
+
+        mat-icon {
+          color: #27ae60;
+        }
+      }
+    }
+
+    .upload-hint {
+      margin: 12px 0 0 0;
+      font-size: 0.9rem;
+      color: $light-text;
+      font-style: italic;
+    }
+  }
+
+  // Specifications Section
+  .specifications-section {
+    padding: 24px;
+    background: linear-gradient(135deg, rgba(135, 206, 235, 0.05) 0%, rgba(255, 215, 0, 0.05) 100%);
+    border-radius: $radius-lg;
+    border: 2px dashed rgba(0, 0, 0, 0.1);
+
+    .section-title {
+      margin: 0 0 24px 0;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: $dark-text;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      mat-icon {
+        color: $primary-blue-dark;
+      }
+
+      .spec-count {
+        font-size: 0.9rem;
+        color: $light-text;
+        font-weight: 500;
+      }
+    }
+
+    .add-specification {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 24px;
+
+      @media (max-width: $breakpoint-md) {
+        grid-template-columns: 1fr;
+      }
+
+      mat-form-field {
+        width: 100%;
+      }
+
+      button {
+        height: 56px;
+        margin-top: 0;
+      }
+    }
+
+    .specifications-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 20px;
+
+      .specification-item {
+        display: grid;
+        grid-template-columns: 1fr 1.5fr auto;
+        gap: 12px;
+        align-items: start;
+        padding: 16px;
+        background: $white;
+        border-radius: $radius-md;
+        border-left: 3px solid $primary-blue-dark;
+        box-shadow: $shadow-sm;
+        transition: $transition-fast;
+
+        &:hover {
+          box-shadow: $shadow-md;
+          transform: translateX(4px);
+        }
+
+        @media (max-width: $breakpoint-md) {
+          grid-template-columns: 1fr;
+        }
+
+        mat-form-field {
+          width: 100%;
+        }
+
+        .remove-spec-btn {
+          margin-top: 8px;
+
+          mat-icon {
+            color: #e74c3c;
+          }
+
+          &:hover {
+            background: rgba(231, 76, 60, 0.1);
+          }
+        }
+      }
+    }
+
+    .no-specifications {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      background: $white;
+      border-radius: $radius-md;
+      border: 2px dashed rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+
+      mat-icon {
+        font-size: 48px;
+        width: 48px;
+        height: 48px;
+        color: rgba(0, 0, 0, 0.2);
+        margin-bottom: 12px;
+      }
+
+      p {
+        margin: 0;
+        color: $light-text;
+        font-size: 0.95rem;
+      }
+    }
+  }
 }
 
 .form-actions {
