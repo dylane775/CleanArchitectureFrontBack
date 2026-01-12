@@ -29,8 +29,17 @@ export const routes: Routes = [
   },
   {
     path: 'basket',
-    loadComponent: () => import('./features/basket/basket').then(m => m.Basket),
-    canActivate: [authGuard]
+    loadComponent: () => import('./features/basket/basket').then(m => m.Basket)
+    // Pas de authGuard - les guests peuvent aussi utiliser le panier
+  },
+  {
+    path: 'checkout',
+    loadComponent: () => import('./features/checkout/checkout').then(m => m.Checkout)
+    // Pas de authGuard - les guests peuvent aussi passer commande
+  },
+  {
+    path: 'checkout/confirmation/:id',
+    loadComponent: () => import('./features/checkout/confirmation/confirmation').then(m => m.Confirmation)
   },
   {
     path: 'orders',

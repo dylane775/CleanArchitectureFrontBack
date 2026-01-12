@@ -86,52 +86,46 @@ export class ProductDetail implements OnInit {
   }
 
   addToBasket(): void {
-    const user = this.authService.currentUser();
-    if (!user) {
-      this.snackBar.open('Please login to add items to basket', 'Close', { duration: 3000 });
-      this.router.navigate(['/auth/login'], { queryParams: { returnUrl: this.router.url } });
-      return;
+  const product = this.product();
+  if (!product) return;
+
+  this.basketService.addItemToBasket({
+    catalogItemId: product.id,
+    productName: product.name,
+    unitPrice: product.price,
+    quantity: this.quantity(),
+    pictureUrl: product.pictureUri || ''
+  }).subscribe({
+    next: () => {
+      this.snackBar.open(
+        `${product.name} (x${this.quantity()}) added to basket!`,
+        'View Basket',
+        {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['success-snackbar']
+        }
+      ).onAction().subscribe(() => {
+        this.router.navigate(['/basket']);
+      });
+    },
+    error: (err: any) => {
+      console.error('Error adding to basket:', err);
+      this.snackBar.open(
+        'Failed to add item to basket. Please try again.',
+        'Close',
+        {
+          duration: 4000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['error-snackbar']
+        }
+      );
     }
+  });
+}
 
-    const product = this.product();
-    if (!product) return;
-
-    this.basketService.addItemToBasket(user.id, {
-      catalogItemId: product.id,
-      productName: product.name,
-      unitPrice: product.price,
-      quantity: this.quantity(),
-      pictureUrl: product.pictureUri || ''
-    }).subscribe({
-      next: () => {
-        this.snackBar.open(
-          `${product.name} (x${this.quantity()}) added to basket!`,
-          'View Basket',
-          {
-            duration: 3000,
-            horizontalPosition: 'end',
-            verticalPosition: 'top',
-            panelClass: ['success-snackbar']
-          }
-        ).onAction().subscribe(() => {
-          this.router.navigate(['/basket']);
-        });
-      },
-      error: (err: any) => {
-        console.error('Error adding to basket:', err);
-        this.snackBar.open(
-          'Failed to add item to basket. Please try again.',
-          'Close',
-          {
-            duration: 4000,
-            horizontalPosition: 'end',
-            verticalPosition: 'top',
-            panelClass: ['error-snackbar']
-          }
-        );
-      }
-    });
-  }
 
   backToCatalog(): void {
     this.router.navigate(['/catalog']);

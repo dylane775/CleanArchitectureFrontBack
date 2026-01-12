@@ -7,24 +7,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthService } from '../../core/services/auth.service';
+import { OrderService } from '../../core/services/order.service';
+import { Order } from '../../core/models/order.model';
 import { environment } from '../../../environments/environment';
-
-interface OrderItem {
-  productName: string;
-  unitPrice: number;
-  quantity: number;
-  pictureUrl: string;
-}
-
-interface Order {
-  id: string;
-  orderDate: Date;
-  status: string;
-  total: number;
-  items: OrderItem[];
-  shippingAddress: string;
-}
 
 @Component({
   selector: 'app-orders',
@@ -37,7 +24,8 @@ interface Order {
     MatIconModule,
     MatChipsModule,
     MatProgressSpinnerModule,
-    MatDividerModule
+    MatDividerModule,
+    MatSnackBarModule
   ],
   templateUrl: './orders.html',
   styleUrl: './orders.scss'
@@ -48,7 +36,9 @@ export class Orders implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private orderService: OrderService,
+    private router: Router,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -64,77 +54,29 @@ export class Orders implements OnInit {
     }
 
     this.loading.set(true);
+    console.log('Loading orders for user:', user.id);
 
-    // TODO: Replace with actual API call when backend is ready
-    // Simulate API call with mock data
-    setTimeout(() => {
-      const mockOrders: Order[] = [
-        {
-          id: '1',
-          orderDate: new Date('2026-01-01'),
-          status: 'Delivered',
-          total: 299.99,
-          shippingAddress: '123 Main St, City, Country',
-          items: [
-            {
-              productName: 'Wireless Headphones',
-              unitPrice: 149.99,
-              quantity: 2,
-              pictureUrl: 'https://via.placeholder.com/100'
-            }
-          ]
-        },
-        {
-          id: '2',
-          orderDate: new Date('2025-12-28'),
-          status: 'Shipped',
-          total: 599.99,
-          shippingAddress: '456 Oak Ave, City, Country',
-          items: [
-            {
-              productName: 'Smart Watch',
-              unitPrice: 299.99,
-              quantity: 1,
-              pictureUrl: 'https://via.placeholder.com/100'
-            },
-            {
-              productName: 'Phone Case',
-              unitPrice: 29.99,
-              quantity: 1,
-              pictureUrl: 'https://via.placeholder.com/100'
-            }
-          ]
-        },
-        {
-          id: '3',
-          orderDate: new Date('2025-12-20'),
-          status: 'Processing',
-          total: 899.99,
-          shippingAddress: '789 Pine Rd, City, Country',
-          items: [
-            {
-              productName: 'Laptop Stand',
-              unitPrice: 89.99,
-              quantity: 1,
-              pictureUrl: 'https://via.placeholder.com/100'
-            },
-            {
-              productName: 'Mechanical Keyboard',
-              unitPrice: 159.99,
-              quantity: 1,
-              pictureUrl: 'https://via.placeholder.com/100'
-            }
-          ]
-        }
-      ];
-
-      this.orders.set(mockOrders);
-      this.loading.set(false);
-    }, 500);
+    // Call real API to get orders
+    this.orderService.getOrders(user.id).subscribe({
+      next: (orders) => {
+        console.log('Orders received:', orders);
+        this.orders.set(orders);
+        this.loading.set(false);
+      },
+      error: (error) => {
+        console.error('Error loading orders:', error);
+        this.loading.set(false);
+        this.snackBar.open('Failed to load orders. Please try again.', 'Close', {
+          duration: 4000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top'
+        });
+      }
+    });
   }
 
   viewOrderDetails(orderId: string): void {
-    this.router.navigate(['/orders', orderId]);
+    this.router.navigate(['/checkout/confirmation', orderId]);
   }
 
   getStatusClass(status: string): string {

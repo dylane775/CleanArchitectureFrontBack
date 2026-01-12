@@ -12,6 +12,7 @@ namespace Basket.Domain.Repositories
     {
         Task<CustomerBasket?> GetByIdAsync(Guid id);
         Task<CustomerBasket?> GetByCustomerIdAsync(string customerId);
+        Task<IEnumerable<CustomerBasket>> GetAllAsync(); // Pour le nettoyage des paniers expirés
         Task<CustomerBasket> AddAsync(CustomerBasket basket);
         Task UpdateAsync(CustomerBasket basket);
         Task DeleteAsync(Guid id);

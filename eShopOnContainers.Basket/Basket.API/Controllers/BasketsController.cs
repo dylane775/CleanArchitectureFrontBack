@@ -19,11 +19,12 @@ namespace Basket.API.Controllers
 {
     /// <summary>
     /// Controller pour gérer les paniers clients
+    /// Autorise l'accès anonyme pour permettre aux guests (non connectés) d'utiliser le panier
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     [Produces("application/json")]
-    [Authorize]
+    [AllowAnonymous] // Autoriser l'accès anonyme pour les paniers guests
     public class BasketsController : ControllerBase
     {
         private readonly IMediator _mediator;

@@ -7,7 +7,7 @@ using Ordering.Application.DTOs.Output;
 
 namespace Ordering.Application.Queries.GetByIdWithItems
 {
-    public class GetByIdWithItems : IRequest<OrderItemDto>
+    public class GetByIdWithItems : IRequest<OrderDto>
     {
        public Guid Id { get; set; }
 

@@ -1,0 +1,16 @@
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.Application\bin\Debug\net9.0\Payment.Application.deps.json
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.Application\bin\Debug\net9.0\Payment.Application.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.Application\bin\Debug\net9.0\Payment.Application.pdb
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.Application\bin\Debug\net9.0\Payment.Domain.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.Application\bin\Debug\net9.0\Payment.Domain.pdb
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.Application\obj\Debug\net9.0\Payment.Application.csproj.AssemblyReference.cache
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.Application\obj\Debug\net9.0\Payment.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.Application\obj\Debug\net9.0\Payment.Application.AssemblyInfoInputs.cache
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.Application\obj\Debug\net9.0\Payment.Application.AssemblyInfo.cs
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.Application\obj\Debug\net9.0\Payment.Application.csproj.CoreCompileInputs.cache
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.Application\obj\Debug\net9.0\Payment.Application.sourcelink.json
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.Application\obj\Debug\net9.0\Payment..100340DD.Up2Date
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.Application\obj\Debug\net9.0\Payment.Application.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.Application\obj\Debug\net9.0\refint\Payment.Application.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.Application\obj\Debug\net9.0\Payment.Application.pdb
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.Application\obj\Debug\net9.0\ref\Payment.Application.dll

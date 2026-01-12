@@ -1,4 +1,5 @@
 using Basket.Application;
+using Basket.Application.Services;
 using Basket.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Basket.Infrastructure.Data;
@@ -59,6 +60,9 @@ builder.Services.AddApplication();
 
 // ✅ INFRASTRUCTURE LAYER (DbContext, Repositories, UnitOfWork)
 builder.Services.AddInfrastructure(builder.Configuration);
+
+// ✅ BACKGROUND SERVICES - Nettoyage automatique des paniers expirés (guests)
+builder.Services.AddHostedService<BasketCleanupService>();
 
 // JWT AUTHENTICATION
 var jwtSecret = builder.Configuration["JwtSettings:Secret"] ?? throw new InvalidOperationException("JWT Secret not configured");

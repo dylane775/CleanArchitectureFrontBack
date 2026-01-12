@@ -10,7 +10,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BasketService } from '../../core/services/basket.service';
-import { AuthService } from '../../core/services/auth.service';
 import { BasketItem } from '../../core/models/basket.model';
 import { environment } from '../../../environments/environment';
 
@@ -55,7 +54,6 @@ export class Basket implements OnInit {
 
   constructor(
     private basketService: BasketService,
-    private authService: AuthService,
     private router: Router,
     private snackBar: MatSnackBar
   ) {}
@@ -64,16 +62,16 @@ export class Basket implements OnInit {
     this.loadBasket();
   }
 
+  /**
+   * Charge le panier (utilisateur connecté ou guest)
+   * Le BasketService gère automatiquement la détection guest/user
+   */
   loadBasket(): void {
-    const user = this.authService.currentUser();
-
-    if (!user) {
-      this.router.navigate(['/auth/login']);
-      return;
-    }
-
     this.loading.set(true);
-    this.basketService.getBasket(user.id).subscribe({
+
+    // Le BasketService utilise getCurrentCustomerId() automatiquement
+    // qui retourne soit l'userId soit le guestBasketId
+    this.basketService.getCurrentBasket().subscribe({
       next: (basket) => {
         this.basketItems.set(basket.items || []);
         this.loading.set(false);
@@ -91,16 +89,17 @@ export class Basket implements OnInit {
     });
   }
 
+  /**
+   * Met à jour la quantité d'un item (fonctionne pour guest et utilisateur connecté)
+   */
   updateQuantity(item: BasketItem, newQuantity: number): void {
     if (newQuantity < 1) {
       this.removeItem(item);
       return;
     }
 
-    const user = this.authService.currentUser();
-    if (!user) return;
-
-    this.basketService.updateBasketItem(user.id, {
+    // Pas besoin de vérifier l'utilisateur - le BasketService gère automatiquement
+    this.basketService.updateBasketItem({
       catalogItemId: item.catalogItemId,
       newQuantity: newQuantity
     }).subscribe({
@@ -109,8 +108,7 @@ export class Basket implements OnInit {
         this.snackBar.open('Quantity updated successfully', '✓', {
           duration: 2000,
           horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['success-snackbar']
+          verticalPosition: 'top'
         });
       },
       error: (err: any) => {
@@ -118,18 +116,18 @@ export class Basket implements OnInit {
         this.snackBar.open('Failed to update quantity. Please try again.', 'Close', {
           duration: 3000,
           horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['error-snackbar']
+          verticalPosition: 'top'
         });
       }
     });
   }
 
+  /**
+   * Supprime un item du panier (fonctionne pour guest et utilisateur connecté)
+   */
   removeItem(item: BasketItem): void {
-    const user = this.authService.currentUser();
-    if (!user) return;
-
-    this.basketService.removeItemFromBasket(user.id, item.catalogItemId).subscribe({
+    // Pas besoin de vérifier l'utilisateur - le BasketService gère automatiquement
+    this.basketService.removeItemFromBasket(item.catalogItemId).subscribe({
       next: () => {
         this.loadBasket();
         this.snackBar.open(`${item.productName} removed from basket`, '✓', {
@@ -151,11 +149,12 @@ export class Basket implements OnInit {
     });
   }
 
+  /**
+   * Vide complètement le panier (fonctionne pour guest et utilisateur connecté)
+   */
   clearBasket(): void {
-    const user = this.authService.currentUser();
-    if (!user) return;
-
-    this.basketService.clearBasket(user.id).subscribe({
+    // Pas besoin de vérifier l'utilisateur - le BasketService gère automatiquement
+    this.basketService.clearBasket().subscribe({
       next: () => {
         this.basketItems.set([]);
         this.snackBar.open('Basket cleared successfully', '✓', {
@@ -188,12 +187,8 @@ export class Basket implements OnInit {
       return;
     }
 
-    this.snackBar.open('Checkout feature coming soon!', 'OK', {
-      duration: 3000,
-      horizontalPosition: 'end',
-      verticalPosition: 'top',
-      panelClass: ['info-snackbar']
-    });
+    // Navigate to checkout page
+    this.router.navigate(['/checkout']);
   }
 
   continueShopping(): void {

@@ -1,0 +1,13 @@
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.Domain\bin\Debug\net9.0\Payment.Domain.deps.json
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.Domain\bin\Debug\net9.0\Payment.Domain.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.Domain\bin\Debug\net9.0\Payment.Domain.pdb
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.Domain\obj\Debug\net9.0\Payment.Domain.csproj.AssemblyReference.cache
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.Domain\obj\Debug\net9.0\Payment.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.Domain\obj\Debug\net9.0\Payment.Domain.AssemblyInfoInputs.cache
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.Domain\obj\Debug\net9.0\Payment.Domain.AssemblyInfo.cs
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.Domain\obj\Debug\net9.0\Payment.Domain.csproj.CoreCompileInputs.cache
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.Domain\obj\Debug\net9.0\Payment.Domain.sourcelink.json
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.Domain\obj\Debug\net9.0\Payment.Domain.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.Domain\obj\Debug\net9.0\refint\Payment.Domain.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.Domain\obj\Debug\net9.0\Payment.Domain.pdb
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.Domain\obj\Debug\net9.0\ref\Payment.Domain.dll

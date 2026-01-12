@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { AuthResponse, LoginRequest, RegisterRequest, User, RefreshTokenRequest } from '../models/auth.model';
@@ -11,12 +11,24 @@ export class AuthService {
   private readonly apiUrl = environment.identityApiUrl;
   private readonly ACCESS_TOKEN_KEY = 'access_token';
   private readonly REFRESH_TOKEN_KEY = 'refresh_token';
+  private readonly http = inject(HttpClient);
 
   currentUser = signal<User | null>(null);
   isAuthenticated = signal<boolean>(false);
 
-  constructor(private http: HttpClient) {
+  // Référence au BasketService (lazy injection pour éviter la dépendance circulaire)
+  private basketService: any = null;
+
+  constructor() {
     this.loadUserFromStorage();
+  }
+
+  /**
+   * Permet d'injecter le BasketService de manière lazy pour éviter la dépendance circulaire
+   * @param basketService Instance du BasketService
+   */
+  setBasketService(basketService: any): void {
+    this.basketService = basketService;
   }
 
   login(request: LoginRequest): Observable<AuthResponse> {
@@ -86,6 +98,19 @@ export class AuthService {
     localStorage.setItem('user', JSON.stringify(user));
     this.currentUser.set(user);
     this.isAuthenticated.set(true);
+
+    // Fusionner le panier guest avec le panier utilisateur (si BasketService est disponible)
+    if (this.basketService && user.id) {
+      console.log('Déclenchement de la fusion du panier guest...');
+      this.basketService.mergeGuestBasketOnLogin(user.id).subscribe({
+        next: () => {
+          console.log('Fusion du panier terminée avec succès');
+        },
+        error: (error: any) => {
+          console.error('Erreur lors de la fusion du panier:', error);
+        }
+      });
+    }
   }
 
   private loadUserFromStorage(): void {

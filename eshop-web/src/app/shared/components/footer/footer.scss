@@ -1,75 +1,137 @@
 @use '../../../../styles/theme' as *;
 
+// ==========================================
+// FOOTER - AMAZON-INSPIRED DESIGN
+// ==========================================
+
 .main-footer {
-  background: linear-gradient(135deg, $dark-bg 0%, #34495e 100%);
+  background: linear-gradient(to bottom, #232f3e 0%, #131a22 100%);
   color: $white;
   margin-top: auto;
+  position: relative;
+  width: 100%;
 }
+
+// Screen Reader Only (Accessibility)
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+// ==========================================
+// BACK TO TOP BUTTON
+// ==========================================
+
+.back-to-top {
+  width: 100%;
+  background: #37475a;
+  color: $white;
+  border: none;
+  padding: 15px 0;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  &:hover {
+    background: #485769;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $primary-yellow;
+    outline-offset: -2px;
+  }
+}
+
+// ==========================================
+// FOOTER CONTAINER
+// ==========================================
 
 .footer-container {
-  max-width: 1400px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 20px;
 }
 
-// Footer Top
-.footer-top {
+// ==========================================
+// FOOTER NAVIGATION (Main Section)
+// ==========================================
+
+.footer-nav {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 40px;
-  padding: 60px 0 40px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+  padding: 48px 0 40px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .footer-column {
-  h3 {
-    font-size: 1.5rem;
+  .footer-heading {
+    font-size: 1rem;
     font-weight: 700;
     margin: 0 0 16px 0;
-    background: linear-gradient(135deg, $primary-yellow 0%, #FFA500 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  h4 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin: 0 0 20px 0;
-    color: $primary-yellow;
-  }
-
-  p {
-    color: rgba(255, 255, 255, 0.8);
-    line-height: 1.6;
-    margin: 0;
+    color: $white;
+    letter-spacing: 0.5px;
   }
 }
 
-// Brand Section
-.footer-brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 
-  .brand-icon {
-    font-size: 32px;
-    width: 32px;
-    height: 32px;
-    color: $primary-yellow;
+  li {
+    margin-bottom: 10px;
+
+    a {
+      color: #ddd;
+      text-decoration: none;
+      font-size: 0.875rem;
+      line-height: 1.6;
+      transition: color 0.2s ease;
+      display: inline-block;
+
+      &:hover {
+        color: $primary-yellow;
+        text-decoration: underline;
+      }
+
+      &:focus-visible {
+        outline: 2px solid $primary-yellow;
+        outline-offset: 2px;
+        color: $primary-yellow;
+      }
+    }
   }
 }
 
-.brand-description {
-  margin-bottom: 24px;
-  font-size: 0.95rem;
-}
+// ==========================================
+// SOCIAL LINKS
+// ==========================================
 
-// Social Links
 .social-links {
   display: flex;
   gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 8px;
 
   .social-link {
     display: flex;
@@ -77,9 +139,9 @@
     justify-content: center;
     width: 40px;
     height: 40px;
-    background-color: rgba(135, 206, 235, 0.2);
+    background-color: rgba(255, 255, 255, 0.1);
     border-radius: 50%;
-    color: $primary-blue;
+    color: $white;
     transition: all 0.3s ease;
     text-decoration: none;
 
@@ -91,175 +153,176 @@
 
     &:hover {
       background-color: $primary-yellow;
-      color: $dark-text;
+      color: #131a22;
       transform: translateY(-3px);
       box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
     }
-  }
-}
 
-// Footer Links
-.footer-links {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-
-  li {
-    margin-bottom: 12px;
-
-    a {
-      color: rgba(255, 255, 255, 0.8);
-      text-decoration: none;
-      transition: all 0.3s ease;
-      display: inline-block;
-
-      &:hover {
-        color: $primary-yellow;
-        transform: translateX(5px);
-      }
+    &:focus-visible {
+      outline: 2px solid $primary-yellow;
+      outline-offset: 2px;
     }
   }
 }
 
-// Newsletter Section
-.newsletter-text {
-  margin-bottom: 16px;
-  font-size: 0.9rem;
-}
+// ==========================================
+// PAYMENT SECTION
+// ==========================================
 
-.newsletter-form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.payment-section {
+  padding: 32px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  text-align: center;
 
-  .newsletter-input {
-    padding: 12px 16px;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    background-color: rgba(255, 255, 255, 0.1);
-    color: $white;
-    font-size: 0.95rem;
-    transition: all 0.3s ease;
-
-    &::placeholder {
-      color: rgba(255, 255, 255, 0.5);
-    }
-
-    &:focus {
-      outline: none;
-      border-color: $primary-yellow;
-      background-color: rgba(255, 255, 255, 0.15);
-    }
-  }
-
-  .subscribe-btn {
-    background-color: $primary-yellow;
-    color: $dark-text;
+  .payment-heading {
+    font-size: 0.9rem;
     font-weight: 600;
-    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0 0 20px 0;
+    letter-spacing: 0.5px;
+  }
+}
+
+.payment-methods {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+
+  .payment-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
     transition: all 0.3s ease;
+
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+      color: rgba(255, 215, 0, 0.9);
+    }
 
     &:hover {
-      box-shadow: 0 4px 12px rgba(255, 215, 0, 0.5);
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 215, 0, 0.5);
       transform: translateY(-2px);
     }
   }
 }
 
-// Footer Bottom
+// ==========================================
+// FOOTER BOTTOM
+// ==========================================
+
 .footer-bottom {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   padding: 24px 0;
-  flex-wrap: wrap;
-  gap: 20px;
-}
+  text-align: center;
 
-.payment-methods {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: rgba(255, 255, 255, 0.7);
-
-  span {
-    font-size: 0.9rem;
-  }
-
-  mat-icon {
-    font-size: 24px;
-    width: 24px;
-    height: 24px;
-    color: $primary-blue;
-  }
-}
-
-.copyright {
-  p {
+  .copyright {
     margin: 0;
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.813rem;
+    letter-spacing: 0.3px;
   }
 }
 
-.footer-links-bottom {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+// ==========================================
+// RESPONSIVE DESIGN
+// ==========================================
 
-  a {
-    color: rgba(255, 255, 255, 0.7);
-    text-decoration: none;
-    font-size: 0.9rem;
-    transition: color 0.3s ease;
+// Tablet
+@media (max-width: 1024px) {
+  .footer-nav {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+  }
+}
 
-    &:hover {
-      color: $primary-yellow;
+// Mobile
+@media (max-width: 768px) {
+  .footer-nav {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding: 32px 0 24px;
+  }
+
+  .footer-column {
+    text-align: center;
+
+    .footer-heading {
+      font-size: 1.05rem;
     }
   }
 
-  .separator {
-    color: rgba(255, 255, 255, 0.4);
+  .social-links {
+    justify-content: center;
   }
-}
 
-// Responsive Design
-@media (max-width: 968px) {
-  .footer-top {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 30px;
-    padding: 40px 0 30px;
+  .payment-section {
+    padding: 24px 0;
+
+    .payment-heading {
+      font-size: 0.875rem;
+    }
   }
-}
 
-@media (max-width: 768px) {
-  .footer-top {
-    grid-template-columns: 1fr;
-    gap: 30px;
+  .payment-methods {
+    gap: 16px;
+
+    .payment-icon {
+      width: 52px;
+      height: 52px;
+
+      mat-icon {
+        font-size: 26px;
+        width: 26px;
+        height: 26px;
+      }
+    }
   }
 
   .footer-bottom {
-    flex-direction: column;
-    text-align: center;
-    gap: 16px;
-  }
+    padding: 20px 0;
 
-  .payment-methods,
-  .footer-links-bottom {
-    justify-content: center;
+    .copyright {
+      font-size: 0.75rem;
+    }
   }
 }
 
+// Small Mobile
 @media (max-width: 480px) {
   .footer-container {
     padding: 0 16px;
   }
 
-  .footer-top {
-    padding: 30px 0 20px;
+  .back-to-top {
+    font-size: 0.813rem;
+    padding: 12px 0;
   }
 
-  .social-links {
-    justify-content: center;
+  .footer-nav {
+    padding: 24px 0 20px;
+    gap: 24px;
+  }
+
+  .payment-methods {
+    .payment-icon {
+      width: 48px;
+      height: 48px;
+
+      mat-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+      }
+    }
   }
 }

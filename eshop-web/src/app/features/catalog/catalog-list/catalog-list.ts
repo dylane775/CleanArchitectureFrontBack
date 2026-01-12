@@ -285,43 +285,33 @@ export class CatalogList implements OnInit {
   }
 
   onAddToBasket(item: CatalogItem): void {
-    const user = this.authService.currentUser();
-    if (!user) {
-      this.snackBar.open('Please login to add items to basket', 'Close', {
+  this.basketService.addItemToBasket({
+    catalogItemId: item.id,
+    productName: item.name,
+    unitPrice: item.price,
+    quantity: 1,
+    pictureUrl: item.pictureUri || ''
+  }).subscribe({
+    next: () => {
+      this.snackBar.open(`${item.name} added to basket!`, 'View Basket', {
         duration: 3000,
         horizontalPosition: 'end',
         verticalPosition: 'top'
+      }).onAction().subscribe(() => {
+        this.router.navigate(['/basket']);
       });
-      this.router.navigate(['/auth/login']);
-      return;
+    },
+    error: (error) => {
+      console.error('Error adding item to basket:', error);
+      this.snackBar.open('Failed to add item to basket. Please try again.', 'Close', {
+        duration: 4000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top'
+      });
     }
+  });
+}
 
-    this.basketService.addItemToBasket(user.id, {
-      catalogItemId: item.id,
-      productName: item.name,
-      unitPrice: item.price,
-      quantity: 1,
-      pictureUrl: item.pictureUri || ''
-    }).subscribe({
-      next: () => {
-        this.snackBar.open(`${item.name} added to basket!`, 'View Basket', {
-          duration: 3000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top'
-        }).onAction().subscribe(() => {
-          this.router.navigate(['/basket']);
-        });
-      },
-      error: (error) => {
-        console.error('Error adding item to basket:', error);
-        this.snackBar.open('Failed to add item to basket. Please try again.', 'Close', {
-          duration: 4000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top'
-        });
-      }
-    });
-  }
 
   formatPrice(value: number): string {
     return `${value.toLocaleString('fr-FR')} FCFA`;

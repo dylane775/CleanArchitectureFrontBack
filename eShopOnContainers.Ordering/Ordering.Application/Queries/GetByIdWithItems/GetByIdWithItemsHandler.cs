@@ -9,7 +9,7 @@ using Ordering.Application.DTOs.Output;
 
 namespace Ordering.Application.Queries.GetByIdWithItems
 {
-    public class GetByIdWithItemsHandler : IRequestHandler<GetByIdWithItems, OrderItemDto>
+    public class GetByIdWithItemsHandler : IRequestHandler<GetByIdWithItems, OrderDto>
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IMapper _mapper;
@@ -20,14 +20,14 @@ namespace Ordering.Application.Queries.GetByIdWithItems
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<OrderItemDto> Handle(GetByIdWithItems request, CancellationToken cancellationToken)
+        public async Task<OrderDto> Handle(GetByIdWithItems request, CancellationToken cancellationToken)
         {
             var order = await _orderRepository.GetByIdWithItemsAsync(request.Id);
 
             if (order == null)
-                throw new KeyNotFoundException($"Order with ID Item not found {request.Id} not found");
+                throw new KeyNotFoundException($"Order with ID {request.Id} not found");
 
-            return _mapper.Map<OrderItemDto>(order);
+            return _mapper.Map<OrderDto>(order);
         }
     }
 }

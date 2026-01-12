@@ -49,6 +49,17 @@ namespace Basket.Infrastructure.Data.Repositories
                 .FirstOrDefaultAsync(b => b.CustomerId == customerId);
         }
 
+        /// <summary>
+        /// Récupère tous les paniers avec leurs items
+        /// Utilisé principalement pour le nettoyage automatique des paniers expirés
+        /// </summary>
+        public async Task<IEnumerable<CustomerBasket>> GetAllAsync()
+        {
+            return await _context.CustomerBaskets
+                .Include(b => b.Items)  // Charger les items de chaque panier
+                .ToListAsync();
+        }
+
         // ====================================
         // ÉCRITURE (Commands)
         // ====================================
