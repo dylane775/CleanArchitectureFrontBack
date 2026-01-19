@@ -5,6 +5,7 @@ using MediatR;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using Ordering.Domain.Events;
+using Ordering.Infrastructure.Services;
 using eShopOnContainers.IntegrationEvents;
 
 namespace Ordering.Infrastructure.Messaging.DomainEventHandlers
@@ -15,13 +16,16 @@ namespace Ordering.Infrastructure.Messaging.DomainEventHandlers
     public class OrderCancelledDomainEventHandler : INotificationHandler<OrderCancelledDomainEvent>
     {
         private readonly IPublishEndpoint _publishEndpoint;
+        private readonly INotificationClient _notificationClient;
         private readonly ILogger<OrderCancelledDomainEventHandler> _logger;
 
         public OrderCancelledDomainEventHandler(
             IPublishEndpoint publishEndpoint,
+            INotificationClient notificationClient,
             ILogger<OrderCancelledDomainEventHandler> logger)
         {
             _publishEndpoint = publishEndpoint ?? throw new ArgumentNullException(nameof(publishEndpoint));
+            _notificationClient = notificationClient ?? throw new ArgumentNullException(nameof(notificationClient));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -48,6 +52,12 @@ namespace Ordering.Infrastructure.Messaging.DomainEventHandlers
                 _logger.LogInformation(
                     "Published Integration Event: OrderCancelled - OrderId: {OrderId}",
                     domainEvent.OrderId);
+
+                // Envoyer notification à l'utilisateur
+                await _notificationClient.SendOrderCancelledNotificationAsync(
+                    domainEvent.CustomerId.ToString(),
+                    domainEvent.OrderId,
+                    domainEvent.Reason);
             }
             catch (Exception ex)
             {

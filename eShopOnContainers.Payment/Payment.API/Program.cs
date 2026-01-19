@@ -213,7 +213,7 @@ app.MapGet("/info", () =>
 
 Console.WriteLine("🚀 Payment API démarrée avec succès !");
 Console.WriteLine($"📍 Environnement : {builder.Environment.EnvironmentName}");
-Console.WriteLine($"🔗 Swagger UI : http://localhost:5241/swagger");
+Console.WriteLine($"🔗 Swagger UI : http://localhost:5246/swagger");
 Console.WriteLine($"💳 Payment Provider : Monetbil");
 
 app.Run();

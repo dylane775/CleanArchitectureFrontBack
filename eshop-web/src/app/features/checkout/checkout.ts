@@ -16,6 +16,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { BasketService } from '../../core/services/basket.service';
 import { OrderService } from '../../core/services/order.service';
 import { AuthService } from '../../core/services/auth.service';
+import { PaymentService } from '../../core/services/payment.service';
 import { Basket, BasketItem } from '../../core/models/basket.model';
 import {
   CheckoutRequest,
@@ -25,6 +26,7 @@ import {
   formatAddressAsString
 } from '../../core/models/order.model';
 import { environment } from '../../../environments/environment';
+import { BreadcrumbComponent, BreadcrumbItem } from '../../shared/components/breadcrumb/breadcrumb';
 
 @Component({
   selector: 'app-checkout',
@@ -42,7 +44,8 @@ import { environment } from '../../../environments/environment';
     MatIconModule,
     MatDividerModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    BreadcrumbComponent
   ],
   templateUrl: './checkout.html',
   styleUrls: ['./checkout.scss']
@@ -58,10 +61,18 @@ export class Checkout implements OnInit {
   paymentMethods = PAYMENT_METHODS;
   selectedPaymentMethod = signal<PaymentMethod>(PAYMENT_METHODS[0]);
 
+  // Breadcrumb
+  breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Accueil', url: '/', icon: 'home' },
+    { label: 'Panier', url: '/basket' },
+    { label: 'Paiement' }
+  ];
+
   constructor(
     private fb: FormBuilder,
     private basketService: BasketService,
     private orderService: OrderService,
+    private paymentService: PaymentService,
     private authService: AuthService,
     private router: Router,
     private snackBar: MatSnackBar
@@ -194,6 +205,10 @@ export class Checkout implements OnInit {
     return this.subtotal + this.shipping + this.tax;
   }
 
+  getBasketTotal(): number {
+    return this.total;
+  }
+
   placeOrder() {
     if (!this.shippingFormGroup.valid || !this.paymentFormGroup.valid) {
       this.snackBar.open('Please fill all required fields', 'Close', { duration: 3000 });
@@ -255,21 +270,15 @@ export class Checkout implements OnInit {
       next: (orderId) => {
         console.log('Order created:', orderId);
 
-        // Clear the basket after successful order
-        this.basketService.deleteBasket(basketData.customerId).subscribe({
-          next: () => {
-            console.log('Basket cleared after checkout');
-          },
-          error: (error) => {
-            console.error('Error clearing basket:', error);
-          }
-        });
+        // Initier le paiement via Monetbil
+        const paymentMethod = this.paymentFormGroup.get('paymentMethod')?.value;
 
-        this.submitting.set(false);
-        this.snackBar.open('Order placed successfully!', 'Close', { duration: 3000 });
-
-        // Navigate to order confirmation page
-        this.router.navigate(['/checkout/confirmation', orderId]);
+        if (paymentMethod === 'Monetbil') {
+          this.initiateMonetbilPayment(orderId, formData, basketData);
+        } else {
+          // Pour les autres méthodes de paiement (Cash on Delivery, etc.)
+          this.finalizeOrder(basketData.customerId, orderId);
+        }
       },
       error: (error) => {
         console.error('Error placing order:', error);
@@ -281,6 +290,75 @@ export class Checkout implements OnInit {
         );
       }
     });
+  }
+
+  /**
+   * Initie le paiement via Monetbil
+   */
+  private initiateMonetbilPayment(orderId: string, formData: any, basketData: Basket) {
+    const currentUrl = window.location.origin;
+
+    // ⚠️ IMPORTANT: En développement avec ngrok, utiliser l'URL ngrok pour le webhook
+    // En production, utiliser l'URL du backend déployé
+    // Pour ngrok: Remplacer par votre URL ngrok actuelle (ex: https://abc123.ngrok-free.app)
+    const backendUrl = 'https://08babe70b679.ngrok-free.app'; // TODO: Mettre en variable d'environnement
+
+    const paymentRequest = {
+      orderId: orderId,
+      customerId: basketData.customerId,
+      amount: this.getBasketTotal(),
+      currency: 'XAF', // Franc CFA
+      paymentProvider: 'Monetbil',
+      customerEmail: formData.email,
+      customerPhone: formData.phone || '',
+      description: `Paiement pour la commande ${orderId}`,
+      callbackUrl: `${backendUrl}/api/payments/webhook/monetbil`,
+      returnUrl: `${currentUrl}/checkout/confirmation/${orderId}`
+    };
+
+    this.paymentService.initiatePayment(paymentRequest).subscribe({
+      next: (paymentResponse) => {
+        console.log('Payment initiated:', paymentResponse);
+
+        // Rediriger vers la page de paiement Monetbil
+        if (paymentResponse.paymentUrl) {
+          window.location.href = paymentResponse.paymentUrl;
+        } else {
+          this.submitting.set(false);
+          this.snackBar.open('Payment URL not provided', 'Close', { duration: 5000 });
+        }
+      },
+      error: (error) => {
+        console.error('Error initiating payment:', error);
+        this.submitting.set(false);
+        this.snackBar.open(
+          error.error?.message || 'Failed to initiate payment. Please try again.',
+          'Close',
+          { duration: 5000 }
+        );
+      }
+    });
+  }
+
+  /**
+   * Finalise la commande (pour les paiements non-Monetbil)
+   */
+  private finalizeOrder(customerId: string, orderId: string) {
+    // Clear the basket after successful order
+    this.basketService.deleteBasket(customerId).subscribe({
+      next: () => {
+        console.log('Basket cleared after checkout');
+      },
+      error: (error) => {
+        console.error('Error clearing basket:', error);
+      }
+    });
+
+    this.submitting.set(false);
+    this.snackBar.open('Order placed successfully!', 'Close', { duration: 3000 });
+
+    // Navigate to order confirmation page
+    this.router.navigate(['/checkout/confirmation', orderId]);
   }
 
   onPaymentMethodChange(method: string) {

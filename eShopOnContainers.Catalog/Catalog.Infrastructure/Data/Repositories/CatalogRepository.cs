@@ -100,6 +100,161 @@ namespace Catalog.Infrastructure.Data.Repositories
                 .ToListAsync();
         }
 
+        /// <summary>
+        /// Recherche les produits par nom, description ou marque (pour auto-complétion)
+        /// </summary>
+        public async Task<IEnumerable<CatalogItem>> SearchAsync(string searchTerm, int limit = 10)
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm))
+                return Enumerable.Empty<CatalogItem>();
+
+            var normalizedSearch = searchTerm.ToLower().Trim();
+
+            return await _context.CatalogItems
+                .Include(x => x.CatalogType)
+                .Include(x => x.CatalogBrand)
+                .Where(x => x.Name.ToLower().Contains(normalizedSearch) ||
+                            x.Description.ToLower().Contains(normalizedSearch) ||
+                            x.CatalogBrand.Brand.ToLower().Contains(normalizedSearch) ||
+                            x.CatalogType.Type.ToLower().Contains(normalizedSearch))
+                .OrderByDescending(x => x.Name.ToLower().StartsWith(normalizedSearch)) // Priorité aux correspondances en début
+                .ThenBy(x => x.Name)
+                .Take(limit)
+                .ToListAsync();
+        }
+
+        /// <summary>
+        /// Recherche les produits avec pagination
+        /// </summary>
+        public async Task<PaginatedItems<CatalogItem>> SearchPagedAsync(string searchTerm, int pageIndex, int pageSize)
+        {
+            var query = _context.CatalogItems
+                .Include(x => x.CatalogType)
+                .Include(x => x.CatalogBrand)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                var normalizedSearch = searchTerm.ToLower().Trim();
+                query = query.Where(x => x.Name.ToLower().Contains(normalizedSearch) ||
+                                         x.Description.ToLower().Contains(normalizedSearch) ||
+                                         x.CatalogBrand.Brand.ToLower().Contains(normalizedSearch) ||
+                                         x.CatalogType.Type.ToLower().Contains(normalizedSearch));
+            }
+
+            var totalItems = await query.LongCountAsync();
+
+            var items = await query
+                .OrderBy(x => x.Name)
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PaginatedItems<CatalogItem>
+            {
+                PageIndex = pageIndex,
+                PageSize = pageSize,
+                Count = totalItems,
+                Data = items
+            };
+        }
+
+        /// <summary>
+        /// Récupère les produits similaires basés sur la catégorie et la marque
+        /// </summary>
+        public async Task<IEnumerable<CatalogItem>> GetRelatedProductsAsync(Guid productId, int limit = 8)
+        {
+            var product = await _context.CatalogItems
+                .FirstOrDefaultAsync(x => x.Id == productId);
+
+            if (product == null)
+                return Enumerable.Empty<CatalogItem>();
+
+            // Récupère les produits de la même catégorie ou marque, excluant le produit actuel
+            return await _context.CatalogItems
+                .Include(x => x.CatalogType)
+                .Include(x => x.CatalogBrand)
+                .Where(x => x.Id != productId &&
+                           (x.CatalogTypeId == product.CatalogTypeId || x.CatalogBrandId == product.CatalogBrandId))
+                .OrderByDescending(x => x.CatalogTypeId == product.CatalogTypeId) // Priorité à la même catégorie
+                .ThenBy(x => Guid.NewGuid()) // Randomize pour varier les résultats
+                .Take(limit)
+                .ToListAsync();
+        }
+
+        /// <summary>
+        /// Récupère les produits les mieux notés
+        /// </summary>
+        public async Task<IEnumerable<CatalogItem>> GetTopRatedProductsAsync(int limit = 8)
+        {
+            // Récupère les produits avec le plus d'avis positifs
+            var productIdsWithRatings = await _context.ProductReviews
+                .GroupBy(r => r.CatalogItemId)
+                .Select(g => new
+                {
+                    ProductId = g.Key,
+                    AverageRating = g.Average(r => r.Rating),
+                    ReviewCount = g.Count()
+                })
+                .Where(x => x.ReviewCount >= 1) // Au moins 1 avis
+                .OrderByDescending(x => x.AverageRating)
+                .ThenByDescending(x => x.ReviewCount)
+                .Take(limit)
+                .Select(x => x.ProductId)
+                .ToListAsync();
+
+            if (!productIdsWithRatings.Any())
+            {
+                // Si aucun avis, retourne les produits les plus récents
+                return await _context.CatalogItems
+                    .Include(x => x.CatalogType)
+                    .Include(x => x.CatalogBrand)
+                    .OrderByDescending(x => x.CreatedAt)
+                    .Take(limit)
+                    .ToListAsync();
+            }
+
+            var products = await _context.CatalogItems
+                .Include(x => x.CatalogType)
+                .Include(x => x.CatalogBrand)
+                .Where(x => productIdsWithRatings.Contains(x.Id))
+                .ToListAsync();
+
+            // Maintenir l'ordre par rating
+            return products.OrderBy(p => productIdsWithRatings.IndexOf(p.Id));
+        }
+
+        /// <summary>
+        /// Récupère les nouveautés (produits récemment ajoutés)
+        /// </summary>
+        public async Task<IEnumerable<CatalogItem>> GetNewArrivalsAsync(int limit = 8)
+        {
+            return await _context.CatalogItems
+                .Include(x => x.CatalogType)
+                .Include(x => x.CatalogBrand)
+                .OrderByDescending(x => x.CreatedAt)
+                .Take(limit)
+                .ToListAsync();
+        }
+
+        /// <summary>
+        /// Récupère les meilleures ventes (basé sur le stock vendu)
+        /// Pour l'instant, simule avec les produits ayant le moins de stock (plus vendus)
+        /// </summary>
+        public async Task<IEnumerable<CatalogItem>> GetBestSellersAsync(int limit = 8)
+        {
+            // Dans une vraie application, on aurait une table de commandes pour calculer les ventes
+            // Ici on simule avec des produits populaires (disponibles avec stock moyen)
+            return await _context.CatalogItems
+                .Include(x => x.CatalogType)
+                .Include(x => x.CatalogBrand)
+                .Where(x => x.AvailableStock > 0)
+                .OrderBy(x => x.AvailableStock) // Les produits avec moins de stock = plus vendus
+                .ThenByDescending(x => x.CreatedAt)
+                .Take(limit)
+                .ToListAsync();
+        }
+
         // ====================================
         // ÉCRITURE (Commands)
         // ====================================

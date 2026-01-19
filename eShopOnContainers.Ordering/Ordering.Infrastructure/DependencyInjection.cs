@@ -5,6 +5,7 @@ using Ordering.Application.Common.Interfaces;
 using Ordering.Domain.Repositories;
 using Ordering.Infrastructure.Data;
 using Ordering.Infrastructure.Data.Repositories;
+using Ordering.Infrastructure.Services;
 using MassTransit;
 using System.Reflection;
 
@@ -53,7 +54,13 @@ namespace Ordering.Infrastructure
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // ====================================
-            // 4. MASSTRANSIT + RABBITMQ (Messaging)
+            // 4. NOTIFICATION CLIENT
+            // ====================================
+
+            services.AddHttpClient<INotificationClient, NotificationClient>();
+
+            // ====================================
+            // 5. MASSTRANSIT + RABBITMQ (Messaging)
             // ====================================
 
             services.AddMassTransit(config =>

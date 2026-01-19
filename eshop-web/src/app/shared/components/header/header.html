@@ -10,18 +10,26 @@
         </a>
       </div>
 
-      <!-- Search Bar (Central - Amazon style) -->
+      <!-- Search Bar (Central - Amazon style) with Auto-complete -->
       <div class="search-section">
         <form class="search-wrapper" (submit)="onSearch(); $event.preventDefault()">
           <input
+            #searchInput
             type="text"
             class="search-input"
             placeholder="Search for products, brands and more..."
-            [(ngModel)]="searchQuery"
+            [value]="searchQuery()"
+            (input)="onSearchInput($event)"
+            (focus)="onSearchFocus()"
+            (keydown)="onKeyDown($event)"
             name="search"
+            autocomplete="off"
           />
-          @if (searchQuery()) {
-            <button type="button" class="clear-btn" (click)="searchQuery.set('')">
+          @if (isLoadingSuggestions()) {
+            <mat-spinner diameter="20" class="search-spinner"></mat-spinner>
+          }
+          @if (searchQuery() && !isLoadingSuggestions()) {
+            <button type="button" class="clear-btn" (click)="clearSearch()">
               <mat-icon>close</mat-icon>
             </button>
           }
@@ -29,6 +37,41 @@
             <mat-icon>search</mat-icon>
           </button>
         </form>
+
+        <!-- Suggestions Dropdown -->
+        @if (showSuggestions() && suggestions().length > 0) {
+          <div class="suggestions-dropdown">
+            @for (suggestion of suggestions(); track suggestion.id; let i = $index) {
+              <div
+                class="suggestion-item"
+                [class.selected]="i === selectedSuggestionIndex()"
+                (click)="selectSuggestion(suggestion)"
+                (mouseenter)="selectedSuggestionIndex.set(i)">
+                <img
+                  [src]="getSuggestionImageUrl(suggestion)"
+                  [alt]="suggestion.name"
+                  class="suggestion-image"
+                  loading="lazy">
+                <div class="suggestion-info">
+                  <span class="suggestion-name">{{ suggestion.name }}</span>
+                  <span class="suggestion-meta">
+                    @if (suggestion.brand) {
+                      <span class="suggestion-brand">{{ suggestion.brand }}</span>
+                    }
+                    @if (suggestion.category) {
+                      <span class="suggestion-category">in {{ suggestion.category }}</span>
+                    }
+                  </span>
+                </div>
+                <span class="suggestion-price">{{ suggestion.price | currency:'XAF':'symbol':'1.0-0' }}</span>
+              </div>
+            }
+            <div class="suggestion-footer" (click)="onSearch()">
+              <mat-icon>search</mat-icon>
+              <span>See all results for "{{ searchQuery() }}"</span>
+            </div>
+          </div>
+        }
       </div>
 
       <!-- User Actions Section -->
@@ -40,6 +83,23 @@
             <strong class="orders-label">& Orders</strong>
           </div>
         </button>
+
+        <!-- Notifications (only for authenticated users) -->
+        @if (isAuthenticated()) {
+          <app-notification-bell></app-notification-bell>
+        }
+
+        <!-- Wishlist (only for authenticated users) -->
+        @if (isAuthenticated()) {
+          <button mat-button routerLink="/wishlist" class="wishlist-btn">
+            <div class="wishlist-icon-wrapper">
+              <mat-icon class="wishlist-icon">favorite</mat-icon>
+              @if (wishlistCount() > 0) {
+                <span class="wishlist-badge">{{ wishlistCount() }}</span>
+              }
+            </div>
+          </button>
+        }
 
         <!-- Shopping Cart -->
         <button mat-button routerLink="/basket" class="cart-btn">

@@ -5,16 +5,7 @@
     </div>
   } @else if (product()) {
     <!-- Breadcrumb Navigation -->
-    <div class="breadcrumb">
-      <button mat-button (click)="backToCatalog()">
-        <mat-icon>arrow_back</mat-icon>
-        Back to Catalog
-      </button>
-      <span class="breadcrumb-separator">›</span>
-      <span class="breadcrumb-category">{{ product()!.catalogTypeName }}</span>
-      <span class="breadcrumb-separator">›</span>
-      <span class="breadcrumb-brand">{{ product()!.catalogBrandName }}</span>
-    </div>
+    <app-breadcrumb [items]="breadcrumbItems()"></app-breadcrumb>
 
     <!-- Main Product Section (Amazon-style layout) -->
     <div class="product-main-section">
@@ -277,6 +268,28 @@
           </div>
         </mat-card-content>
       </mat-card>
+
+      <!-- Customer Reviews Section -->
+      <app-product-reviews [productId]="product()!.id"></app-product-reviews>
+
+      <!-- Related Products Section -->
+      @if (relatedProducts().length > 0) {
+        <div class="related-products-section">
+          <h2 class="section-title">
+            <mat-icon>recommend</mat-icon>
+            Customers who viewed this also viewed
+          </h2>
+          <div class="related-products-grid">
+            @for (item of relatedProducts(); track item.id) {
+              <app-catalog-item
+                [item]="item"
+                [compact]="true"
+                (addToBasket)="onAddRelatedToBasket($event)">
+              </app-catalog-item>
+            }
+          </div>
+        </div>
+      }
     </div>
   }
 </div>

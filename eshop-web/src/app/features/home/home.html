@@ -1,39 +1,130 @@
 <div class="home-page">
-  <!-- 1. Hero Section (Amazon-style) -->
-  <app-hero-section></app-hero-section>
-
-  <!-- 2. Categories Section -->
-  <section class="categories-section">
-    <div class="container">
-      <h2 class="section-title">Shop by Category</h2>
-      <div class="categories-grid">
-        @for (category of categories; track category.name) {
-          <a [routerLink]="['/catalog']" class="category-card">
-            <div class="category-image">
-              <mat-icon class="category-icon">{{ category.icon }}</mat-icon>
-            </div>
-            <h3 class="category-name">{{ category.name }}</h3>
-            <span class="category-link">Shop now</span>
-          </a>
+  <!-- HERO CAROUSEL SECTION -->
+  <section class="hero-section">
+    <div class="hero-carousel">
+      @for (slide of heroSlides; track $index) {
+        <div class="hero-slide" [class.active]="$index === currentHeroSlide()" 
+             [style.backgroundImage]="'url(' + slide.image + ')'">
+          <div class="hero-overlay"></div>
+          <div class="hero-content">
+            <h1 class="hero-title">{{ slide.title }}</h1>
+            <p class="hero-subtitle">{{ slide.subtitle }}</p>
+            <button class="hero-cta" [routerLink]="slide.link" mat-flat-button>
+              Shop Now
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </div>
+      }
+      <div class="carousel-dots">
+        @for (slide of heroSlides; track $index) {
+          <button class="dot" [class.active]="$index === currentHeroSlide()" 
+                  (click)="currentHeroSlide.set($index)"></button>
         }
       </div>
     </div>
   </section>
 
-  <!-- 3. Featured Products -->
-  <section class="products-section featured-section">
+  <!-- AMAZON STYLE CATEGORY CARDS -->
+  <section class="categories-section">
+    <div class="container">
+      <div class="categories-grid">
+        <div class="category-card" routerLink="/catalog">
+          <div class="category-image">
+            <span class="category-icon">🛍️</span>
+          </div>
+          <h3 class="category-name">All Products</h3>
+          <a class="category-link">Shop now</a>
+        </div>
+        <div class="category-card" routerLink="/catalog">
+          <div class="category-image">
+            <span class="category-icon">⚡</span>
+          </div>
+          <h3 class="category-name">Today's Deals</h3>
+          <a class="category-link">See deals</a>
+        </div>
+        <div class="category-card" routerLink="/catalog">
+          <div class="category-image">
+            <span class="category-icon">🏆</span>
+          </div>
+          <h3 class="category-name">Best Sellers</h3>
+          <a class="category-link">Discover</a>
+        </div>
+        <div class="category-card" routerLink="/catalog">
+          <div class="category-image">
+            <span class="category-icon">🆕</span>
+          </div>
+          <h3 class="category-name">New Arrivals</h3>
+          <a class="category-link">Explore</a>
+        </div>
+        <div class="category-card" routerLink="/catalog">
+          <div class="category-image">
+            <span class="category-icon">💎</span>
+          </div>
+          <h3 class="category-name">Premium</h3>
+          <a class="category-link">Browse</a>
+        </div>
+        <div class="category-card" routerLink="/catalog">
+          <div class="category-image">
+            <span class="category-icon">🎁</span>
+          </div>
+          <h3 class="category-name">Gift Ideas</h3>
+          <a class="category-link">Find</a>
+        </div>
+        <div class="category-card" routerLink="/catalog">
+          <div class="category-image">
+            <span class="category-icon">📦</span>
+          </div>
+          <h3 class="category-name">Flash Sales</h3>
+          <a class="category-link">Grab</a>
+        </div>
+        <div class="category-card" routerLink="/catalog">
+          <div class="category-image">
+            <span class="category-icon">⭐</span>
+          </div>
+          <h3 class="category-name">Top Rated</h3>
+          <a class="category-link">View</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROMO BANNER 1 -->
+  <section class="promo-banner">
+    <div class="container">
+      <div class="promo-card">
+        <div class="promo-content">
+          <span class="promo-badge">LIMITED OFFER</span>
+          <h2 class="promo-title">⚡ Big Deals Today</h2>
+          <p class="promo-subtitle">Get up to 50% off on selected items. Don't miss out on these amazing deals!</p>
+          <button class="promo-cta" routerLink="/catalog" mat-flat-button>
+            Shop Deals
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </div>
+        <div class="promo-image">
+          <mat-icon>local_offer</mat-icon>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED PRODUCTS SECTION -->
+  <section class="products-section">
     <div class="container">
       <div class="section-header">
-        <h2 class="section-title">Today's Deals</h2>
-        <a routerLink="/catalog" class="view-all">
-          See all deals
+        <div class="header-left">
+          <h2 class="section-title">Featured Products</h2>
+        </div>
+        <a routerLink="/catalog" class="view-all-link">
+          See all
           <mat-icon>arrow_forward</mat-icon>
         </a>
       </div>
 
       @if (loading()) {
         <div class="loading-state">
-          <mat-icon>hourglass_empty</mat-icon>
+          <mat-spinner diameter="40"></mat-spinner>
           <p>Loading products...</p>
         </div>
       } @else {
@@ -46,87 +137,83 @@
     </div>
   </section>
 
-  <!-- 4. Promotional Banner -->
+  <!-- PROMOTION BANNER 2 -->
   <section class="promo-banner">
     <div class="container">
-      <div class="promo-card">
+      <div class="promo-card promo-alt">
+        <div class="promo-image">
+          <mat-icon>card_giftcard</mat-icon>
+        </div>
         <div class="promo-content">
-          <span class="promo-badge">Limited Time</span>
-          <h2 class="promo-title">Spring Sale - Up to 50% Off</h2>
-          <p class="promo-subtitle">Don't miss out on our biggest deals of the season</p>
-          <button mat-raised-button class="promo-cta" routerLink="/catalog">
-            Shop Now
+          <span class="promo-badge">EXCLUSIVE</span>
+          <h2 class="promo-title">Member Only Discounts</h2>
+          <p class="promo-subtitle">Sign up now and get 15% off your first purchase, plus exclusive deals!</p>
+          <button class="promo-cta" routerLink="/auth/register" mat-flat-button>
+            Join Now
             <mat-icon>arrow_forward</mat-icon>
           </button>
         </div>
-        <div class="promo-image">
-          <mat-icon>local_offer</mat-icon>
-        </div>
       </div>
     </div>
   </section>
 
-  <!-- 5. New Arrivals -->
-  <section class="products-section new-arrivals-section">
+  <!-- BEST SELLERS SECTION -->
+  <section class="products-section">
     <div class="container">
       <div class="section-header">
-        <h2 class="section-title">New Arrivals</h2>
-        <a routerLink="/catalog" class="view-all">
-          Explore more
+        <div class="header-left">
+          <h2 class="section-title">Best Sellers</h2>
+        </div>
+        <a routerLink="/catalog" class="view-all-link">
+          See all
           <mat-icon>arrow_forward</mat-icon>
         </a>
       </div>
 
       @if (loading()) {
         <div class="loading-state">
-          <mat-icon>hourglass_empty</mat-icon>
+          <mat-spinner diameter="40"></mat-spinner>
           <p>Loading products...</p>
         </div>
       } @else {
-        <div class="products-carousel-wrapper">
-          <div class="products-carousel">
-            @for (product of newArrivals(); track product.id) {
-              <div class="carousel-item">
-                <app-catalog-item [item]="product" [compact]="true"></app-catalog-item>
-              </div>
-            }
-          </div>
+        <div class="products-grid">
+          @for (product of bestSellers(); track product.id) {
+            <app-catalog-item [item]="product"></app-catalog-item>
+          }
         </div>
       }
     </div>
   </section>
 
-  <!-- 6. Best Sellers -->
-  <section class="products-section best-sellers-section">
+  <!-- NEW ARRIVALS SECTION -->
+  <section class="products-section">
     <div class="container">
       <div class="section-header">
-        <h2 class="section-title">Best Sellers</h2>
-        <a routerLink="/catalog" class="view-all">
-          See more
+        <div class="header-left">
+          <h2 class="section-title">New Arrivals</h2>
+        </div>
+        <a routerLink="/catalog" class="view-all-link">
+          See all
           <mat-icon>arrow_forward</mat-icon>
         </a>
       </div>
 
       @if (loading()) {
         <div class="loading-state">
-          <mat-icon>hourglass_empty</mat-icon>
+          <mat-spinner diameter="40"></mat-spinner>
           <p>Loading products...</p>
         </div>
       } @else {
-        <div class="products-carousel-wrapper">
-          <div class="products-carousel">
-            @for (product of bestSellers(); track product.id) {
-              <div class="carousel-item">
-                <app-catalog-item [item]="product" [compact]="true"></app-catalog-item>
-              </div>
-            }
-          </div>
+        <div class="products-grid">
+          @for (product of newArrivals(); track product.id) {
+            <app-catalog-item [item]="product"></app-catalog-item>
+          }
         </div>
       }
     </div>
   </section>
 
-  <!-- 7. Trust/Features Section -->
+  <!-- FEATURES SECTION - Trust Indicators -->
   <section class="features-section">
     <div class="container">
       <div class="features-grid">
@@ -165,14 +252,16 @@
     </div>
   </section>
 
-  <!-- 8. Newsletter Section -->
+  <!-- NEWSLETTER SECTION -->
   <section class="newsletter-section">
     <div class="container">
       <div class="newsletter-card">
         <div class="newsletter-content">
           <mat-icon class="newsletter-icon">email</mat-icon>
-          <h2 class="newsletter-title">Get Exclusive Offers</h2>
-          <p class="newsletter-subtitle">Subscribe to our newsletter and receive special discounts</p>
+          <div>
+            <h2 class="newsletter-title">Get Exclusive Offers</h2>
+            <p class="newsletter-subtitle">Subscribe to our newsletter and receive special discounts</p>
+          </div>
         </div>
         <div class="newsletter-form">
           <input type="email" placeholder="Enter your email" class="newsletter-input">

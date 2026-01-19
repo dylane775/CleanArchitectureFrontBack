@@ -1,0 +1,199 @@
+<div class="product-reviews">
+  <h2 class="reviews-title">
+    <mat-icon>rate_review</mat-icon>
+    Avis clients
+  </h2>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  } @else {
+    <!-- Stats Summary -->
+    @if (stats()) {
+      <div class="reviews-summary">
+        <div class="average-rating">
+          <span class="rating-number">{{ stats()!.averageRating | number:'1.1-1' }}</span>
+          <div class="rating-stars">
+            @for (star of getStarArray(5); track star) {
+              <mat-icon [class]="getStarClass(star, stats()!.averageRating)">
+                {{ star <= stats()!.averageRating ? 'star' : (star - 0.5 <= stats()!.averageRating ? 'star_half' : 'star_border') }}
+              </mat-icon>
+            }
+          </div>
+          <span class="total-reviews">{{ stats()!.totalReviews }} avis</span>
+        </div>
+
+        <div class="rating-breakdown">
+          <div class="rating-bar">
+            <span class="rating-label">5 étoiles</span>
+            <mat-progress-bar mode="determinate" [value]="stats()!.fiveStarPercentage"></mat-progress-bar>
+            <span class="rating-count">{{ stats()!.fiveStarCount }}</span>
+          </div>
+          <div class="rating-bar">
+            <span class="rating-label">4 étoiles</span>
+            <mat-progress-bar mode="determinate" [value]="stats()!.fourStarPercentage"></mat-progress-bar>
+            <span class="rating-count">{{ stats()!.fourStarCount }}</span>
+          </div>
+          <div class="rating-bar">
+            <span class="rating-label">3 étoiles</span>
+            <mat-progress-bar mode="determinate" [value]="stats()!.threeStarPercentage"></mat-progress-bar>
+            <span class="rating-count">{{ stats()!.threeStarCount }}</span>
+          </div>
+          <div class="rating-bar">
+            <span class="rating-label">2 étoiles</span>
+            <mat-progress-bar mode="determinate" [value]="stats()!.twoStarPercentage"></mat-progress-bar>
+            <span class="rating-count">{{ stats()!.twoStarCount }}</span>
+          </div>
+          <div class="rating-bar">
+            <span class="rating-label">1 étoile</span>
+            <mat-progress-bar mode="determinate" [value]="stats()!.oneStarPercentage"></mat-progress-bar>
+            <span class="rating-count">{{ stats()!.oneStarCount }}</span>
+          </div>
+        </div>
+      </div>
+    }
+
+    <mat-divider></mat-divider>
+
+    <!-- Write Review Button -->
+    <div class="write-review-section">
+      <button mat-raised-button color="primary" (click)="toggleReviewForm()">
+        <mat-icon>edit</mat-icon>
+        {{ showReviewForm() ? 'Annuler' : 'Écrire un avis' }}
+      </button>
+    </div>
+
+    <!-- Review Form -->
+    @if (showReviewForm()) {
+      <mat-card class="review-form-card">
+        <mat-card-content>
+          <h3>Votre avis</h3>
+
+          <!-- Star Rating Selection -->
+          <div class="rating-selection">
+            <span class="rating-label">Note :</span>
+            <div class="star-selector" (mouseleave)="clearHoverRating()">
+              @for (star of getStarArray(5); track star) {
+                <mat-icon
+                  class="selectable-star"
+                  [class.selected]="star <= getDisplayRating()"
+                  (mouseenter)="setHoverRating(star)"
+                  (click)="setRating(star)">
+                  {{ star <= getDisplayRating() ? 'star' : 'star_border' }}
+                </mat-icon>
+              }
+            </div>
+            <span class="selected-rating">{{ selectedRating() > 0 ? selectedRating() + ' / 5' : '' }}</span>
+          </div>
+
+          <form [formGroup]="reviewForm" (ngSubmit)="submitReview()">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Titre de votre avis</mat-label>
+              <input matInput formControlName="title" placeholder="Résumez votre avis en une phrase">
+              <mat-error>Le titre doit contenir entre 5 et 200 caractères</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Votre commentaire (optionnel)</mat-label>
+              <textarea matInput formControlName="comment" rows="4"
+                placeholder="Décrivez ce que vous avez aimé ou non..."></textarea>
+              <mat-error>Le commentaire ne peut pas dépasser 2000 caractères</mat-error>
+            </mat-form-field>
+
+            <div class="form-actions">
+              <button mat-button type="button" (click)="toggleReviewForm()">Annuler</button>
+              <button mat-raised-button color="primary" type="submit"
+                [disabled]="reviewForm.invalid || selectedRating() === 0 || submitting()">
+                @if (submitting()) {
+                  <mat-spinner diameter="20"></mat-spinner>
+                } @else {
+                  Publier
+                }
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    <!-- Reviews List -->
+    <div class="reviews-list">
+      @if (reviews().length === 0) {
+        <div class="no-reviews">
+          <mat-icon>comment</mat-icon>
+          <p>Aucun avis pour ce produit. Soyez le premier à donner votre avis !</p>
+        </div>
+      } @else {
+        @for (review of reviews(); track review.id) {
+          <mat-card class="review-card">
+            <mat-card-content>
+              <div class="review-header">
+                <div class="reviewer-info">
+                  <mat-icon class="avatar-icon">account_circle</mat-icon>
+                  <div class="reviewer-details">
+                    <span class="reviewer-name">{{ review.userDisplayName }}</span>
+                    @if (review.isVerifiedPurchase) {
+                      <span class="verified-badge">
+                        <mat-icon>verified</mat-icon>
+                        Achat vérifié
+                      </span>
+                    }
+                  </div>
+                </div>
+                <span class="review-date">{{ formatDate(review.createdAt) }}</span>
+              </div>
+
+              <div class="review-rating">
+                @for (star of getStarArray(5); track star) {
+                  <mat-icon [class]="star <= review.rating ? 'star-filled' : 'star-empty'">
+                    {{ star <= review.rating ? 'star' : 'star_border' }}
+                  </mat-icon>
+                }
+              </div>
+
+              <h4 class="review-title">{{ review.title }}</h4>
+
+              @if (review.comment) {
+                <p class="review-comment">{{ review.comment }}</p>
+              }
+
+              <div class="review-footer">
+                <div class="helpful-section">
+                  <span class="helpful-text">Cet avis vous a-t-il été utile ?</span>
+                  <button mat-button (click)="voteHelpful(review.id, true)">
+                    <mat-icon>thumb_up</mat-icon>
+                    Oui ({{ review.helpfulCount }})
+                  </button>
+                  <button mat-button (click)="voteHelpful(review.id, false)">
+                    <mat-icon>thumb_down</mat-icon>
+                    Non
+                  </button>
+                </div>
+
+                @if (canDeleteReview(review)) {
+                  <button mat-icon-button color="warn" (click)="deleteReview(review.id)"
+                    matTooltip="Supprimer mon avis">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                }
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
+
+        <!-- Pagination -->
+        @if (totalReviews() > pageSize) {
+          <mat-paginator
+            [length]="totalReviews()"
+            [pageSize]="pageSize"
+            [pageIndex]="pageIndex - 1"
+            [pageSizeOptions]="[5, 10, 20]"
+            (page)="onPageChange($event)"
+            aria-label="Sélectionner une page">
+          </mat-paginator>
+        }
+      }
+    </div>
+  }
+</div>

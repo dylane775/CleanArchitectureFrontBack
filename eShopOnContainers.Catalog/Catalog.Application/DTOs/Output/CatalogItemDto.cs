@@ -30,6 +30,10 @@ namespace Catalog.Application.DTOs.Output
         // Dictionnaire clé-valeur pour attributs personnalisés (taille, couleur, etc.)
         public IReadOnlyDictionary<string, string>? Specifications { get; init; }
 
+        // Review Statistics
+        public double AverageRating { get; init; }
+        public int ReviewCount { get; init; }
+
         // Audit (optionnel - à exposer selon les besoins)
         public DateTime CreatedAt { get; init; }
         public string CreatedBy { get; init; }="";

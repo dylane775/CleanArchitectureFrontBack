@@ -17,6 +17,7 @@ import { BasketService } from '../../../core/services/basket.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { CatalogItem } from '../../../core/models/catalog.model';
 import { CatalogItemComponent } from '../catalog-item/catalog-item';
+import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb';
 
 interface FilterOption {
   label: string;
@@ -40,7 +41,8 @@ interface FilterOption {
     MatIconModule,
     MatChipsModule,
     MatSnackBarModule,
-    CatalogItemComponent
+    CatalogItemComponent,
+    BreadcrumbComponent
   ],
   templateUrl: './catalog-list.html',
   styleUrl: './catalog-list.scss',
@@ -54,6 +56,12 @@ export class CatalogList implements OnInit {
 
   // Sidebar state
   sidebarCollapsed = signal(false);
+
+  // Breadcrumb
+  breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Accueil', url: '/', icon: 'home' },
+    { label: 'Catalogue' }
+  ];
 
   // Filters
   priceRange = signal<number[]>([0, 1000]);

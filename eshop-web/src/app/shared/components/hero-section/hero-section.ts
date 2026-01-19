@@ -16,14 +16,6 @@ interface HeroSlide {
   secondaryCtaLink?: string;
 }
 
-interface QuickLink {
-  id: string;
-  title: string;
-  subtitle: string;
-  icon: string;
-  route: string;
-}
-
 @Component({
   selector: 'app-hero-section',
   imports: [
@@ -71,37 +63,6 @@ export class HeroSection implements OnInit, OnDestroy {
       imageUrl: 'https://images.unsplash.com/photo-1607083206968-13611e3d76db?w=1600&h=600&fit=crop',
       ctaText: 'Explore Now',
       ctaLink: '/catalog'
-    }
-  ];
-
-  quickLinks: QuickLink[] = [
-    {
-      id: '1',
-      title: 'Electronics',
-      subtitle: 'Latest gadgets',
-      icon: 'devices',
-      route: '/catalog'
-    },
-    {
-      id: '2',
-      title: 'Fashion',
-      subtitle: 'Trending styles',
-      icon: 'checkroom',
-      route: '/catalog'
-    },
-    {
-      id: '3',
-      title: 'Home & Kitchen',
-      subtitle: 'Best deals',
-      icon: 'home',
-      route: '/catalog'
-    },
-    {
-      id: '4',
-      title: 'Sports',
-      subtitle: 'Gear up',
-      icon: 'sports_soccer',
-      route: '/catalog'
     }
   ];
 

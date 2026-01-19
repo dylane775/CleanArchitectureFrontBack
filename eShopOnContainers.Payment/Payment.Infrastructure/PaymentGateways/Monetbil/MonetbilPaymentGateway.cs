@@ -42,65 +42,91 @@ namespace Payment.Infrastructure.PaymentGateways.Monetbil
             {
                 _logger.LogInformation("Initiating Monetbil payment for reference {PaymentReference}", paymentReference);
 
-                // Préparer les données pour Monetbil
-                var requestData = new
+                // Monetbil utilise application/x-www-form-urlencoded
+                var formData = new Dictionary<string, string>
                 {
-                    service = _settings.ServiceKey,
-                    amount = amount,
-                    currency = currency,
-                    item_ref = paymentReference,
-                    user = customerPhone ?? customerEmail,
-                    email = customerEmail,
-                    phonenumber = customerPhone,
-                    item_name = description ?? "Payment",
-                    return_url = returnUrl,
-                    notify_url = callbackUrl,
-                    // Mode sandbox si configuré
-                    test = _settings.UseSandbox ? "true" : "false"
+                    ["amount"] = amount.ToString("F0"),
+                    // Ne pas pré-remplir le téléphone pour laisser l'utilisateur choisir
+                    // ["phone"] = customerPhone ?? "",
+                    ["locale"] = "fr",
+                    ["country"] = "CM",
+                    ["currency"] = currency,
+                    ["item_ref"] = paymentReference,
+                    ["payment_ref"] = paymentReference,
+                    ["user"] = customerEmail,
+                    ["first_name"] = "",
+                    ["last_name"] = "",
+                    ["email"] = customerEmail,
+                    ["return_url"] = returnUrl ?? "",
+                    ["notify_url"] = callbackUrl ?? ""
                 };
 
-                var content = new StringContent(
-                    JsonSerializer.Serialize(requestData),
-                    Encoding.UTF8,
-                    "application/json");
+                var content = new FormUrlEncodedContent(formData);
 
-                // Appeler l'API Monetbil
-                var response = await _httpClient.PostAsync("/payment", content);
+                // L'endpoint correct pour Monetbil Widget API
+                var requestUrl = $"https://www.monetbil.com/widget/v2.1/{_settings.ServiceKey}";
+
+                var response = await _httpClient.PostAsync(requestUrl, content);
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                _logger.LogInformation("Monetbil response: {Response}", responseContent);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var responseContent = await response.Content.ReadAsStringAsync();
-                    var monetbilResponse = JsonSerializer.Deserialize<MonetbilPaymentResponse>(responseContent);
-
-                    if (monetbilResponse?.Success == true)
+                    try
                     {
-                        _logger.LogInformation(
-                            "Monetbil payment initiated successfully. PaymentToken: {PaymentToken}",
-                            monetbilResponse.PaymentToken);
+                        var monetbilResponse = JsonSerializer.Deserialize<MonetbilPaymentResponse>(responseContent, new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        });
+
+                        if (monetbilResponse != null && !string.IsNullOrEmpty(monetbilResponse.PaymentUrl))
+                        {
+                            _logger.LogInformation(
+                                "Monetbil payment initiated successfully. PaymentUrl: {PaymentUrl}",
+                                monetbilResponse.PaymentUrl);
+
+                            return new PaymentGatewayResponse
+                            {
+                                Success = true,
+                                TransactionId = paymentReference, // Utiliser la référence comme ID temporaire
+                                PaymentUrl = monetbilResponse.PaymentUrl,
+                                QrCodeUrl = monetbilResponse.QrCodeUrl
+                            };
+                        }
+                        else
+                        {
+                            _logger.LogWarning("Monetbil payment initiation failed: Invalid response structure");
+
+                            return new PaymentGatewayResponse
+                            {
+                                Success = false,
+                                ErrorMessage = "Invalid response from Monetbil"
+                            };
+                        }
+                    }
+                    catch (JsonException jsonEx)
+                    {
+                        _logger.LogError(jsonEx, "Failed to parse Monetbil response: {Response}", responseContent);
+
+                        // Si la réponse n'est pas du JSON, construire manuellement l'URL de paiement
+                        // selon la documentation Monetbil Widget
+                        var paymentUrl = $"https://www.monetbil.com/widget/v2.1/{_settings.ServiceKey}?" +
+                            $"amount={amount:F0}&currency={currency}&item_ref={paymentReference}&" +
+                            $"email={customerEmail}&return_url={returnUrl}&notify_url={callbackUrl}";
 
                         return new PaymentGatewayResponse
                         {
                             Success = true,
-                            TransactionId = monetbilResponse.PaymentToken,
-                            PaymentUrl = monetbilResponse.PaymentUrl,
-                            QrCodeUrl = monetbilResponse.QrCodeUrl
-                        };
-                    }
-                    else
-                    {
-                        _logger.LogWarning("Monetbil payment initiation failed: {Error}", monetbilResponse?.Message);
-
-                        return new PaymentGatewayResponse
-                        {
-                            Success = false,
-                            ErrorMessage = monetbilResponse?.Message ?? "Unknown error from Monetbil"
+                            TransactionId = paymentReference,
+                            PaymentUrl = paymentUrl,
+                            QrCodeUrl = null
                         };
                     }
                 }
                 else
                 {
-                    var errorContent = await response.Content.ReadAsStringAsync();
-                    _logger.LogError("Monetbil API error: {StatusCode} - {Error}", response.StatusCode, errorContent);
+                    _logger.LogError("Monetbil API error: {StatusCode} - {Error}", response.StatusCode, responseContent);
 
                     return new PaymentGatewayResponse
                     {
@@ -236,17 +262,26 @@ namespace Payment.Infrastructure.PaymentGateways.Monetbil
     // ====== DTOs POUR MONETBIL ======
     internal class MonetbilPaymentResponse
     {
+        [System.Text.Json.Serialization.JsonPropertyName("success")]
         public bool Success { get; set; }
-        public string PaymentToken { get; set; }
-        public string PaymentUrl { get; set; }
-        public string QrCodeUrl { get; set; }
-        public string Message { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("payment_token")]
+        public string? PaymentToken { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("payment_url")]
+        public string? PaymentUrl { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("qr_code_url")]
+        public string? QrCodeUrl { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("message")]
+        public string? Message { get; set; }
     }
 
     internal class MonetbilStatusResponse
     {
         public bool Success { get; set; }
-        public string Status { get; set; }
-        public string Message { get; set; }
+        public string? Status { get; set; }
+        public string? Message { get; set; }
     }
 }

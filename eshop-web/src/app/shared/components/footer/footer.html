@@ -60,25 +60,81 @@
       </div>
     </nav>
 
-    <!-- Payment Methods -->
-    <div class="payment-section">
-      <h3 class="payment-heading">Secure Payment Methods</h3>
-      <div class="payment-methods" role="list" aria-label="Accepted payment methods">
-        <div class="payment-icon" role="listitem" aria-label="Visa">
-          <mat-icon aria-hidden="true">credit_card</mat-icon>
-          <span class="sr-only">Visa</span>
+    <!-- Newsletter Section -->
+    <div class="newsletter-section">
+      <div class="newsletter-content">
+        <div class="newsletter-text">
+          <h3 class="newsletter-heading">Restez informé de nos offres</h3>
+          <p class="newsletter-description">Inscrivez-vous à notre newsletter et recevez 10% de réduction sur votre première commande</p>
         </div>
-        <div class="payment-icon" role="listitem" aria-label="Mastercard">
-          <mat-icon aria-hidden="true">payment</mat-icon>
-          <span class="sr-only">Mastercard</span>
-        </div>
-        <div class="payment-icon" role="listitem" aria-label="PayPal">
-          <mat-icon aria-hidden="true">account_balance_wallet</mat-icon>
-          <span class="sr-only">PayPal</span>
-        </div>
-        <div class="payment-icon" role="listitem" aria-label="Bank Transfer">
-          <mat-icon aria-hidden="true">account_balance</mat-icon>
-          <span class="sr-only">Bank Transfer</span>
+        <form class="newsletter-form" (ngSubmit)="subscribeNewsletter()" #newsletterForm="ngForm">
+          <div class="newsletter-input-group">
+            <input
+              type="email"
+              [(ngModel)]="newsletterEmail"
+              name="email"
+              placeholder="Entrez votre email"
+              class="newsletter-input"
+              required
+              email
+              aria-label="Email pour la newsletter"
+            />
+            <button
+              type="submit"
+              class="newsletter-button"
+              [disabled]="!newsletterForm.valid || isSubscribing()"
+              aria-label="S'inscrire à la newsletter"
+            >
+              @if (isSubscribing()) {
+                <mat-icon class="spinner">hourglass_empty</mat-icon>
+              } @else {
+                S'inscrire
+              }
+            </button>
+          </div>
+          @if (newsletterMessage()) {
+            <p class="newsletter-message" [class.success]="newsletterSuccess()">
+              {{ newsletterMessage() }}
+            </p>
+          }
+        </form>
+      </div>
+    </div>
+
+    <!-- Contact & Payment Info -->
+    <div class="info-section">
+      <!-- Contact Information -->
+      <div class="contact-info">
+        <h3 class="info-heading">Contactez-nous</h3>
+        <ul class="contact-list">
+          <li class="contact-item">
+            <mat-icon aria-hidden="true">email</mat-icon>
+            <a href="mailto:dylaneossombe@gmail.com">dylaneossombe@gmail.com</a>
+          </li>
+          <li class="contact-item">
+            <mat-icon aria-hidden="true">phone</mat-icon>
+            <a href="tel:+237697781415">+237 697 781 415</a>
+          </li>
+          <li class="contact-item">
+            <mat-icon aria-hidden="true">location_on</mat-icon>
+            <span>Douala, Cameroun</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Payment Methods -->
+      <div class="payment-info">
+        <h3 class="info-heading">Moyens de paiement</h3>
+        <div class="payment-methods" role="list" aria-label="Accepted payment methods">
+          <div class="payment-icon monetbil" role="listitem" aria-label="Monetbil">
+            <span class="payment-text">Monetbil</span>
+          </div>
+          <div class="payment-icon mtn" role="listitem" aria-label="MTN Mobile Money">
+            <span class="payment-text">MTN MoMo</span>
+          </div>
+          <div class="payment-icon orange" role="listitem" aria-label="Orange Money">
+            <span class="payment-text">Orange Money</span>
+          </div>
         </div>
       </div>
     </div>

@@ -5,6 +5,7 @@ using MediatR;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using Ordering.Domain.Events;
+using Ordering.Infrastructure.Services;
 using eShopOnContainers.IntegrationEvents;
 
 namespace Ordering.Infrastructure.Messaging.DomainEventHandlers
@@ -15,13 +16,16 @@ namespace Ordering.Infrastructure.Messaging.DomainEventHandlers
     public class OrderShippedDomainEventHandler : INotificationHandler<OrderShippedDomainEvent>
     {
         private readonly IPublishEndpoint _publishEndpoint;
+        private readonly INotificationClient _notificationClient;
         private readonly ILogger<OrderShippedDomainEventHandler> _logger;
 
         public OrderShippedDomainEventHandler(
             IPublishEndpoint publishEndpoint,
+            INotificationClient notificationClient,
             ILogger<OrderShippedDomainEventHandler> logger)
         {
             _publishEndpoint = publishEndpoint ?? throw new ArgumentNullException(nameof(publishEndpoint));
+            _notificationClient = notificationClient ?? throw new ArgumentNullException(nameof(notificationClient));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -47,6 +51,12 @@ namespace Ordering.Infrastructure.Messaging.DomainEventHandlers
                 _logger.LogInformation(
                     "Published Integration Event: OrderShipped - OrderId: {OrderId}",
                     domainEvent.OrderId);
+
+                // Envoyer notification à l'utilisateur
+                await _notificationClient.SendOrderShippedNotificationAsync(
+                    domainEvent.CustomerId.ToString(),
+                    domainEvent.OrderId,
+                    domainEvent.ShippingAddress);
             }
             catch (Exception ex)
             {

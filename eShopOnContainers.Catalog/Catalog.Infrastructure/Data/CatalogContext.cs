@@ -39,8 +39,14 @@ namespace Catalog.Infrastructure.Data
         /// Collection des marques
         /// Correspond à la table "CatalogBrands" en base
         /// </summary>
-        
+
         public DbSet<CatalogBrand> CatalogBrands { get; set; }
+
+        /// <summary>
+        /// Collection des avis clients
+        /// Correspond à la table "ProductReviews" en base
+        /// </summary>
+        public DbSet<ProductReview> ProductReviews { get; set; }
 
           // ====================================
         // CONSTRUCTEURS

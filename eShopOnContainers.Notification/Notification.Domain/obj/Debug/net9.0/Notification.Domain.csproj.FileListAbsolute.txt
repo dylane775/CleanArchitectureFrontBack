@@ -1,0 +1,12 @@
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Notification\Notification.Domain\bin\Debug\net9.0\Notification.Domain.deps.json
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Notification\Notification.Domain\bin\Debug\net9.0\Notification.Domain.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Notification\Notification.Domain\bin\Debug\net9.0\Notification.Domain.pdb
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Notification\Notification.Domain\obj\Debug\net9.0\Notification.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Notification\Notification.Domain\obj\Debug\net9.0\Notification.Domain.AssemblyInfoInputs.cache
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Notification\Notification.Domain\obj\Debug\net9.0\Notification.Domain.AssemblyInfo.cs
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Notification\Notification.Domain\obj\Debug\net9.0\Notification.Domain.csproj.CoreCompileInputs.cache
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Notification\Notification.Domain\obj\Debug\net9.0\Notification.Domain.sourcelink.json
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Notification\Notification.Domain\obj\Debug\net9.0\Notification.Domain.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Notification\Notification.Domain\obj\Debug\net9.0\refint\Notification.Domain.dll
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Notification\Notification.Domain\obj\Debug\net9.0\Notification.Domain.pdb
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Notification\Notification.Domain\obj\Debug\net9.0\ref\Notification.Domain.dll

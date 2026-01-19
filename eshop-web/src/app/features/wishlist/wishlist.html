@@ -1,0 +1,112 @@
+<div class="wishlist-page">
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <a routerLink="/">Home</a>
+    <mat-icon>chevron_right</mat-icon>
+    <span>Wishlist</span>
+  </div>
+
+  <div class="wishlist-container">
+    <!-- Header -->
+    <div class="wishlist-header">
+      <div class="header-left">
+        <h1>
+          <mat-icon>favorite</mat-icon>
+          Your Wishlist
+        </h1>
+        @if (wishlistCount() > 0) {
+          <span class="item-count">{{ wishlistCount() }} {{ wishlistCount() === 1 ? 'item' : 'items' }}</span>
+        }
+      </div>
+      @if (wishlistItems().length > 0) {
+        <div class="header-actions">
+          <button mat-stroked-button color="primary" (click)="addAllToCart()">
+            <mat-icon>shopping_cart</mat-icon>
+            Add All to Cart
+          </button>
+          <button mat-stroked-button color="warn" (click)="clearWishlist()">
+            <mat-icon>delete_sweep</mat-icon>
+            Clear All
+          </button>
+        </div>
+      }
+    </div>
+
+    <!-- Loading State -->
+    @if (loading()) {
+      <div class="loading-state">
+        <mat-spinner diameter="48"></mat-spinner>
+        <p>Loading your wishlist...</p>
+      </div>
+    } @else if (wishlistItems().length === 0) {
+      <!-- Empty State -->
+      <div class="empty-state">
+        <mat-icon class="empty-icon">favorite_border</mat-icon>
+        <h2>Your wishlist is empty</h2>
+        <p>Save items you love to buy later!</p>
+        <button mat-raised-button color="primary" (click)="continueShopping()">
+          <mat-icon>store</mat-icon>
+          Continue Shopping
+        </button>
+      </div>
+    } @else {
+      <!-- Wishlist Grid -->
+      <div class="wishlist-grid">
+        @for (item of wishlistItems(); track item.id) {
+          <mat-card class="wishlist-item">
+            <!-- Product Image -->
+            <div class="item-image" (click)="viewProduct(item)">
+              <img [src]="getImageUrl(item.pictureUrl)" [alt]="item.productName" loading="lazy">
+            </div>
+
+            <!-- Item Details -->
+            <mat-card-content class="item-details">
+              <div class="item-meta">
+                @if (item.brandName) {
+                  <span class="brand">{{ item.brandName }}</span>
+                }
+                @if (item.categoryName) {
+                  <span class="category">{{ item.categoryName }}</span>
+                }
+              </div>
+
+              <h3 class="item-name" (click)="viewProduct(item)">{{ item.productName }}</h3>
+
+              <div class="item-price">{{ item.price | number:'1.0-0' }} FCFA</div>
+
+              <div class="item-added">
+                <mat-icon>schedule</mat-icon>
+                Added {{ item.addedAt | date:'short' }}
+              </div>
+            </mat-card-content>
+
+            <!-- Item Actions -->
+            <mat-card-actions class="item-actions">
+              <button mat-raised-button class="add-to-cart-btn" (click)="moveToCart(item)">
+                <mat-icon>add_shopping_cart</mat-icon>
+                Add to Cart
+              </button>
+              <button mat-icon-button color="warn"
+                      matTooltip="Remove from wishlist"
+                      (click)="removeFromWishlist(item)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        }
+      </div>
+
+      <!-- Summary Footer -->
+      <div class="wishlist-footer">
+        <div class="total-value">
+          <span class="label">Total Value:</span>
+          <span class="value">{{ totalValue() | number:'1.0-0' }} FCFA</span>
+        </div>
+        <button mat-raised-button color="accent" (click)="continueShopping()">
+          <mat-icon>add</mat-icon>
+          Add More Items
+        </button>
+      </div>
+    }
+  </div>
+</div>

@@ -42,8 +42,9 @@ namespace Basket.Infrastructure
             // ====================================
             // 2. REPOSITORIES (Implémentations)
             // ====================================
-            
+
             services.AddScoped<IBasketRepository, BasketRepository>();
+            services.AddScoped<IWishlistRepository, WishlistRepository>();
 
             // ====================================
             // 3. UNIT OF WORK (Transactions + Events)

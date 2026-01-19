@@ -6,6 +6,7 @@ using Payment.Domain.Repositories;
 using Payment.Infrastructure.Data;
 using Payment.Infrastructure.Data.Repositories;
 using Payment.Infrastructure.PaymentGateways.Monetbil;
+using Payment.Infrastructure.Services;
 using MassTransit;
 using System.Reflection;
 
@@ -62,8 +63,17 @@ namespace Payment.Infrastructure
             // HttpClient pour Monetbil
             services.AddHttpClient<IPaymentGatewayService, MonetbilPaymentGateway>();
 
+            // Validation de signature Monetbil
+            services.AddScoped<IMonetbilSignatureValidator, MonetbilSignatureValidator>();
+
             // ====================================
-            // 5. MASSTRANSIT + RABBITMQ (Messaging)
+            // 5. NOTIFICATION CLIENT
+            // ====================================
+
+            services.AddHttpClient<INotificationClient, NotificationClient>();
+
+            // ====================================
+            // 6. MASSTRANSIT + RABBITMQ (Messaging)
             // ====================================
 
             services.AddMassTransit(config =>

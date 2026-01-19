@@ -11,6 +11,8 @@ using Catalog.Application.Commands.DeleteCatalogItem;
 using Catalog.Application.Commands.UpdateStock;
 using Catalog.Application.Queries.GetCatalogItems;
 using Catalog.Application.Queries.GetCatalogItemById;
+using Catalog.Application.Queries.SearchCatalogItems;
+using Catalog.Application.Queries.Recommendations;
 using Catalog.Application.DTOs.Input;
 using Catalog.Application.DTOs.Output;
 
@@ -224,6 +226,136 @@ namespace Catalog.API.Controllers
             await _mediator.Send(command);
 
             return NoContent();
+        }
+
+        /// <summary>
+        /// Recherche des produits avec suggestions (auto-complétion)
+        /// </summary>
+        [HttpGet("search/suggestions")]
+        [ProducesResponseType(typeof(IEnumerable<SearchSuggestionDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<SearchSuggestionDto>>> GetSearchSuggestions(
+            [FromQuery] string q,
+            [FromQuery] int limit = 8)
+        {
+            if (string.IsNullOrWhiteSpace(q) || q.Length < 2)
+            {
+                return Ok(Enumerable.Empty<SearchSuggestionDto>());
+            }
+
+            _logger.LogInformation("Recherche de suggestions pour: {Query}", q);
+
+            var query = new SearchCatalogItemsQuery(q, limit);
+            var result = await _mediator.Send(query);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Recherche des produits avec pagination
+        /// </summary>
+        [HttpGet("search")]
+        [ProducesResponseType(typeof(PaginatedItemsDto<CatalogItemDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<PaginatedItemsDto<CatalogItemDto>>> Search(
+            [FromQuery] string q,
+            [FromQuery] int pageIndex = 1,
+            [FromQuery] int pageSize = 10)
+        {
+            if (pageIndex < 1 || pageSize <= 0 || pageSize > 100)
+            {
+                return BadRequest("Paramètres de pagination invalides");
+            }
+
+            _logger.LogInformation("Recherche de produits: {Query} - Page: {PageIndex}", q, pageIndex);
+
+            var query = new SearchCatalogItemsPagedQuery(q ?? "", pageIndex, pageSize);
+            var result = await _mediator.Send(query);
+
+            return Ok(result);
+        }
+
+        // ====================================
+        // RECOMMANDATIONS
+        // ====================================
+
+        /// <summary>
+        /// Récupère les produits similaires à un produit donné
+        /// </summary>
+        [HttpGet("{id:guid}/related")]
+        [ProducesResponseType(typeof(IEnumerable<CatalogItemDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<CatalogItemDto>>> GetRelatedProducts(
+            Guid id,
+            [FromQuery] int limit = 8)
+        {
+            _logger.LogInformation("Récupération des produits similaires pour {ProductId}", id);
+
+            var query = new GetRelatedProductsQuery(id, limit);
+            var result = await _mediator.Send(query);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Récupère les produits les mieux notés
+        /// </summary>
+        [HttpGet("recommendations/top-rated")]
+        [ProducesResponseType(typeof(IEnumerable<CatalogItemDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<CatalogItemDto>>> GetTopRated(
+            [FromQuery] int limit = 8)
+        {
+            _logger.LogInformation("Récupération des produits les mieux notés");
+
+            var query = new GetTopRatedProductsQuery(limit);
+            var result = await _mediator.Send(query);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Récupère les nouveautés
+        /// </summary>
+        [HttpGet("recommendations/new-arrivals")]
+        [ProducesResponseType(typeof(IEnumerable<CatalogItemDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<CatalogItemDto>>> GetNewArrivals(
+            [FromQuery] int limit = 8)
+        {
+            _logger.LogInformation("Récupération des nouveautés");
+
+            var query = new GetNewArrivalsQuery(limit);
+            var result = await _mediator.Send(query);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Récupère les meilleures ventes
+        /// </summary>
+        [HttpGet("recommendations/best-sellers")]
+        [ProducesResponseType(typeof(IEnumerable<CatalogItemDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<CatalogItemDto>>> GetBestSellers(
+            [FromQuery] int limit = 8)
+        {
+            _logger.LogInformation("Récupération des meilleures ventes");
+
+            var query = new GetBestSellersQuery(limit);
+            var result = await _mediator.Send(query);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Récupère toutes les recommandations pour la page d'accueil
+        /// </summary>
+        [HttpGet("recommendations/home")]
+        [ProducesResponseType(typeof(HomeRecommendationsDto), StatusCodes.Status200OK)]
+        public async Task<ActionResult<HomeRecommendationsDto>> GetHomeRecommendations(
+            [FromQuery] int limit = 8)
+        {
+            _logger.LogInformation("Récupération des recommandations pour la page d'accueil");
+
+            var query = new GetHomeRecommendationsQuery(limit);
+            var result = await _mediator.Send(query);
+
+            return Ok(result);
         }
     }
 }

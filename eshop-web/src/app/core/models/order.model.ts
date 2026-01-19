@@ -86,11 +86,12 @@ export interface CheckoutFormData {
 }
 
 export interface PaymentMethod {
-  type: 'CreditCard' | 'DebitCard' | 'PayPal' | 'BankTransfer' | 'CashOnDelivery';
+  type: 'CreditCard' | 'DebitCard' | 'PayPal' | 'BankTransfer' | 'CashOnDelivery' | 'Monetbil';
   label: string;
 }
 
 export const PAYMENT_METHODS: PaymentMethod[] = [
+  { type: 'Monetbil', label: 'Mobile Money (Monetbil)' },
   { type: 'CreditCard', label: 'Credit Card' },
   { type: 'DebitCard', label: 'Debit Card' },
   { type: 'PayPal', label: 'PayPal' },

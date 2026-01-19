@@ -20,26 +20,26 @@ namespace Payment.Infrastructure.Data.Repositories
         // ====== OPÉRATIONS DE BASE ======
         public async Task<Domain.Entities.Payment> GetByIdAsync(Guid id)
         {
-            return await _context.Payments
-                .FirstOrDefaultAsync(p => p.Id == id);
+            return (await _context.Payments
+                .FirstOrDefaultAsync(p => p.Id == id))!;
         }
 
         public async Task<Domain.Entities.Payment> GetByOrderIdAsync(Guid orderId)
         {
-            return await _context.Payments
-                .FirstOrDefaultAsync(p => p.OrderId == orderId);
+            return (await _context.Payments
+                .FirstOrDefaultAsync(p => p.OrderId == orderId))!;
         }
 
         public async Task<Domain.Entities.Payment> GetByTransactionIdAsync(string transactionId)
         {
-            return await _context.Payments
-                .FirstOrDefaultAsync(p => p.TransactionId == transactionId);
+            return (await _context.Payments
+                .FirstOrDefaultAsync(p => p.TransactionId == transactionId))!;
         }
 
         public async Task<Domain.Entities.Payment> GetByPaymentReferenceAsync(string paymentReference)
         {
-            return await _context.Payments
-                .FirstOrDefaultAsync(p => p.PaymentReference == paymentReference);
+            return (await _context.Payments
+                .FirstOrDefaultAsync(p => p.PaymentReference == paymentReference))!;
         }
 
         // ====== QUERIES ======

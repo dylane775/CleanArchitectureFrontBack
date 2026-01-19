@@ -1,0 +1,94 @@
+<div class="notifications-page">
+  <div class="notifications-container">
+    <!-- Header -->
+    <div class="page-header">
+      <div class="header-left">
+        <h1>Notifications</h1>
+        <span class="unread-count" *ngIf="unreadCount > 0">
+          {{ unreadCount }} non lue{{ unreadCount > 1 ? 's' : '' }}
+        </span>
+      </div>
+      <div class="header-actions">
+        <button class="action-btn" (click)="markAllAsRead()" *ngIf="unreadCount > 0">
+          <span class="material-icons">done_all</span>
+          Tout marquer comme lu
+        </button>
+        <button class="action-btn danger" (click)="deleteAllNotifications()" *ngIf="notifications().length > 0">
+          <span class="material-icons">delete_sweep</span>
+          Tout supprimer
+        </button>
+        <!-- Test button (dev only) -->
+        <button class="action-btn test" (click)="sendTestNotification()">
+          <span class="material-icons">science</span>
+          Test
+        </button>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters">
+      <button
+        class="filter-btn"
+        [class.active]="selectedFilter() === 'all'"
+        (click)="setFilter('all')">
+        Toutes ({{ notifications().length }})
+      </button>
+      <button
+        class="filter-btn"
+        [class.active]="selectedFilter() === 'unread'"
+        (click)="setFilter('unread')">
+        Non lues ({{ unreadCount }})
+      </button>
+    </div>
+
+    <!-- Notifications List -->
+    <div class="notifications-list">
+      @if (isLoading()) {
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <p>Chargement des notifications...</p>
+        </div>
+      } @else if (filteredNotifications.length === 0) {
+        <div class="empty-state">
+          <span class="material-icons">notifications_off</span>
+          <h3>Aucune notification</h3>
+          <p>Vous n'avez pas de nouvelles notifications pour le moment.</p>
+        </div>
+      } @else {
+        @for (notification of filteredNotifications; track notification.id) {
+          <div
+            class="notification-card"
+            [class.unread]="!notification.isRead"
+            (click)="markAsRead(notification)">
+            <div class="notification-icon" [style.background-color]="getColor(notification.type)">
+              <span class="material-icons">{{ getIcon(notification.type) }}</span>
+            </div>
+            <div class="notification-body">
+              <div class="notification-header">
+                <h3 class="notification-title">{{ notification.title }}</h3>
+                <span class="notification-time">{{ getTimeAgo(notification.createdAt) }}</span>
+              </div>
+              <p class="notification-message">{{ notification.message }}</p>
+              @if (notification.actionUrl) {
+                <a [routerLink]="notification.actionUrl" class="notification-link">
+                  Voir les détails
+                  <span class="material-icons">arrow_forward</span>
+                </a>
+              }
+            </div>
+            <div class="notification-actions">
+              @if (!notification.isRead) {
+                <button class="icon-btn" title="Marquer comme lu" (click)="markAsRead(notification); $event.stopPropagation()">
+                  <span class="material-icons">check_circle</span>
+                </button>
+              }
+              <button class="icon-btn delete" title="Supprimer" (click)="deleteNotification(notification, $event)">
+                <span class="material-icons">delete</span>
+              </button>
+            </div>
+          </div>
+        }
+      }
+    </div>
+  </div>
+</div>

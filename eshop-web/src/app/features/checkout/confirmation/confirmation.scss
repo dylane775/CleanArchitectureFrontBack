@@ -286,6 +286,26 @@
   }
 }
 
+.warning-card {
+  margin: 1rem auto;
+  padding: 1rem;
+  background-color: #fff3e0;
+  border-left: 4px solid #ff9800;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: 600px;
+
+  mat-icon {
+    color: #f57c00;
+  }
+
+  p {
+    margin: 0;
+    color: #e65100;
+  }
+}
+
 // Print styles
 @media print {
   .action-buttons {

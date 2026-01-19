@@ -33,6 +33,11 @@ export const routes: Routes = [
     // Pas de authGuard - les guests peuvent aussi utiliser le panier
   },
   {
+    path: 'wishlist',
+    loadComponent: () => import('./features/wishlist/wishlist').then(m => m.Wishlist),
+    canActivate: [authGuard] // Wishlist requires authentication
+  },
+  {
     path: 'checkout',
     loadComponent: () => import('./features/checkout/checkout').then(m => m.Checkout)
     // Pas de authGuard - les guests peuvent aussi passer commande
@@ -49,6 +54,11 @@ export const routes: Routes = [
   {
     path: 'profile',
     loadComponent: () => import('./features/profile/profile').then(m => m.Profile),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'notifications',
+    loadComponent: () => import('./features/notifications/notifications').then(m => m.NotificationsComponent),
     canActivate: [authGuard]
   },
   {
@@ -93,6 +103,6 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: '/catalog'
+    redirectTo: '/'
   }
 ];

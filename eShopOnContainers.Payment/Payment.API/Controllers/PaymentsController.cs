@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
+using System.Text.Json;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +18,8 @@ using Payment.Application.Queries.GetPaymentsByCustomerId;
 using Payment.Application.Queries.GetPaymentByReference;
 using Payment.Application.DTOs.Input;
 using Payment.Application.DTOs.Output;
+using Payment.Infrastructure.PaymentGateways.Monetbil;
+using Payment.Infrastructure.Services;
 
 namespace Payment.API.Controllers
 {
@@ -26,11 +30,19 @@ namespace Payment.API.Controllers
     {
         private readonly IMediator _mediator;
         private readonly ILogger<PaymentsController> _logger;
+        private readonly IMonetbilSignatureValidator _signatureValidator;
+        private readonly INotificationClient _notificationClient;
 
-        public PaymentsController(IMediator mediator, ILogger<PaymentsController> logger)
+        public PaymentsController(
+            IMediator mediator,
+            ILogger<PaymentsController> logger,
+            IMonetbilSignatureValidator signatureValidator,
+            INotificationClient notificationClient)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _signatureValidator = signatureValidator ?? throw new ArgumentNullException(nameof(signatureValidator));
+            _notificationClient = notificationClient ?? throw new ArgumentNullException(nameof(notificationClient));
         }
 
         // ====================================
@@ -272,32 +284,129 @@ namespace Payment.API.Controllers
         }
 
         /// <summary>
+        /// Marque un paiement comme échoué via la référence (appelé par le frontend)
+        /// </summary>
+        [HttpPost("reference/{reference}/fail")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> FailPaymentByReference(string reference, [FromBody] FailPaymentDto dto)
+        {
+            _logger.LogInformation("Failing payment with reference {Reference}", reference);
+
+            try
+            {
+                var payment = await _mediator.Send(new GetPaymentByReferenceQuery(reference));
+                var command = new FailPaymentCommand(payment.Id, dto.FailureReason);
+                await _mediator.Send(command);
+                return Ok(new { Message = "Payment marked as failed" });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                _logger.LogWarning(ex, "Payment with reference {Reference} not found", reference);
+                return NotFound(new { Message = ex.Message });
+            }
+        }
+
+        /// <summary>
         /// Webhook Monetbil (callback après paiement)
         /// </summary>
         [HttpPost("webhook/monetbil")]
         [AllowAnonymous]
+        [Consumes("application/json", "application/x-www-form-urlencoded", "application/form-data")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult> MonetbilWebhook([FromBody] MonetbilWebhookDto webhook)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult> MonetbilWebhook()
         {
-            _logger.LogInformation("Received Monetbil webhook for reference {Reference}", webhook.ItemRef);
+            _logger.LogInformation("Received Monetbil webhook");
 
             try
             {
+                // Lire le body brut pour voir ce que Monetbil envoie
+                string requestBody;
+                using (var reader = new StreamReader(Request.Body))
+                {
+                    requestBody = await reader.ReadToEndAsync();
+                }
+
+                _logger.LogInformation("Webhook raw body: {Body}", requestBody);
+                _logger.LogInformation("Content-Type: {ContentType}", Request.ContentType);
+
+                // Parser selon le Content-Type
+                MonetbilWebhookDto webhook;
+
+                if (Request.ContentType?.Contains("application/json") == true)
+                {
+                    webhook = JsonSerializer.Deserialize<MonetbilWebhookDto>(requestBody, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                }
+                else
+                {
+                    // Parser form-urlencoded
+                    var formData = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(requestBody);
+                    webhook = new MonetbilWebhookDto
+                    {
+                        ItemRef = formData["item_ref"].ToString() ?? formData["payment_ref"].ToString(),
+                        TransactionId = formData["transaction_id"].ToString() ?? formData["paymentId"].ToString(),
+                        Status = formData["status"].ToString(),
+                        Message = formData["message"].ToString()
+                    };
+                }
+
+                _logger.LogInformation("Parsed webhook - ItemRef: {ItemRef}, Status: {Status}, TransactionId: {TransactionId}",
+                    webhook.ItemRef, webhook.Status, webhook.TransactionId);
+
+                // ====================================
+                // VALIDATION DE LA SIGNATURE (Optionnel en dev)
+                // ====================================
+                var signature = Request.Headers["X-Monetbil-Signature"].FirstOrDefault();
+
+                if (!string.IsNullOrEmpty(signature))
+                {
+                    if (!_signatureValidator.ValidateSignature(requestBody, signature))
+                    {
+                        _logger.LogError("Invalid Monetbil webhook signature. Possible security breach!");
+                        return Unauthorized(new { Message = "Invalid signature" });
+                    }
+                    _logger.LogInformation("Monetbil webhook signature validated successfully");
+                }
+                else
+                {
+                    _logger.LogWarning("Webhook received without signature - proceeding anyway (dev mode)");
+                }
+
+                // ====================================
+                // TRAITEMENT DU WEBHOOK
+                // ====================================
                 // Récupérer le paiement par référence
                 var payment = await _mediator.Send(new GetPaymentByReferenceQuery(webhook.ItemRef));
 
                 // Traiter selon le statut
-                if (webhook.Status?.ToLower() == "success" || webhook.Status?.ToLower() == "completed")
+                if (webhook.Status?.ToLower() == "success" || webhook.Status?.ToLower() == "completed" || webhook.Status == "1")
                 {
                     var confirmCommand = new ConfirmPaymentCommand(payment.Id, webhook.TransactionId);
                     await _mediator.Send(confirmCommand);
                     _logger.LogInformation("Payment {PaymentId} confirmed via webhook", payment.Id);
+
+                    // Envoyer notification de paiement confirmé
+                    await _notificationClient.SendPaymentConfirmedNotificationAsync(
+                        payment.CustomerId,
+                        payment.OrderId,
+                        payment.Amount,
+                        payment.Currency);
                 }
                 else
                 {
                     var failCommand = new FailPaymentCommand(payment.Id, webhook.Message ?? "Payment failed");
                     await _mediator.Send(failCommand);
                     _logger.LogInformation("Payment {PaymentId} failed via webhook", payment.Id);
+
+                    // Envoyer notification d'échec de paiement
+                    await _notificationClient.SendPaymentFailedNotificationAsync(
+                        payment.CustomerId,
+                        payment.OrderId,
+                        webhook.Message ?? "Le paiement a échoué");
                 }
 
                 return Ok(new { Message = "Webhook processed successfully" });
@@ -306,7 +415,7 @@ namespace Payment.API.Controllers
             {
                 _logger.LogError(ex, "Error processing Monetbil webhook");
                 // Toujours retourner 200 pour éviter que Monetbil ne réessaie indéfiniment
-                return Ok(new { Message = "Webhook received but processing failed" });
+                return Ok(new { Message = "Webhook received but processing failed", Error = ex.Message });
             }
         }
     }

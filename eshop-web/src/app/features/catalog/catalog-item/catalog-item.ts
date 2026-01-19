@@ -1,11 +1,14 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { CatalogItem as CatalogItemModel } from '../../../core/models/catalog.model';
+import { WishlistService } from '../../../core/services/wishlist.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -15,7 +18,8 @@ import { environment } from '../../../../environments/environment';
     MatCardModule,
     MatButtonModule,
     MatIconModule,
-    MatChipsModule
+    MatChipsModule,
+    MatSnackBarModule
   ],
   templateUrl: './catalog-item.html',
   styleUrl: './catalog-item.scss',
@@ -25,7 +29,16 @@ export class CatalogItemComponent {
   @Input() compact = false; // Mode compact pour carrousels
   @Output() addToBasket = new EventEmitter<CatalogItemModel>();
 
-  constructor(private router: Router) {}
+  isInWishlist = computed(() => this.wishlistService.isInWishlist(this.item?.id));
+  isAuthenticated = computed(() => this.authService.isAuthenticated());
+  isWishlistLoading = signal(false);
+
+  constructor(
+    private router: Router,
+    private wishlistService: WishlistService,
+    private authService: AuthService,
+    private snackBar: MatSnackBar
+  ) {}
 
   onAddToBasket(): void {
     this.addToBasket.emit(this.item);
@@ -35,29 +48,101 @@ export class CatalogItemComponent {
     this.router.navigate(['/product', this.item.id]);
   }
 
+  toggleWishlist(): void {
+    if (!this.isAuthenticated()) {
+      this.snackBar.open('Please login to add items to your wishlist', 'Login', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top'
+      }).onAction().subscribe(() => {
+        this.router.navigate(['/auth/login']);
+      });
+      return;
+    }
+
+    this.isWishlistLoading.set(true);
+
+    const request = {
+      catalogItemId: this.item.id,
+      productName: this.item.name,
+      price: this.item.price,
+      pictureUrl: this.item.pictureUri,
+      brandName: this.item.catalogBrandName,
+      categoryName: this.item.catalogTypeName
+    };
+
+    this.wishlistService.toggleWishlist(this.item.id, request).subscribe({
+      next: (response) => {
+        this.isWishlistLoading.set(false);
+        const message = response.added
+          ? 'Added to wishlist'
+          : 'Removed from wishlist';
+        this.snackBar.open(message, '✓', {
+          duration: 2000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: response.added ? ['success-snackbar'] : ['info-snackbar']
+        });
+      },
+      error: (error) => {
+        this.isWishlistLoading.set(false);
+        console.error('Error toggling wishlist:', error);
+        this.snackBar.open('Error updating wishlist', 'OK', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
+  }
+
   getDiscountPercentage(): number {
-    // Calcul fictif pour démo - en production, utiliser item.discount
-    return Math.floor(Math.random() * 30) + 10;
+    // Calcul déterministe basé sur l'ID du produit pour une valeur stable
+    if (!this.item?.id) return 0;
+    const hash = this.hashCode(this.item.id);
+    return 10 + (Math.abs(hash) % 25); // Entre 10% et 34%
+  }
+
+  hasDiscount(): boolean {
+    // Seulement certains produits ont une réduction (basé sur l'ID)
+    if (!this.item?.id) return false;
+    const hash = this.hashCode(this.item.id);
+    return Math.abs(hash) % 3 === 0; // ~33% des produits ont une réduction
   }
 
   isNew(): boolean {
-    // Logique fictive pour démo - en production, vérifier item.createdDate
-    return Math.random() > 0.7;
+    // Vérifie si le produit a été créé dans les 30 derniers jours
+    if (!this.item?.createdAt) return false;
+    const createdDate = new Date(this.item.createdAt);
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    return createdDate > thirtyDaysAgo;
   }
 
   getRating(): number {
-    // Note fictive pour démo (3.5 à 5 étoiles)
-    return Math.floor(Math.random() * 1.5) + 3.5;
+    // Retourne la note moyenne depuis la base de données
+    return this.item.averageRating || 0;
   }
 
   getReviewCount(): number {
-    // Nombre d'avis fictif pour démo
-    return Math.floor(Math.random() * 5000) + 100;
+    // Retourne le nombre d'avis depuis la base de données
+    return this.item.reviewCount || 0;
   }
 
   hasPrime(): boolean {
-    // Badge Prime fictif pour démo
-    return Math.random() > 0.6;
+    // Badge Prime déterministe basé sur l'ID du produit
+    if (!this.item?.id) return false;
+    const hash = this.hashCode(this.item.id);
+    return Math.abs(hash) % 5 < 2; // ~40% des produits ont Prime
+  }
+
+  private hashCode(str: string): number {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash;
   }
 
   getImageUrl(): string {

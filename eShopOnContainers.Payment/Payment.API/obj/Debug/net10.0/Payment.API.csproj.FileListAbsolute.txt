@@ -1,0 +1,9 @@
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.API\obj\Debug\net10.0\Payment.API.csproj.AssemblyReference.cache
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.API\obj\Debug\net10.0\rpswa.dswa.cache.json
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.API\obj\Debug\net10.0\Payment.API.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.API\obj\Debug\net10.0\Payment.API.AssemblyInfoInputs.cache
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.API\obj\Debug\net10.0\Payment.API.AssemblyInfo.cs
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.API\obj\Debug\net10.0\Payment.API.csproj.CoreCompileInputs.cache
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.API\obj\Debug\net10.0\Payment.API.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.API\obj\Debug\net10.0\Payment.API.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\stage.pmo\Desktop\EshopOnContainerCleanArchitecture\eShopOnContainers.Payment\Payment.API\obj\Debug\net10.0\Payment.API.sourcelink.json

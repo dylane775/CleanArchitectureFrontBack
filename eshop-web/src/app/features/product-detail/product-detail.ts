@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -13,6 +13,9 @@ import { BasketService } from '../../core/services/basket.service';
 import { AuthService } from '../../core/services/auth.service';
 import { CatalogItem } from '../../core/models/catalog.model';
 import { environment } from '../../../environments/environment';
+import { BreadcrumbComponent, BreadcrumbItem } from '../../shared/components/breadcrumb/breadcrumb';
+import { ProductReviewsComponent } from '../../shared/components/product-reviews/product-reviews';
+import { CatalogItemComponent } from '../catalog/catalog-item/catalog-item';
 
 @Component({
   selector: 'app-product-detail',
@@ -26,15 +29,31 @@ import { environment } from '../../../environments/environment';
     MatChipsModule,
     MatDividerModule,
     MatSnackBarModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    BreadcrumbComponent,
+    ProductReviewsComponent,
+    CatalogItemComponent
   ],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.scss',
 })
 export class ProductDetail implements OnInit {
   product = signal<CatalogItem | null>(null);
+  relatedProducts = signal<CatalogItem[]>([]);
   loading = signal(false);
   quantity = signal(1);
+
+  breadcrumbItems = computed<BreadcrumbItem[]>(() => {
+    const prod = this.product();
+    if (!prod) return [];
+    return [
+      { label: 'Accueil', url: '/', icon: 'home' },
+      { label: 'Catalogue', url: '/catalog' },
+      { label: prod.catalogTypeName, url: `/catalog?type=${prod.catalogTypeName}` },
+      { label: prod.catalogBrandName, url: `/catalog?brand=${prod.catalogBrandName}` },
+      { label: prod.name }
+    ];
+  });
 
   constructor(
     private route: ActivatedRoute,
@@ -60,12 +79,45 @@ export class ProductDetail implements OnInit {
       next: (product) => {
         this.product.set(product);
         this.loading.set(false);
+        // Charger les produits similaires
+        this.loadRelatedProducts(productId);
       },
       error: (err: any) => {
         console.error('Error loading product:', err);
         this.loading.set(false);
         this.snackBar.open('Product not found', 'Close', { duration: 3000 });
         this.router.navigate(['/catalog']);
+      }
+    });
+  }
+
+  loadRelatedProducts(productId: string): void {
+    this.catalogService.getRelatedProducts(productId, 4).subscribe({
+      next: (products) => {
+        this.relatedProducts.set(products);
+      },
+      error: (err: any) => {
+        console.error('Error loading related products:', err);
+      }
+    });
+  }
+
+  onAddRelatedToBasket(item: CatalogItem): void {
+    this.basketService.addItemToBasket({
+      catalogItemId: item.id,
+      productName: item.name,
+      unitPrice: item.price,
+      pictureUrl: item.pictureUri,
+      quantity: 1
+    }).subscribe({
+      next: () => {
+        this.snackBar.open(`${item.name} added to basket!`, 'View', {
+          duration: 2500,
+          horizontalPosition: 'end',
+          verticalPosition: 'top'
+        }).onAction().subscribe(() => {
+          this.router.navigate(['/basket']);
+        });
       }
     });
   }

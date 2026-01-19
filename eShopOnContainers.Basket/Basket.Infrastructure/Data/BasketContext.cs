@@ -13,6 +13,7 @@ namespace Basket.Infrastructure.Data
     {
         public DbSet<CustomerBasket> CustomerBaskets { get; set; }
         public DbSet<BasketItem> BasketItems { get; set; }
+        public DbSet<WishlistItem> WishlistItems { get; set; }
 
         public BasketContext(DbContextOptions<BasketContext> options) : base(options)
         {
@@ -25,6 +26,10 @@ namespace Basket.Infrastructure.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            // Exclure DomainEvent du modèle - c'est une classe de base pour les événements
+            modelBuilder.Ignore<DomainEvent>();
+
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
 

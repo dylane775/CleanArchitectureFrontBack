@@ -18,20 +18,20 @@ namespace Payment.Domain.Entities
         public PaymentProvider Provider { get; private set; }
 
         // Informations de transaction
-        public string TransactionId { get; private set; }  // ID de la transaction chez le provider (Monetbil, etc.)
+        public string? TransactionId { get; private set; }  // ID de la transaction chez le provider (Monetbil, etc.)
         public string PaymentReference { get; private set; }  // Notre référence interne
 
         // Métadonnées du paiement
         public string CustomerEmail { get; private set; }
-        public string CustomerPhone { get; private set; }
-        public string Description { get; private set; }
+        public string? CustomerPhone { get; private set; }
+        public string? Description { get; private set; }
 
         // Informations de callback/webhook
-        public string CallbackUrl { get; private set; }
-        public string ReturnUrl { get; private set; }
+        public string? CallbackUrl { get; private set; }
+        public string? ReturnUrl { get; private set; }
 
         // Informations de résultat
-        public string FailureReason { get; private set; }
+        public string? FailureReason { get; private set; }
         public DateTime? CompletedAt { get; private set; }
         public DateTime? FailedAt { get; private set; }
 

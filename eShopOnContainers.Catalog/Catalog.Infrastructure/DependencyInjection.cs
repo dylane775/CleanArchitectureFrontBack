@@ -44,10 +44,11 @@ namespace Catalog.Infrastructure
             // ====================================
             // 2. REPOSITORIES (Implémentations)
             // ====================================
-            
+
             services.AddScoped<ICatalogRepository, CatalogRepository>();
             services.AddScoped<ICatalogTypeRepository, CatalogTypeRepository>();
             services.AddScoped<ICatalogBrandRepository, CatalogBrandRepository>();
+            services.AddScoped<IProductReviewRepository, ProductReviewRepository>();
 
             // ====================================
             // 3. UNIT OF WORK (Transactions + Events)

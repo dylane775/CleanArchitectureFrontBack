@@ -64,7 +64,7 @@
 
 .new-badge {
   position: absolute;
-  top: 8px;
+  top: 50px; // Below the wishlist button
   right: 8px;
   background: #007185;
   color: $white;
@@ -74,6 +74,70 @@
   font-weight: 700;
   text-transform: uppercase;
   z-index: 2;
+}
+
+// Wishlist Button
+.wishlist-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  opacity: 0;
+
+  mat-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+    color: #565959;
+    transition: all 0.2s ease;
+  }
+
+  &:hover {
+    background: $white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transform: scale(1.1);
+
+    mat-icon {
+      color: #c45500;
+    }
+  }
+
+  &.active {
+    opacity: 1;
+
+    mat-icon {
+      color: #e31c3d;
+    }
+
+    &:hover mat-icon {
+      color: #b71c1c;
+    }
+  }
+
+  &.loading {
+    pointer-events: none;
+    opacity: 0.7;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+// Show wishlist button on card hover
+.product-image-wrapper:hover .wishlist-btn {
+  opacity: 1;
 }
 
 // ===================================

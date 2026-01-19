@@ -166,52 +166,237 @@
 }
 
 // ==========================================
-// PAYMENT SECTION
+// NEWSLETTER SECTION
 // ==========================================
 
-.payment-section {
-  padding: 32px 0;
+.newsletter-section {
+  padding: 40px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-  text-align: center;
+  background: rgba(255, 255, 255, 0.03);
+}
 
-  .payment-heading {
-    font-size: 0.9rem;
+.newsletter-content {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.newsletter-text {
+  margin-bottom: 24px;
+
+  .newsletter-heading {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: $white;
+    margin: 0 0 12px 0;
+    letter-spacing: 0.5px;
+  }
+
+  .newsletter-description {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+.newsletter-form {
+  .newsletter-input-group {
+    display: flex;
+    gap: 12px;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .newsletter-input {
+    flex: 1;
+    padding: 14px 20px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: $white;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: $primary-yellow;
+      background: rgba(255, 255, 255, 0.15);
+    }
+  }
+
+  .newsletter-button {
+    padding: 14px 32px;
+    background: $primary-yellow;
+    color: #131a22;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.9);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+
+    &:hover:not(:disabled) {
+      background: #e6c200; // darken(#ffd700, 10%)
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .spinner {
+      animation: spin 1s linear infinite;
+    }
+  }
+
+  .newsletter-message {
+    margin-top: 12px;
+    font-size: 0.875rem;
+    color: #ff6b6b;
+
+    &.success {
+      color: #51cf66;
+    }
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+// ==========================================
+// INFO SECTION (Contact + Payment)
+// ==========================================
+
+.info-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  padding: 40px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+
+  .info-heading {
+    font-size: 1rem;
+    font-weight: 700;
+    color: $white;
     margin: 0 0 20px 0;
     letter-spacing: 0.5px;
   }
 }
 
-.payment-methods {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 24px;
-  flex-wrap: wrap;
+// Contact Information
+.contact-info {
+  .contact-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.9rem;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      color: $primary-yellow;
+    }
+
+    a {
+      color: rgba(255, 255, 255, 0.85);
+      text-decoration: none;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: $primary-yellow;
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+// Payment Methods
+.payment-info {
+  .payment-methods {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
 
   .payment-icon {
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 56px;
-    height: 56px;
+    padding: 12px 20px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
     transition: all 0.3s ease;
 
-    mat-icon {
-      font-size: 28px;
-      width: 28px;
-      height: 28px;
-      color: rgba(255, 215, 0, 0.9);
+    .payment-text {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.9);
+      letter-spacing: 0.3px;
+    }
+
+    &.monetbil {
+      border-color: rgba(46, 125, 50, 0.5);
+
+      .payment-text {
+        color: #66bb6a;
+      }
+
+      &:hover {
+        background: rgba(46, 125, 50, 0.1);
+        border-color: #66bb6a;
+      }
+    }
+
+    &.mtn {
+      border-color: rgba(255, 193, 7, 0.5);
+
+      .payment-text {
+        color: #ffca28;
+      }
+
+      &:hover {
+        background: rgba(255, 193, 7, 0.1);
+        border-color: #ffca28;
+      }
+    }
+
+    &.orange {
+      border-color: rgba(255, 87, 34, 0.5);
+
+      .payment-text {
+        color: #ff7043;
+      }
+
+      &:hover {
+        background: rgba(255, 87, 34, 0.1);
+        border-color: #ff7043;
+      }
     }
 
     &:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 215, 0, 0.5);
       transform: translateY(-2px);
     }
   }
@@ -265,27 +450,49 @@
     justify-content: center;
   }
 
-  .payment-section {
-    padding: 24px 0;
+  .newsletter-section {
+    padding: 32px 0;
+  }
 
-    .payment-heading {
+  .newsletter-text {
+    .newsletter-heading {
+      font-size: 1.25rem;
+    }
+
+    .newsletter-description {
       font-size: 0.875rem;
     }
   }
 
-  .payment-methods {
-    gap: 16px;
-
-    .payment-icon {
-      width: 52px;
-      height: 52px;
-
-      mat-icon {
-        font-size: 26px;
-        width: 26px;
-        height: 26px;
-      }
+  .newsletter-form {
+    .newsletter-input-group {
+      flex-direction: column;
+      gap: 12px;
     }
+
+    .newsletter-button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  .info-section {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding: 32px 0;
+  }
+
+  .contact-info,
+  .payment-info {
+    text-align: center;
+  }
+
+  .contact-item {
+    justify-content: center;
+  }
+
+  .payment-methods {
+    justify-content: center;
   }
 
   .footer-bottom {

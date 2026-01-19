@@ -1,16 +1,11 @@
-<div class="catalog-wrapper" [class.sidebar-collapsed]="sidebarCollapsed()">
-  <!-- Sidebar Toggle Button -->
-  <button mat-icon-button class="sidebar-toggle-btn" (click)="toggleSidebar()" [attr.aria-label]="sidebarCollapsed() ? 'Show filters' : 'Hide filters'">
-    <mat-icon>{{ sidebarCollapsed() ? 'chevron_right' : 'chevron_left' }}</mat-icon>
-  </button>
+<!-- Breadcrumb Navigation -->
+<app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
 
-  <!-- Sidebar Filters -->
-  <aside class="filters-sidebar" [class.collapsed]="sidebarCollapsed()">
+<div class="catalog-wrapper">
+  <!-- Filters Section (Left Side) -->
+  <aside class="filters-section">
     <div class="filters-header">
-      <h2>
-        <mat-icon>filter_list</mat-icon>
-        Filters
-      </h2>
+      <h2>Filters</h2>
       @if (getActiveFiltersCount() > 0) {
         <button mat-button (click)="clearAllFilters()" class="clear-all-btn">
           <mat-icon>clear</mat-icon>
@@ -20,14 +15,11 @@
     </div>
 
     <!-- Price Range Filter -->
-    <mat-expansion-panel [expanded]="true" class="filter-panel">
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          <mat-icon>payments</mat-icon>
-          Price Range
-        </mat-panel-title>
-      </mat-expansion-panel-header>
-
+    <div class="filter-group">
+      <h3 class="filter-title">
+        <mat-icon>payments</mat-icon>
+        Price Range
+      </h3>
       <div class="price-filter-content">
         <div class="price-values">
           <span class="price-label">{{ formatPrice(priceMin) }}</span>
@@ -39,17 +31,14 @@
           <input matSliderEndThumb [(ngModel)]="priceMax" (ngModelChange)="onPriceChange()">
         </mat-slider>
       </div>
-    </mat-expansion-panel>
+    </div>
 
     <!-- Categories Filter -->
-    <mat-expansion-panel [expanded]="true" class="filter-panel">
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          <mat-icon>category</mat-icon>
-          Categories
-        </mat-panel-title>
-      </mat-expansion-panel-header>
-
+    <div class="filter-group">
+      <h3 class="filter-title">
+        <mat-icon>category</mat-icon>
+        Categories
+      </h3>
       <div class="filter-options">
         @for (category of categories(); track category.value) {
           <mat-checkbox
@@ -63,17 +52,14 @@
           </mat-checkbox>
         }
       </div>
-    </mat-expansion-panel>
+    </div>
 
     <!-- Brands Filter -->
-    <mat-expansion-panel [expanded]="true" class="filter-panel">
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          <mat-icon>local_offer</mat-icon>
-          Brands
-        </mat-panel-title>
-      </mat-expansion-panel-header>
-
+    <div class="filter-group">
+      <h3 class="filter-title">
+        <mat-icon>local_offer</mat-icon>
+        Brands
+      </h3>
       <div class="filter-options">
         @for (brand of brands(); track brand.value) {
           <mat-checkbox
@@ -87,7 +73,7 @@
           </mat-checkbox>
         }
       </div>
-    </mat-expansion-panel>
+    </div>
   </aside>
 
   <!-- Main Content -->

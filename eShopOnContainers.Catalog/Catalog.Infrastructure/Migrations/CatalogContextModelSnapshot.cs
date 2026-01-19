@@ -205,6 +205,100 @@ namespace Catalog.Infrastructure.Migrations
                     b.ToTable("CatalogTypes", (string)null);
                 });
 
+            modelBuilder.Entity("Catalog.Domain.Entities.ProductReview", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CatalogItemId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("HelpfulCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsVerifiedPurchase")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("TotalVotes")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<string>("UserDisplayName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CatalogItemId")
+                        .HasDatabaseName("IX_ProductReviews_CatalogItemId");
+
+                    b.HasIndex("IsDeleted")
+                        .HasDatabaseName("IX_ProductReviews_IsDeleted");
+
+                    b.HasIndex("Rating")
+                        .HasDatabaseName("IX_ProductReviews_Rating");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("IX_ProductReviews_UserId");
+
+                    b.HasIndex("CatalogItemId", "UserId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_ProductReviews_CatalogItemId_UserId");
+
+                    b.ToTable("ProductReviews", (string)null);
+                });
+
             modelBuilder.Entity("Catalog.Domain.Entities.CatalogItem", b =>
                 {
                     b.HasOne("Catalog.Domain.Entities.CatalogBrand", "CatalogBrand")
@@ -242,6 +336,17 @@ namespace Catalog.Infrastructure.Migrations
 
                     b.Navigation("Specifications")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Catalog.Domain.Entities.ProductReview", b =>
+                {
+                    b.HasOne("Catalog.Domain.Entities.CatalogItem", "CatalogItem")
+                        .WithMany()
+                        .HasForeignKey("CatalogItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CatalogItem");
                 });
 #pragma warning restore 612, 618
         }

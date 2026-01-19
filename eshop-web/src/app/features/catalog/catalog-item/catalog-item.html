@@ -4,12 +4,22 @@
     <img [src]="getImageUrl()" [alt]="item.name" class="product-image">
 
     <!-- Badges -->
-    @if (getDiscountPercentage() > 15) {
+    @if (hasDiscount()) {
       <div class="discount-badge">-{{ getDiscountPercentage() }}%</div>
     }
     @if (isNew()) {
       <div class="new-badge">NEW</div>
     }
+
+    <!-- Wishlist Button -->
+    <button class="wishlist-btn"
+            [class.active]="isInWishlist()"
+            [class.loading]="isWishlistLoading()"
+            (click)="toggleWishlist(); $event.stopPropagation()"
+            [disabled]="isWishlistLoading()"
+            [attr.aria-label]="isInWishlist() ? 'Remove from wishlist' : 'Add to wishlist'">
+      <mat-icon>{{ isInWishlist() ? 'favorite' : 'favorite_border' }}</mat-icon>
+    </button>
   </div>
 
   <mat-card-content class="product-info">
@@ -33,7 +43,7 @@
 
     <!-- Price Section -->
     <div class="price-section">
-      @if (getDiscountPercentage() > 15) {
+      @if (hasDiscount()) {
         <div class="price-row">
           <span class="discount-label">-{{ getDiscountPercentage() }}%</span>
           <span class="current-price">{{ item.price | number:'1.0-0' }} FCFA</span>
